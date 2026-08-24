@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0B3C49">
+  <meta name="description" content="Sistema de Audiências">
+  <title>Sistema de Audiências</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+  <main class="app-shell" id="app">
+    <section class="card" aria-labelledby="app-title">
+      <p class="eyebrow">Sistema de Audiências</p>
+      <h1 id="app-title">Frontend inicial configurado</h1>
+      <p class="muted">Estrutura base pronta para a próxima etapa: implementação do login real.</p>
+      <div class="status" role="status">Ambiente inicial carregado com sucesso.</div>
+    </section>
+  </main>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/auth.js"></script>
+  <script src="./js/session.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function (error) {
+          console.error('Falha ao registrar o Service Worker:', error);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

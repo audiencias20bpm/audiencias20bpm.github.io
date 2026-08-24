@@ -1,0 +1,11 @@
+{
+  "name": "Sistema de Audiências",
+  "short_name": "Audiências",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0B3C49",
+  "lang": "pt-BR",
+  "icons": []
+}
