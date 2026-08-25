@@ -73,3 +73,11 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - mantém os módulos como estrutura visual sem executar operações ainda;
 - deixa explícito que a autorização real continua sendo validada no backend;
 - adiciona `js/dashboard.js` para manter a renderização do painel separada da autenticação.
+
+## 0.3.1 - Identidade visual e favicon
+
+- adiciona favicon profissional do Sistema de Audiências;
+- inclui ícones 32, 180, 192 e 512 px;
+- integra favicon ao navegador e ícones ao manifest da PWA;
+- atualiza cache do Service Worker para incluir os novos ativos;
+- preserva integralmente login, sessão, logout e dashboard v0.3.0.

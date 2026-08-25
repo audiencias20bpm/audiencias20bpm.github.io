@@ -1,14 +1,18 @@
-const CACHE_NAME = 'audiencias-shell-v0.3.0';
+const CACHE_NAME = 'audiencias-shell-v0.3.1';
 const APP_SHELL = [
   './',
   './index.html',
-  './css/app.css?v=0.3.0',
-  './js/config.js?v=0.3.0',
-  './js/api.js?v=0.3.0',
-  './js/dashboard.js?v=0.3.0',
-  './js/auth.js?v=0.3.0',
-  './js/session.js?v=0.3.0',
-  './manifest.json'
+  './css/app.css?v=0.3.1',
+  './js/config.js?v=0.3.1',
+  './js/api.js?v=0.3.1',
+  './js/dashboard.js?v=0.3.1',
+  './js/auth.js?v=0.3.1',
+  './js/session.js?v=0.3.1',
+  './manifest.json?v=0.3.1',
+  './assets/icons/favicon-32.png',
+  './assets/icons/apple-touch-icon.png',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png'
 ];
 
 self.addEventListener('install', function (event) {
