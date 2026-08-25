@@ -54,6 +54,7 @@ input {
 }
 
 .login-card {
+  position: relative;
   width: min(100%, 520px);
   margin: 0 auto;
   padding: 26px 22px 20px;
@@ -261,16 +262,43 @@ h1 {
   font-size: 0.85rem;
 }
 
+.app-version-badge {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  color: #74838A;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 .login-footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 7px;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
   margin-top: 24px;
   padding-top: 16px;
   border-top: 1px solid #E7ECEE;
   color: var(--texto-suave);
   font-size: 0.76rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.login-footer strong {
+  color: var(--petroleo);
+  font-weight: 800;
+}
+
+.login-footer a {
+  color: var(--petroleo);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-footer a:hover,
+.login-footer a:focus-visible {
+  text-decoration: underline;
 }
 
 .noscript-message {
@@ -1268,5 +1296,16 @@ h1 {
 
   .recipient-entry-actions .compact-button {
     width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .login-card {
+    padding-top: 36px;
+  }
+
+  .app-version-badge {
+    top: 12px;
+    right: 16px;
   }
 }

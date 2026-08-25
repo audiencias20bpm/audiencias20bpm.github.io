@@ -104,7 +104,7 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - após salvar, a lista é recarregada e exibe o novo registro.
 
 
-## v0.6.2 — Múltiplos militares por audiência
+## v0.6.3 — Múltiplos militares por audiência
 
 - substitui o campo manual `destinatario_id` por seleção operacional de militares via RG;
 - permite adicionar vários militares à mesma audiência;
@@ -117,7 +117,7 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - nenhum CPF/RG da base é colocado no repositório público do frontend.
 
 
-## v0.6.2 — Busca cadastral e WhatsApp
+## v0.6.3 — Busca cadastral e WhatsApp
 
 - campo Código removido do formulário; o backend sempre gera o identificador da audiência;
 - RG, CPF e Nome consultam a mesma base cadastral;
@@ -126,8 +126,17 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - em usos futuros, o WhatsApp salvo retorna automaticamente junto com RG, CPF e Nome.
 
 
-## v0.6.2
+## v0.6.3
 - adiciona botão **Limpar dados** no cadastro do militar;
 - preserva CPFs com zero à esquerda;
 - mantém busca por RG, CPF ou Nome;
 - mantém gravação e retorno automático do WhatsApp.
+
+
+## v0.6.3 — Rodapé institucional
+
+- remove a mensagem técnica de HTTPS do rodapé;
+- move a versão para o canto superior direito do cartão principal;
+- adiciona identificação institucional do Sistema de Audiências • 20º BPM;
+- informa desenvolvimento pelo P4/20º BPM;
+- adiciona canal clicável para dúvidas, sugestões ou problemas: audiencias.20.bpm@gmail.com.

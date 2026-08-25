@@ -9,12 +9,13 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.6.2">
-  <link rel="stylesheet" href="./css/app.css?v=0.6.2">
+  <link rel="manifest" href="./manifest.json?v=0.6.3">
+  <link rel="stylesheet" href="./css/app.css?v=0.6.3">
 </head>
 <body>
   <main class="app-shell" id="app">
     <section class="login-card" aria-labelledby="login-title">
+      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.6.3</span></span>
       <header class="login-header">
         <div class="brand-mark" aria-hidden="true">SA</div>
         <div>
@@ -299,9 +300,9 @@
       </div>
 
       <footer class="login-footer">
-        <span>Conexão protegida por HTTPS</span>
-        <span aria-hidden="true">•</span>
-        <span>v<span id="app-version">0.6.2</span></span>
+        <strong>Sistema de Audiências • 20º BPM</strong>
+        <span>Aplicação desenvolvida pelo P4/20º BPM</span>
+        <span>Dúvidas, sugestões ou problemas: <a href="mailto:audiencias.20.bpm@gmail.com">audiencias.20.bpm@gmail.com</a></span>
       </footer>
     </section>
   </main>
@@ -310,12 +311,12 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.6.2"></script>
-  <script src="./js/api.js?v=0.6.2"></script>
-  <script src="./js/audiencias.js?v=0.6.2"></script>
-  <script src="./js/dashboard.js?v=0.6.2"></script>
-  <script src="./js/auth.js?v=0.6.2"></script>
-  <script src="./js/session.js?v=0.6.2"></script>
+  <script src="./js/config.js?v=0.6.3"></script>
+  <script src="./js/api.js?v=0.6.3"></script>
+  <script src="./js/audiencias.js?v=0.6.3"></script>
+  <script src="./js/dashboard.js?v=0.6.3"></script>
+  <script src="./js/auth.js?v=0.6.3"></script>
+  <script src="./js/session.js?v=0.6.3"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
