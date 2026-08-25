@@ -90,3 +90,15 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - estados de carregamento, vazio e erro;
 - nenhuma criacao, edicao ou exclusao nesta fase;
 - backend: adicionar `Audiencias.gs` e substituir `Router.gs` pela versao entregue.
+
+
+## v0.5.0 — Cadastro de Audiências
+
+- mantém listagem segura da v0.4.0;
+- adiciona formulário responsivo de nova audiência;
+- adiciona rota backend `POST audiencias_create`;
+- código pode ser informado ou gerado automaticamente;
+- status inicial é controlado pelo backend como `AGENDADA`;
+- campos técnicos e de auditoria são preenchidos pelo servidor;
+- criação exige sessão válida e perfil DEV ou ADMINISTRADOR;
+- após salvar, a lista é recarregada e exibe o novo registro.

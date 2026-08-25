@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.4.0">
-  <link rel="stylesheet" href="./css/app.css?v=0.4.0">
+  <link rel="manifest" href="./manifest.json?v=0.5.0">
+  <link rel="stylesheet" href="./css/app.css?v=0.5.0">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -136,8 +136,13 @@
                 <h2 id="audiencias-view-title">Audiências</h2>
                 <p class="module-view-subtitle">Consulta das audiências registradas no sistema.</p>
               </div>
-              <span id="audiencias-count" class="module-count">—</span>
+              <div class="module-header-actions">
+                <span id="audiencias-count" class="module-count">—</span>
+                <button id="audiencias-new" class="primary-button compact-button" type="button">+ Nova audiência</button>
+              </div>
             </header>
+
+            <div id="audiencias-success" class="module-success" role="status" aria-live="polite" hidden></div>
 
             <div id="audiencias-loading" class="module-state" role="status" aria-live="polite">
               <div class="validation-spinner" aria-hidden="true"></div>
@@ -174,6 +179,77 @@
             <div class="module-actions">
               <button id="audiencias-retry" class="secondary-button" type="button">Atualizar lista</button>
             </div>
+
+            <section id="audiencias-form-view" class="audiencias-form-view" aria-labelledby="audiencias-form-title" hidden>
+              <div class="form-view-heading">
+                <button id="audiencias-form-back" class="back-button" type="button">← Voltar à lista</button>
+                <p class="dashboard-kicker">Cadastro</p>
+                <h3 id="audiencias-form-title">Nova audiência</h3>
+                <p>Informe os dados principais. Os campos técnicos e de auditoria são preenchidos automaticamente pelo sistema.</p>
+              </div>
+
+              <form id="audiencias-form" class="audiencias-form" novalidate>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="audiencia-codigo">Código <span class="field-optional">(opcional)</span></label>
+                    <input id="audiencia-codigo" name="codigo" type="text" maxlength="80" autocomplete="off" placeholder="Gerado automaticamente se vazio">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="audiencia-processo">Processo</label>
+                    <input id="audiencia-processo" name="processo" type="text" maxlength="120" autocomplete="off" required>
+                  </div>
+
+                  <div class="form-group form-group-wide">
+                    <label for="audiencia-assunto">Assunto</label>
+                    <input id="audiencia-assunto" name="assunto" type="text" maxlength="300" autocomplete="off" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="audiencia-data-hora">Data e hora</label>
+                    <input id="audiencia-data-hora" name="data_hora" type="datetime-local" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="audiencia-modalidade">Modalidade</label>
+                    <select id="audiencia-modalidade" name="modalidade" required>
+                      <option value="">Selecione</option>
+                      <option value="PRESENCIAL">Presencial</option>
+                      <option value="VIDEOCONFERENCIA">Videoconferência</option>
+                      <option value="HIBRIDA">Híbrida</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group form-group-wide">
+                    <label for="audiencia-local">Local <span class="field-optional">(obrigatório para presencial)</span></label>
+                    <input id="audiencia-local" name="local" type="text" maxlength="300" autocomplete="off">
+                  </div>
+
+                  <div class="form-group form-group-wide">
+                    <label for="audiencia-link">Link da audiência <span class="field-optional">(opcional)</span></label>
+                    <input id="audiencia-link" name="link" type="url" maxlength="1000" inputmode="url" autocomplete="off" placeholder="https://...">
+                  </div>
+
+                  <div class="form-group form-group-wide">
+                    <label for="audiencia-destinatario">ID do destinatário <span class="field-optional">(opcional nesta etapa)</span></label>
+                    <input id="audiencia-destinatario" name="destinatario_id" type="text" maxlength="120" autocomplete="off">
+                    <small>A vinculação por busca será adicionada quando o módulo Destinatários for implementado.</small>
+                  </div>
+
+                  <div class="form-group form-group-wide">
+                    <label for="audiencia-observacoes">Observações <span class="field-optional">(opcional)</span></label>
+                    <textarea id="audiencia-observacoes" name="observacoes" rows="4" maxlength="3000"></textarea>
+                  </div>
+                </div>
+
+                <div id="audiencias-form-error" class="module-error" role="alert" hidden></div>
+
+                <div class="form-actions">
+                  <button id="audiencias-form-cancel" class="secondary-button" type="button">Cancelar</button>
+                  <button id="audiencias-form-submit" class="primary-button" type="submit">Salvar audiência</button>
+                </div>
+              </form>
+            </section>
           </section>
         </section>
       </section>
@@ -189,7 +265,7 @@
       <footer class="login-footer">
         <span>Conexão protegida por HTTPS</span>
         <span aria-hidden="true">•</span>
-        <span>v<span id="app-version">0.4.0</span></span>
+        <span>v<span id="app-version">0.5.0</span></span>
       </footer>
     </section>
   </main>
@@ -198,12 +274,12 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.4.0"></script>
-  <script src="./js/api.js?v=0.4.0"></script>
-  <script src="./js/audiencias.js?v=0.4.0"></script>
-  <script src="./js/dashboard.js?v=0.4.0"></script>
-  <script src="./js/auth.js?v=0.4.0"></script>
-  <script src="./js/session.js?v=0.4.0"></script>
+  <script src="./js/config.js?v=0.5.0"></script>
+  <script src="./js/api.js?v=0.5.0"></script>
+  <script src="./js/audiencias.js?v=0.5.0"></script>
+  <script src="./js/dashboard.js?v=0.5.0"></script>
+  <script src="./js/auth.js?v=0.5.0"></script>
+  <script src="./js/session.js?v=0.5.0"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
