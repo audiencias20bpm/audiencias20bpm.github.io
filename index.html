@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.5.0">
-  <link rel="stylesheet" href="./css/app.css?v=0.5.0">
+  <link rel="manifest" href="./manifest.json?v=0.6.0">
+  <link rel="stylesheet" href="./css/app.css?v=0.6.0">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -165,6 +165,7 @@
                       <th>Código</th>
                       <th>Processo</th>
                       <th>Assunto</th>
+                      <th>Militares</th>
                       <th>Data e hora</th>
                       <th>Modalidade</th>
                       <th>Local</th>
@@ -230,10 +231,47 @@
                     <input id="audiencia-link" name="link" type="url" maxlength="1000" inputmode="url" autocomplete="off" placeholder="https://...">
                   </div>
 
-                  <div class="form-group form-group-wide">
-                    <label for="audiencia-destinatario">ID do destinatário <span class="field-optional">(opcional nesta etapa)</span></label>
-                    <input id="audiencia-destinatario" name="destinatario_id" type="text" maxlength="120" autocomplete="off">
-                    <small>A vinculação por busca será adicionada quando o módulo Destinatários for implementado.</small>
+                  <div class="form-group form-group-wide recipients-builder">
+                    <div class="recipients-heading">
+                      <div>
+                        <label>Militares convocados</label>
+                        <small>Digite o RG. Se o militar já estiver cadastrado, os demais dados serão preenchidos automaticamente.</small>
+                      </div>
+                      <span id="audiencia-destinatarios-count" class="recipients-count">0 adicionados</span>
+                    </div>
+
+                    <div class="recipient-entry-card">
+                      <div class="recipient-entry-grid">
+                        <div class="form-group">
+                          <label for="destinatario-rg">RG</label>
+                          <input id="destinatario-rg" type="text" inputmode="numeric" maxlength="20" autocomplete="off" placeholder="Digite o RG">
+                        </div>
+                        <div class="form-group">
+                          <label for="destinatario-nome">Nome</label>
+                          <input id="destinatario-nome" type="text" maxlength="200" autocomplete="off" placeholder="Preenchido automaticamente ou informe o nome">
+                        </div>
+                        <div class="form-group">
+                          <label for="destinatario-cpf">CPF <span class="field-optional">(opcional)</span></label>
+                          <input id="destinatario-cpf" type="text" inputmode="numeric" maxlength="18" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                          <label for="destinatario-telefone">WhatsApp <span class="field-optional">(opcional nesta fase)</span></label>
+                          <input id="destinatario-telefone" type="tel" inputmode="tel" maxlength="20" autocomplete="off">
+                        </div>
+                        <div class="form-group form-group-wide">
+                          <label for="destinatario-unidade">Unidade <span class="field-optional">(opcional)</span></label>
+                          <input id="destinatario-unidade" type="text" maxlength="200" autocomplete="off">
+                        </div>
+                      </div>
+
+                      <div id="destinatario-lookup-status" class="recipient-lookup-status" role="status" aria-live="polite"></div>
+
+                      <div class="recipient-entry-actions">
+                        <button id="destinatario-adicionar" class="secondary-button compact-button" type="button">+ Adicionar militar</button>
+                      </div>
+                    </div>
+
+                    <div id="audiencia-destinatarios-list" class="recipients-list" aria-live="polite"></div>
                   </div>
 
                   <div class="form-group form-group-wide">
@@ -274,12 +312,12 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.5.0"></script>
-  <script src="./js/api.js?v=0.5.0"></script>
-  <script src="./js/audiencias.js?v=0.5.0"></script>
-  <script src="./js/dashboard.js?v=0.5.0"></script>
-  <script src="./js/auth.js?v=0.5.0"></script>
-  <script src="./js/session.js?v=0.5.0"></script>
+  <script src="./js/config.js?v=0.6.0"></script>
+  <script src="./js/api.js?v=0.6.0"></script>
+  <script src="./js/audiencias.js?v=0.6.0"></script>
+  <script src="./js/dashboard.js?v=0.6.0"></script>
+  <script src="./js/auth.js?v=0.6.0"></script>
+  <script src="./js/session.js?v=0.6.0"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

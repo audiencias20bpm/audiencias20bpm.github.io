@@ -102,3 +102,16 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - campos técnicos e de auditoria são preenchidos pelo servidor;
 - criação exige sessão válida e perfil DEV ou ADMINISTRADOR;
 - após salvar, a lista é recarregada e exibe o novo registro.
+
+
+## v0.6.0 — Múltiplos militares por audiência
+
+- substitui o campo manual `destinatario_id` por seleção operacional de militares via RG;
+- permite adicionar vários militares à mesma audiência;
+- consulta RG no backend e preenche Nome/CPF/WhatsApp/Unidade quando já cadastrado;
+- se o RG não existir, o operador informa os dados e o cadastro é persistido automaticamente ao salvar a audiência;
+- cria a relação normalizada `AUDIENCIA_DESTINATARIOS`;
+- mantém `destinatario_id` em AUDIENCIAS apenas como compatibilidade legada, apontando para o primeiro militar;
+- adiciona coluna Militares à listagem de audiências;
+- base cadastral inicial fornecida pelo responsável pode ser importada uma única vez no Apps Script;
+- nenhum CPF/RG da base é colocado no repositório público do frontend.

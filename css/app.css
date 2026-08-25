@@ -1049,3 +1049,140 @@ h1 {
     width: 100%;
   }
 }
+
+
+/* v0.6.0 — militares convocados / destinatários múltiplos */
+.recipients-builder {
+  padding-top: 4px;
+}
+
+.recipients-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.recipients-heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.recipients-count {
+  flex: 0 0 auto;
+  border: 1px solid #c8d8dd;
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: #f5f9fa;
+  color: #0b3c49;
+  font-weight: 800;
+  font-size: 0.82rem;
+}
+
+.recipient-entry-card {
+  border: 1px solid #cbd9dd;
+  border-radius: 16px;
+  padding: 16px;
+  background: #f8fbfc;
+}
+
+.recipient-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.recipient-entry-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.recipient-lookup-status {
+  min-height: 22px;
+  margin-top: 10px;
+  font-size: 0.88rem;
+  color: #4c6570;
+}
+
+.recipient-lookup-status.is-found { color: #176b43; }
+.recipient-lookup-status.is-new { color: #8a5a00; }
+.recipient-lookup-status.is-error { color: #a01919; font-weight: 700; }
+.recipient-lookup-status.is-loading { color: #0b3c49; }
+
+.recipients-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.recipients-empty {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px dashed #cbd9dd;
+  border-radius: 12px;
+  color: #60747d;
+  background: #fff;
+}
+
+.recipient-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid #bcd4cb;
+  border-radius: 13px;
+  background: #eef8f2;
+}
+
+.recipient-chip-text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.recipient-chip-text strong {
+  color: #073947;
+}
+
+.recipient-chip-text span {
+  color: #4d666f;
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.recipient-remove {
+  flex: 0 0 auto;
+  border: 1px solid #e3a9a9;
+  background: #fff;
+  color: #a01919;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.audiencias-recipients-cell {
+  min-width: 240px;
+  white-space: normal;
+  line-height: 1.35;
+}
+
+@media (max-width: 720px) {
+  .recipient-entry-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recipients-heading,
+  .recipient-chip {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .recipient-remove,
+  .recipient-entry-actions .compact-button {
+    width: 100%;
+  }
+}
