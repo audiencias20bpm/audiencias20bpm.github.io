@@ -5,6 +5,7 @@
   var USER_STORAGE_KEY = 'audiencias_session_user';
   var EXPIRES_STORAGE_KEY = 'audiencias_session_expires_at';
   var ACTIVITY_THROTTLE_MS = 60000;
+  var MAX_VISUAL_SESSION_MS = 30 * 60 * 1000;
 
   var timerId = null;
   var validating = false;
@@ -96,6 +97,7 @@
   }
 
   function setIndicatorState_(remainingMs) {
+    var visualRemainingMs = Math.min(Math.max(0, remainingMs), MAX_VISUAL_SESSION_MS);
     var indicator = document.getElementById('session-indicator');
     var timer = document.getElementById('session-timer');
 
@@ -103,13 +105,13 @@
       return;
     }
 
-    timer.textContent = formatRemaining_(remainingMs);
+    timer.textContent = formatRemaining_(visualRemainingMs);
 
     indicator.classList.remove('session-warning', 'session-critical');
 
-    if (remainingMs <= 60000) {
+    if (visualRemainingMs <= 60000) {
       indicator.classList.add('session-critical');
-    } else if (remainingMs <= 300000) {
+    } else if (visualRemainingMs <= 300000) {
       indicator.classList.add('session-warning');
     }
   }
@@ -244,7 +246,14 @@
     bindActivity_();
 
     if (!getToken_()) {
+      if (window.Auth && typeof window.Auth.showLogin === 'function') {
+        window.Auth.showLogin('');
+      }
       return;
+    }
+
+    if (window.Auth && typeof window.Auth.showValidating === 'function') {
+      window.Auth.showValidating();
     }
 
     validateSession_({ expireOnNetworkError: true });

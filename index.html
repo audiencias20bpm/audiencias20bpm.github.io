@@ -7,7 +7,7 @@
   <meta name="description" content="Sistema de Audiências">
   <title>Entrar | Sistema de Audiências</title>
   <link rel="manifest" href="./manifest.json">
-  <link rel="stylesheet" href="./css/app.css?v=0.2.2">
+  <link rel="stylesheet" href="./css/app.css?v=0.2.3">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -20,9 +20,15 @@
         </div>
       </header>
 
-      <p class="login-intro">Entre com suas credenciais para continuar.</p>
+      <p id="login-intro" class="login-intro">Entre com suas credenciais para continuar.</p>
 
-      <form id="login-form" class="login-form" novalidate>
+      <section id="session-validating" class="session-validating" role="status" aria-live="polite" hidden>
+        <div class="validation-spinner" aria-hidden="true"></div>
+        <strong>Validando sessão...</strong>
+        <span>Aguarde enquanto confirmamos seu acesso com segurança.</span>
+      </section>
+
+      <form id="login-form" class="login-form" novalidate hidden>
         <div class="field">
           <label for="login">Usuário</label>
           <input
@@ -86,7 +92,7 @@
       <footer class="login-footer">
         <span>Conexão protegida por HTTPS</span>
         <span aria-hidden="true">•</span>
-        <span>v<span id="app-version">0.2.0</span></span>
+        <span>v<span id="app-version">0.2.3</span></span>
       </footer>
     </section>
   </main>
@@ -95,10 +101,10 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.2.2"></script>
-  <script src="./js/api.js?v=0.2.2"></script>
-  <script src="./js/auth.js?v=0.2.2"></script>
-  <script src="./js/session.js?v=0.2.2"></script>
+  <script src="./js/config.js?v=0.2.3"></script>
+  <script src="./js/api.js?v=0.2.3"></script>
+  <script src="./js/auth.js?v=0.2.3"></script>
+  <script src="./js/session.js?v=0.2.3"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

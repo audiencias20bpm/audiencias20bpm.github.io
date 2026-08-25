@@ -132,6 +132,27 @@
     sessionStorage.removeItem(EXPIRES_STORAGE_KEY);
   }
 
+
+  function showValidating_() {
+    var form = document.getElementById('login-form');
+    var successPanel = document.getElementById('login-success');
+    var validatingPanel = document.getElementById('session-validating');
+    var intro = document.getElementById('login-intro');
+
+    if (form) {
+      form.hidden = true;
+    }
+    if (successPanel) {
+      successPanel.hidden = true;
+    }
+    if (validatingPanel) {
+      validatingPanel.hidden = false;
+    }
+    if (intro) {
+      intro.hidden = true;
+    }
+  }
+
   function showAuthenticated_(user) {
     var form = document.getElementById('login-form');
     var successPanel = document.getElementById('login-success');
@@ -139,6 +160,8 @@
     var message = document.getElementById('login-message');
     var loginInput = document.getElementById('login');
     var passwordInput = document.getElementById('senha');
+    var validatingPanel = document.getElementById('session-validating');
+    var intro = document.getElementById('login-intro');
     var normalizedUser = isObject_(user) ? user : {};
     var label = normalizedUser.nome || normalizedUser.name || normalizedUser.login || '';
     var profile = normalizedUser.perfil || normalizedUser.role || '';
@@ -164,6 +187,13 @@
       passwordInput.value = '';
     }
 
+    if (validatingPanel) {
+      validatingPanel.hidden = true;
+    }
+    if (intro) {
+      intro.hidden = false;
+    }
+
     form.hidden = true;
     successPanel.hidden = false;
 
@@ -181,9 +211,18 @@
     var message = document.getElementById('login-message');
     var loginInput = document.getElementById('login');
     var passwordInput = document.getElementById('senha');
+    var validatingPanel = document.getElementById('session-validating');
+    var intro = document.getElementById('login-intro');
 
     if (!form || !successPanel) {
       return;
+    }
+
+    if (validatingPanel) {
+      validatingPanel.hidden = true;
+    }
+    if (intro) {
+      intro.hidden = false;
     }
 
     successPanel.hidden = true;
@@ -244,6 +283,12 @@
 
     if (version && window.APP_CONFIG && window.APP_CONFIG.APP_VERSION) {
       version.textContent = window.APP_CONFIG.APP_VERSION;
+    }
+
+    if (sessionStorage.getItem(TOKEN_STORAGE_KEY)) {
+      showValidating_();
+    } else {
+      showLogin_('');
     }
 
     function setMessage_(text) {
@@ -347,6 +392,7 @@
     login: login,
     clearStoredSession: clearStoredSession_,
     showAuthenticated: showAuthenticated_,
-    showLogin: showLogin_
+    showLogin: showLogin_,
+    showValidating: showValidating_
   });
 }());
