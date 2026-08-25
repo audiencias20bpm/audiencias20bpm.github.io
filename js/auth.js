@@ -25,7 +25,9 @@
 
   function getToken_(response) {
     var data = getData_(response);
-    return data.token || response.token || '';
+    var session = data && typeof data === 'object' ? (data.sessao || data.session || {}) : {};
+
+    return session.token || data.token || response.token || '';
   }
 
   function getUser_(response) {
@@ -68,7 +70,8 @@
     }).then(function (response) {
       if (!isSuccess_(response)) {
         var error = new Error('LOGIN_RECUSADO');
-        error.code = response && (response.codigo || response.code) ? (response.codigo || response.code) : '';
+        var errorData = getData_(response);
+        error.code = errorData.code || errorData.codigo || response.codigo || response.code || '';
         throw error;
       }
 
