@@ -132,6 +132,79 @@
     sessionStorage.removeItem(EXPIRES_STORAGE_KEY);
   }
 
+  function showAuthenticated_(user) {
+    var form = document.getElementById('login-form');
+    var successPanel = document.getElementById('login-success');
+    var successUser = document.getElementById('success-user');
+    var message = document.getElementById('login-message');
+    var loginInput = document.getElementById('login');
+    var passwordInput = document.getElementById('senha');
+    var normalizedUser = isObject_(user) ? user : {};
+    var label = normalizedUser.nome || normalizedUser.name || normalizedUser.login || '';
+    var profile = normalizedUser.perfil || normalizedUser.role || '';
+
+    if (!form || !successPanel || !successUser) {
+      return;
+    }
+
+    if (label && profile) {
+      successUser.textContent = label + ' - ' + profile;
+    } else if (label) {
+      successUser.textContent = label;
+    } else {
+      successUser.textContent = 'Autenticação concluída com sucesso.';
+    }
+
+    if (message) {
+      message.textContent = '';
+      message.hidden = true;
+    }
+
+    if (passwordInput) {
+      passwordInput.value = '';
+    }
+
+    form.hidden = true;
+    successPanel.hidden = false;
+
+    if (loginInput) {
+      loginInput.disabled = false;
+    }
+    if (passwordInput) {
+      passwordInput.disabled = false;
+    }
+  }
+
+  function showLogin_(messageText) {
+    var form = document.getElementById('login-form');
+    var successPanel = document.getElementById('login-success');
+    var message = document.getElementById('login-message');
+    var loginInput = document.getElementById('login');
+    var passwordInput = document.getElementById('senha');
+
+    if (!form || !successPanel) {
+      return;
+    }
+
+    successPanel.hidden = true;
+    form.hidden = false;
+
+    if (message) {
+      message.textContent = messageText || '';
+      message.hidden = !messageText;
+    }
+
+    if (passwordInput) {
+      passwordInput.value = '';
+    }
+
+    window.setTimeout(function () {
+      if (loginInput) {
+        loginInput.focus();
+      }
+    }, 0);
+  }
+
   function login(login, senha) {
     var normalizedLogin = normalizeLogin_(login);
 
@@ -166,8 +239,6 @@
     var buttonLoading = submitButton.querySelector('.button-loading');
     var message = document.getElementById('login-message');
     var togglePassword = document.getElementById('toggle-password');
-    var successPanel = document.getElementById('login-success');
-    var successUser = document.getElementById('success-user');
     var version = document.getElementById('app-version');
     var submitting = false;
 
@@ -189,23 +260,6 @@
       buttonLabel.hidden = loading;
       buttonLoading.hidden = !loading;
       form.setAttribute('aria-busy', loading ? 'true' : 'false');
-    }
-
-    function showSuccess_(result) {
-      var user = result.user || {};
-      var label = user.nome || user.name || user.login || '';
-      var profile = user.perfil || user.role || '';
-
-      if (label && profile) {
-        successUser.textContent = label + ' - ' + profile;
-      } else if (label) {
-        successUser.textContent = label;
-      } else {
-        successUser.textContent = 'Autenticacao concluida com sucesso.';
-      }
-
-      form.hidden = true;
-      successPanel.hidden = false;
     }
 
     togglePassword.addEventListener('click', function () {
@@ -231,7 +285,7 @@
       passwordInput.setAttribute('aria-invalid', passwordValue ? 'false' : 'true');
 
       if (!loginValue || !passwordValue) {
-        setMessage_('Informe usuario e senha para continuar.');
+        setMessage_('Informe usuário e senha para continuar.');
         (!loginValue ? loginInput : passwordInput).focus();
         return;
       }
@@ -241,23 +295,26 @@
 
       login(loginValue, passwordValue)
         .then(function (result) {
-          passwordInput.value = '';
-          showSuccess_(result);
+          showAuthenticated_(result.user);
+
+          if (window.Session && typeof window.Session.afterLogin === 'function') {
+            window.Session.afterLogin();
+          }
         })
         .catch(function (error) {
           clearStoredSession_();
           passwordInput.value = '';
 
           if (error && error.name === 'AbortError') {
-            setMessage_('Nao foi possivel concluir o acesso agora. Tente novamente.');
+            setMessage_('Não foi possível concluir o acesso agora. Tente novamente.');
           } else if (error && error.message === 'LOGIN_RECUSADO') {
             if (error.code === 'ACESSO_TEMPORARIAMENTE_BLOQUEADO' || error.code === 'ACESSO_INDISPONIVEL') {
-              setMessage_('Acesso temporariamente indisponivel. Tente novamente mais tarde.');
+              setMessage_('Acesso temporariamente indisponível. Tente novamente mais tarde.');
             } else {
-              setMessage_('Nao foi possivel entrar. Verifique suas credenciais e tente novamente.');
+              setMessage_('Não foi possível entrar. Verifique suas credenciais e tente novamente.');
             }
           } else {
-            setMessage_('Nao foi possivel concluir o acesso agora. Tente novamente.');
+            setMessage_('Não foi possível concluir o acesso agora. Tente novamente.');
           }
 
           passwordInput.focus();
@@ -277,15 +334,19 @@
       setMessage_('');
     });
 
-    window.setTimeout(function () {
-      loginInput.focus();
-    }, 0);
+    if (!sessionStorage.getItem(TOKEN_STORAGE_KEY)) {
+      window.setTimeout(function () {
+        loginInput.focus();
+      }, 0);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', initLoginPage_);
 
   window.Auth = Object.freeze({
     login: login,
-    clearStoredSession: clearStoredSession_
+    clearStoredSession: clearStoredSession_,
+    showAuthenticated: showAuthenticated_,
+    showLogin: showLogin_
   });
 }());

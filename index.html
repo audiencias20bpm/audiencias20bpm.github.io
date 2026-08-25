@@ -7,7 +7,7 @@
   <meta name="description" content="Sistema de Audiências">
   <title>Entrar | Sistema de Audiências</title>
   <link rel="manifest" href="./manifest.json">
-  <link rel="stylesheet" href="./css/app.css?v=0.2.1">
+  <link rel="stylesheet" href="./css/app.css?v=0.2.2">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -75,7 +75,12 @@
         <div class="success-icon" aria-hidden="true">✓</div>
         <h2>Login realizado</h2>
         <p id="success-user">Autenticação concluída com sucesso.</p>
-        <p class="success-note">A sessão foi recebida do servidor. A validação contínua da sessão será implementada na próxima etapa.</p>
+        <div id="session-indicator" class="session-indicator" role="status" aria-live="polite">
+          <span class="session-shield" aria-hidden="true">◆</span>
+          <span>Sessão</span>
+          <strong id="session-timer">30:00</strong>
+        </div>
+        <p class="success-note">A sessão é validada pelo servidor e renovada somente após atividade do usuário.</p>
       </section>
 
       <footer class="login-footer">
@@ -90,10 +95,10 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.2.1"></script>
-  <script src="./js/api.js?v=0.2.1"></script>
-  <script src="./js/auth.js?v=0.2.1"></script>
-  <script src="./js/session.js?v=0.2.1"></script>
+  <script src="./js/config.js?v=0.2.2"></script>
+  <script src="./js/api.js?v=0.2.2"></script>
+  <script src="./js/auth.js?v=0.2.2"></script>
+  <script src="./js/session.js?v=0.2.2"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

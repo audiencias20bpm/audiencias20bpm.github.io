@@ -40,3 +40,12 @@ Estrutura inicial do frontend criada. Login, sessão e dashboard ainda não fora
 - cache do PWA versionado para evitar JavaScript antigo apos deploy;
 - assets do login com cache-busting `v=0.2.1`;
 - backend e regras de autenticacao preservados.
+
+
+## Versao 0.2.2
+- valida sessao existente no backend ao recarregar a pagina;
+- exibe contador visual de 30 minutos;
+- estados de atencao em 5 minutos e critico em 1 minuto;
+- renova a sessao somente em resposta a atividade do usuario, com limite de chamadas;
+- limpa a sessao local quando expira;
+- preserva login e backend aprovados.
