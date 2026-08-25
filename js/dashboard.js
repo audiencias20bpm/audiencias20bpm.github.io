@@ -2,7 +2,7 @@
   'use strict';
 
   var NORMAL_MODULES = [
-    { key: 'audiencias', title: 'Audiências', description: 'Cadastro, consulta e acompanhamento de audiências.' },
+    { key: 'audiencias', title: 'Audiências', description: 'Consulta e acompanhamento de audiências.', available: true },
     { key: 'destinatarios', title: 'Destinatários', description: 'Cadastro e consulta dos destinatários das notificações.' },
     { key: 'documentos', title: 'Documentos', description: 'Organização dos ofícios e documentos vinculados.' },
     { key: 'notificacoes', title: 'Notificações', description: 'Acompanhamento das notificações e respectivos status.' },
@@ -44,7 +44,7 @@
 
     var status = document.createElement('span');
     status.className = 'dashboard-module-status';
-    status.textContent = 'Em implementação';
+    status.textContent = module.available ? 'Disponível' : 'Em implementação';
 
     top.appendChild(badge);
     top.appendChild(status);
@@ -58,6 +58,20 @@
     article.appendChild(top);
     article.appendChild(title);
     article.appendChild(description);
+
+    if (module.available) {
+      article.classList.add('dashboard-module-available');
+      var action = document.createElement('button');
+      action.className = 'module-open-button';
+      action.type = 'button';
+      action.textContent = 'Abrir módulo';
+      action.addEventListener('click', function () {
+        if (module.key === 'audiencias' && window.Audiencias) {
+          window.Audiencias.open();
+        }
+      });
+      article.appendChild(action);
+    }
 
     return article;
   }

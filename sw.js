@@ -1,14 +1,15 @@
-const CACHE_NAME = 'audiencias-shell-v0.3.1';
+const CACHE_NAME = 'audiencias-shell-v0.4.0';
 const APP_SHELL = [
   './',
   './index.html',
-  './css/app.css?v=0.3.1',
-  './js/config.js?v=0.3.1',
-  './js/api.js?v=0.3.1',
-  './js/dashboard.js?v=0.3.1',
-  './js/auth.js?v=0.3.1',
-  './js/session.js?v=0.3.1',
-  './manifest.json?v=0.3.1',
+  './css/app.css?v=0.4.0',
+  './js/config.js?v=0.4.0',
+  './js/api.js?v=0.4.0',
+  './js/audiencias.js?v=0.4.0',
+  './js/dashboard.js?v=0.4.0',
+  './js/auth.js?v=0.4.0',
+  './js/session.js?v=0.4.0',
+  './manifest.json?v=0.4.0',
   './assets/icons/favicon-32.png',
   './assets/icons/apple-touch-icon.png',
   './assets/icons/icon-192.png',

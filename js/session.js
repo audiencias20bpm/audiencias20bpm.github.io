@@ -179,6 +179,15 @@
     startTimer_();
   }
 
+
+  function updateExpiry_(value) {
+    if (!value) {
+      return;
+    }
+    saveExpiresAt_(value);
+    tick_();
+  }
+
   function validateSession_(options) {
     var opts = options || {};
     var token = getToken_();
@@ -349,6 +358,7 @@
   document.addEventListener('DOMContentLoaded', init_);
 
   window.Session = Object.freeze({
+    updateExpiry: updateExpiry_,
     afterLogin: afterLogin_,
     validate: validateSession_,
     expireLocalSession: expireLocalSession_,

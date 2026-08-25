@@ -689,3 +689,215 @@ h1 {
     flex: 1 1 110px;
   }
 }
+
+/* ===== Audiencias - Fase 1 ===== */
+.dashboard-module-available {
+  border-color: rgba(11, 60, 73, 0.34);
+  box-shadow: 0 10px 24px rgba(11, 60, 73, 0.08);
+}
+
+.module-open-button,
+.secondary-button,
+.back-button {
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.module-open-button {
+  width: 100%;
+  margin-top: auto;
+  padding: 0.75rem 1rem;
+  border: 1px solid #0B3C49;
+  border-radius: 12px;
+  background: #0B3C49;
+  color: #FFFFFF;
+}
+
+.module-open-button:hover,
+.module-open-button:focus-visible {
+  filter: brightness(1.06);
+}
+
+.module-view {
+  min-width: 0;
+}
+
+.module-view-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.module-view-header h2 {
+  margin: 0.15rem 0 0.35rem;
+  color: #073746;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+}
+
+.module-view-subtitle {
+  margin: 0;
+  color: #53636a;
+}
+
+.back-button {
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #0B3C49;
+}
+
+.back-button:hover,
+.back-button:focus-visible {
+  text-decoration: underline;
+}
+
+.module-count {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cad9dd;
+  border-radius: 999px;
+  background: #f6fafb;
+  color: #0B3C49;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.module-state {
+  display: flex;
+  min-height: 190px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 1.5rem;
+  border: 1px solid #d4e0e3;
+  border-radius: 16px;
+  background: #f9fbfc;
+  color: #53636a;
+  text-align: center;
+}
+
+.module-state strong {
+  color: #073746;
+  font-size: 1.05rem;
+}
+
+.module-error {
+  padding: 1rem;
+  border-left: 4px solid #C62828;
+  border-radius: 12px;
+  background: #fbeaea;
+  color: #8d1919;
+  font-weight: 700;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid #d4e0e3;
+  border-radius: 16px;
+  background: #FFFFFF;
+}
+
+.audiencias-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.audiencias-table th,
+.audiencias-table td {
+  padding: 0.9rem 0.85rem;
+  border-bottom: 1px solid #e5ecee;
+  text-align: left;
+  vertical-align: top;
+}
+
+.audiencias-table th {
+  background: #f3f7f8;
+  color: #0B3C49;
+  font-size: 0.78rem;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.audiencias-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.audiencias-table tbody tr:hover {
+  background: #fbfdfd;
+}
+
+.audiencias-code {
+  font-weight: 800;
+  color: #073746;
+}
+
+.audiencia-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: #eef3f4;
+  color: #31474f;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.status-agendada,
+.status-ciencia-confirmada {
+  background: #eaf5ee;
+  color: #17633d;
+}
+
+.status-realizada {
+  background: #e8f1f5;
+  color: #0B3C49;
+}
+
+.status-cancelada {
+  background: #fbeaea;
+  color: #9d1c1c;
+}
+
+.module-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.secondary-button {
+  padding: 0.7rem 1rem;
+  border: 1px solid #b9cbd0;
+  border-radius: 12px;
+  background: #FFFFFF;
+  color: #0B3C49;
+}
+
+.secondary-button:hover,
+.secondary-button:focus-visible {
+  border-color: #0B3C49;
+}
+
+@media (max-width: 720px) {
+  .module-view-header {
+    flex-direction: column;
+  }
+
+  .audiencias-table {
+    min-width: 760px;
+    font-size: 0.88rem;
+  }
+
+  .module-actions,
+  .secondary-button {
+    width: 100%;
+  }
+}

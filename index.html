@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.3.1">
-  <link rel="stylesheet" href="./css/app.css?v=0.3.1">
+  <link rel="manifest" href="./manifest.json?v=0.4.0">
+  <link rel="stylesheet" href="./css/app.css?v=0.4.0">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -82,6 +82,7 @@
 
       <section id="login-success" class="authenticated-shell" aria-live="polite" hidden>
         <section id="dashboard" class="dashboard" aria-labelledby="dashboard-title">
+          <div id="dashboard-home">
           <header class="dashboard-header">
             <div>
               <p class="eyebrow">Sistema de Audiências</p>
@@ -125,6 +126,55 @@
           </section>
 
           <p class="dashboard-security-note">Os módulos acima representam a navegação do painel. As permissões reais continuam sendo validadas no backend.</p>
+          </div>
+
+          <section id="audiencias-view" class="module-view" aria-labelledby="audiencias-view-title" hidden>
+            <header class="module-view-header">
+              <div>
+                <button id="audiencias-back" class="back-button" type="button">← Voltar ao painel</button>
+                <p class="dashboard-kicker">Operação</p>
+                <h2 id="audiencias-view-title">Audiências</h2>
+                <p class="module-view-subtitle">Consulta das audiências registradas no sistema.</p>
+              </div>
+              <span id="audiencias-count" class="module-count">—</span>
+            </header>
+
+            <div id="audiencias-loading" class="module-state" role="status" aria-live="polite">
+              <div class="validation-spinner" aria-hidden="true"></div>
+              <strong>Carregando audiências...</strong>
+              <span>Aguarde enquanto consultamos os dados.</span>
+            </div>
+
+            <div id="audiencias-error" class="module-error" role="alert" hidden></div>
+
+            <div id="audiencias-empty" class="module-state" hidden>
+              <strong>Nenhuma audiência cadastrada.</strong>
+              <span>Quando houver registros, eles aparecerão aqui.</span>
+            </div>
+
+            <div id="audiencias-content" class="audiencias-content" hidden>
+              <div class="table-scroll" tabindex="0" aria-label="Lista de audiências">
+                <table class="audiencias-table">
+                  <thead>
+                    <tr>
+                      <th>Código</th>
+                      <th>Processo</th>
+                      <th>Assunto</th>
+                      <th>Data e hora</th>
+                      <th>Modalidade</th>
+                      <th>Local</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="audiencias-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="module-actions">
+              <button id="audiencias-retry" class="secondary-button" type="button">Atualizar lista</button>
+            </div>
+          </section>
         </section>
       </section>
 
@@ -139,7 +189,7 @@
       <footer class="login-footer">
         <span>Conexão protegida por HTTPS</span>
         <span aria-hidden="true">•</span>
-        <span>v<span id="app-version">0.3.1</span></span>
+        <span>v<span id="app-version">0.4.0</span></span>
       </footer>
     </section>
   </main>
@@ -148,11 +198,12 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.3.1"></script>
-  <script src="./js/api.js?v=0.3.1"></script>
-  <script src="./js/dashboard.js?v=0.3.1"></script>
-  <script src="./js/auth.js?v=0.3.1"></script>
-  <script src="./js/session.js?v=0.3.1"></script>
+  <script src="./js/config.js?v=0.4.0"></script>
+  <script src="./js/api.js?v=0.4.0"></script>
+  <script src="./js/audiencias.js?v=0.4.0"></script>
+  <script src="./js/dashboard.js?v=0.4.0"></script>
+  <script src="./js/auth.js?v=0.4.0"></script>
+  <script src="./js/session.js?v=0.4.0"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

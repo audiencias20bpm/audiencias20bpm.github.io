@@ -74,10 +74,19 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - deixa explícito que a autorização real continua sendo validada no backend;
 - adiciona `js/dashboard.js` para manter a renderização do painel separada da autenticação.
 
-## 0.3.1 - Identidade visual e favicon
+## 0.4.0 - Identidade visual e favicon
 
 - adiciona favicon profissional do Sistema de Audiências;
 - inclui ícones 32, 180, 192 e 512 px;
 - integra favicon ao navegador e ícones ao manifest da PWA;
 - atualiza cache do Service Worker para incluir os novos ativos;
 - preserva integralmente login, sessão, logout e dashboard v0.3.0.
+
+## v0.4.0 - Audiencias Fase 1
+
+- card Audiências passa a abrir o modulo funcional;
+- listagem protegida por sessao valida;
+- autorizacao real no Apps Script para DEV e ADMINISTRADOR;
+- estados de carregamento, vazio e erro;
+- nenhuma criacao, edicao ou exclusao nesta fase;
+- backend: adicionar `Audiencias.gs` e substituir `Router.gs` pela versao entregue.
