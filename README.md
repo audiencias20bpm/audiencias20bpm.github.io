@@ -31,7 +31,7 @@ A autenticação, a autorização e a validade real da sessão permanecem contro
 
 ## Estado atual
 
-Login por senha, validação/restauração da sessão, contador visual e logout seguro implementados. Dashboard e Passkey/WebAuthn permanecem para etapas posteriores.
+Login por senha, validação/restauração da sessão, contador visual, logout seguro e dashboard básico por perfil implementados. Os módulos funcionais e Passkey/WebAuthn permanecem para etapas posteriores.
 
 ## 0.2.1 - Integração do login
 
@@ -63,3 +63,13 @@ Login por senha, validação/restauração da sessão, contador visual e logout 
 - limpa os dados locais somente após confirmação do servidor;
 - retorna ao login após o encerramento confirmado;
 - em falha de rede, preserva a sessão local e permite nova tentativa, evitando declarar logout seguro sem confirmação do backend.
+
+## 0.3.0 - Dashboard básico e perfis
+
+- substitui a tela de confirmação de login pelo painel principal autenticado;
+- mantém contador de sessão e logout no cabeçalho do painel;
+- exibe módulos operacionais para DEV e ADMINISTRADOR;
+- exibe a seção `Administração DEV` somente para o perfil DEV;
+- mantém os módulos como estrutura visual sem executar operações ainda;
+- deixa explícito que a autorização real continua sendo validada no backend;
+- adiciona `js/dashboard.js` para manter a renderização do painel separada da autenticação.

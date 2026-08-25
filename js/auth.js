@@ -156,26 +156,16 @@
   function showAuthenticated_(user) {
     var form = document.getElementById('login-form');
     var successPanel = document.getElementById('login-success');
-    var successUser = document.getElementById('success-user');
     var message = document.getElementById('login-message');
     var loginInput = document.getElementById('login');
     var passwordInput = document.getElementById('senha');
     var validatingPanel = document.getElementById('session-validating');
     var intro = document.getElementById('login-intro');
     var normalizedUser = isObject_(user) ? user : {};
-    var label = normalizedUser.nome || normalizedUser.name || normalizedUser.login || '';
-    var profile = normalizedUser.perfil || normalizedUser.role || '';
+    var card = document.querySelector('.login-card');
 
-    if (!form || !successPanel || !successUser) {
+    if (!form || !successPanel) {
       return;
-    }
-
-    if (label && profile) {
-      successUser.textContent = label + ' - ' + profile;
-    } else if (label) {
-      successUser.textContent = label;
-    } else {
-      successUser.textContent = 'Autenticação concluída com sucesso.';
     }
 
     if (message) {
@@ -196,6 +186,13 @@
 
     form.hidden = true;
     successPanel.hidden = false;
+    if (card) {
+      card.classList.add('is-authenticated');
+    }
+
+    if (window.Dashboard && typeof window.Dashboard.render === 'function') {
+      window.Dashboard.render(normalizedUser);
+    }
 
     if (loginInput) {
       loginInput.disabled = false;
@@ -213,6 +210,7 @@
     var passwordInput = document.getElementById('senha');
     var validatingPanel = document.getElementById('session-validating');
     var intro = document.getElementById('login-intro');
+    var card = document.querySelector('.login-card');
 
     if (!form || !successPanel) {
       return;
@@ -226,6 +224,12 @@
     }
 
     successPanel.hidden = true;
+    if (card) {
+      card.classList.remove('is-authenticated');
+    }
+    if (window.Dashboard && typeof window.Dashboard.hide === 'function') {
+      window.Dashboard.hide();
+    }
     form.hidden = false;
 
     if (message) {

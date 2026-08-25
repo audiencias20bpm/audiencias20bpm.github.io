@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0B3C49">
   <meta name="description" content="Sistema de Audiências">
-  <title>Entrar | Sistema de Audiências</title>
+  <title>Sistema de Audiências</title>
   <link rel="manifest" href="./manifest.json">
-  <link rel="stylesheet" href="./css/app.css?v=0.2.4">
+  <link rel="stylesheet" href="./css/app.css?v=0.3.0">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -77,18 +77,52 @@
         </button>
       </form>
 
-      <section id="login-success" class="success-panel" aria-live="polite" hidden>
-        <div class="success-icon" aria-hidden="true">✓</div>
-        <h2>Login realizado</h2>
-        <p id="success-user">Autenticação concluída com sucesso.</p>
-        <div id="session-indicator" class="session-indicator" role="status" aria-live="polite">
-          <span class="session-shield" aria-hidden="true">◆</span>
-          <span>Sessão</span>
-          <strong id="session-timer">30:00</strong>
-        </div>
-        <p class="success-note">A sessão é validada pelo servidor e renovada somente após atividade do usuário.</p>
-        <div id="logout-message" class="logout-message" role="status" aria-live="polite" hidden></div>
-        <button id="logout-button" class="logout-button" type="button">Sair</button>
+      <section id="login-success" class="authenticated-shell" aria-live="polite" hidden>
+        <section id="dashboard" class="dashboard" aria-labelledby="dashboard-title">
+          <header class="dashboard-header">
+            <div>
+              <p class="eyebrow">Sistema de Audiências</p>
+              <h2 id="dashboard-title">Painel principal</h2>
+              <p class="dashboard-welcome">Olá, <strong id="dashboard-user-name">Usuário</strong>.</p>
+            </div>
+            <span id="dashboard-user-profile" class="profile-badge">USUÁRIO</span>
+          </header>
+
+          <div class="dashboard-session-bar">
+            <div id="session-indicator" class="session-indicator" role="status" aria-live="polite">
+              <span class="session-shield" aria-hidden="true">◆</span>
+              <span>Sessão</span>
+              <strong id="session-timer">30:00</strong>
+            </div>
+            <button id="logout-button" class="logout-button dashboard-logout" type="button">Sair</button>
+          </div>
+
+          <div id="logout-message" class="logout-message" role="status" aria-live="polite" hidden></div>
+
+          <section class="dashboard-section" aria-labelledby="modules-title">
+            <div class="dashboard-section-heading">
+              <div>
+                <p class="dashboard-kicker">Operação</p>
+                <h3 id="modules-title">Módulos do sistema</h3>
+              </div>
+              <span class="dashboard-section-note">Estrutura inicial</span>
+            </div>
+            <div id="dashboard-modules" class="dashboard-grid"></div>
+          </section>
+
+          <section id="dashboard-dev-section" class="dashboard-section dashboard-dev" aria-labelledby="dev-title" hidden>
+            <div class="dashboard-section-heading">
+              <div>
+                <p class="dashboard-kicker">Acesso restrito</p>
+                <h3 id="dev-title">Administração DEV</h3>
+              </div>
+              <span class="dashboard-section-note">Somente DEV</span>
+            </div>
+            <div id="dashboard-dev-modules" class="dashboard-grid"></div>
+          </section>
+
+          <p class="dashboard-security-note">Os módulos acima representam a navegação do painel. As permissões reais continuam sendo validadas no backend.</p>
+        </section>
       </section>
 
       <div id="logout-overlay" class="logout-overlay" role="status" aria-live="assertive" aria-busy="true" hidden>
@@ -102,7 +136,7 @@
       <footer class="login-footer">
         <span>Conexão protegida por HTTPS</span>
         <span aria-hidden="true">•</span>
-        <span>v<span id="app-version">0.2.4</span></span>
+        <span>v<span id="app-version">0.3.0</span></span>
       </footer>
     </section>
   </main>
@@ -111,10 +145,11 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.2.4"></script>
-  <script src="./js/api.js?v=0.2.4"></script>
-  <script src="./js/auth.js?v=0.2.4"></script>
-  <script src="./js/session.js?v=0.2.4"></script>
+  <script src="./js/config.js?v=0.3.0"></script>
+  <script src="./js/api.js?v=0.3.0"></script>
+  <script src="./js/dashboard.js?v=0.3.0"></script>
+  <script src="./js/auth.js?v=0.3.0"></script>
+  <script src="./js/session.js?v=0.3.0"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
