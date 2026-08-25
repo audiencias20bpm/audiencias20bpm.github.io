@@ -1693,3 +1693,22 @@ body.modal-open {
     grid-column: auto;
   }
 }
+
+
+/* v0.8.1 — dados fixos do destinatário */
+.recipient-edit-card input[readonly] {
+  background: #f3f6f7;
+  color: #40545b;
+  cursor: not-allowed;
+}
+
+.fixed-data-note {
+  margin: -2px 0 4px;
+  padding: 10px 12px;
+  border-left: 3px solid #0B3C49;
+  border-radius: 8px;
+  background: #f3f7f8;
+  color: #53676e;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}

@@ -176,3 +176,11 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - Permite atualizar RG, CPF, Nome, WhatsApp, Unidade e Status.
 - Preserva IDs e vínculos existentes com audiências.
 - Não há exclusão física de destinatários.
+
+
+## v0.8.1 — Dados fixos e contato atualizável
+
+- RG, CPF e Nome passam a ser somente leitura na manutenção cadastral comum.
+- WhatsApp, Unidade e Status permanecem editáveis.
+- O backend ignora tentativas de alteração dos dados fixos nessa rota e preserva os valores já cadastrados.
+- WhatsApp informado durante uma audiência continua podendo atualizar o cadastro para retornar automaticamente nos próximos usos.

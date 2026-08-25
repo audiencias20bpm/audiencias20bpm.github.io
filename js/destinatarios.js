@@ -246,8 +246,8 @@
     dialog.hidden = false;
     document.body.classList.add('modal-open');
     window.setTimeout(function () {
-      var name = document.getElementById('destinatarios-edit-nome');
-      if (name) name.focus();
+      var whatsapp = document.getElementById('destinatarios-edit-whatsapp');
+      if (whatsapp) whatsapp.focus();
     }, 0);
   }
 
@@ -269,19 +269,12 @@
     }
 
     var id = text_(document.getElementById('destinatarios-edit-id').value).trim();
-    var rg = digits_(document.getElementById('destinatarios-edit-rg').value);
-    var cpf = normalizeCpf_(document.getElementById('destinatarios-edit-cpf').value);
-    var nome = text_(document.getElementById('destinatarios-edit-nome').value).trim();
     var telefone = digits_(document.getElementById('destinatarios-edit-whatsapp').value);
     var unidade = text_(document.getElementById('destinatarios-edit-unidade').value).trim();
     var status = text_(document.getElementById('destinatarios-edit-status').value).toUpperCase();
 
-    if (!id || !rg || !nome) {
-      setEditError_('RG e Nome são obrigatórios.');
-      return;
-    }
-    if (cpf && cpf.length !== 11) {
-      setEditError_('Informe um CPF com 11 dígitos.');
+    if (!id) {
+      setEditError_('Cadastro inválido. Atualize a lista e tente novamente.');
       return;
     }
     if (telefone && telefone.length < 10) {
@@ -299,9 +292,6 @@
     window.Api.post('destinatarios_update', {
       token: token,
       id: id,
-      rg: rg,
-      cpf: cpf,
-      nome: nome,
       telefone: telefone,
       unidade: unidade,
       status: status
@@ -313,8 +303,6 @@
           handleExpiredSession_();
           return false;
         }
-        if (code === 'RG_EM_USO') throw new Error('Este RG já está vinculado a outro militar.');
-        if (code === 'CPF_EM_USO') throw new Error('Este CPF já está vinculado a outro militar.');
         if (code === 'DESTINATARIO_NAO_ENCONTRADO') throw new Error('O cadastro não foi encontrado. Atualize a lista e tente novamente.');
         throw new Error('Não foi possível salvar as alterações.');
       }
