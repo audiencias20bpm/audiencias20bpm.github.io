@@ -7,7 +7,7 @@
   <meta name="description" content="Sistema de Audiências">
   <title>Entrar | Sistema de Audiências</title>
   <link rel="manifest" href="./manifest.json">
-  <link rel="stylesheet" href="./css/app.css?v=0.2.3">
+  <link rel="stylesheet" href="./css/app.css?v=0.2.4">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -87,12 +87,22 @@
           <strong id="session-timer">30:00</strong>
         </div>
         <p class="success-note">A sessão é validada pelo servidor e renovada somente após atividade do usuário.</p>
+        <div id="logout-message" class="logout-message" role="status" aria-live="polite" hidden></div>
+        <button id="logout-button" class="logout-button" type="button">Sair</button>
       </section>
+
+      <div id="logout-overlay" class="logout-overlay" role="status" aria-live="assertive" aria-busy="true" hidden>
+        <div class="logout-dialog">
+          <div class="validation-spinner" aria-hidden="true"></div>
+          <strong>Encerrando sessão...</strong>
+          <span>Aguarde enquanto o acesso é encerrado com segurança.</span>
+        </div>
+      </div>
 
       <footer class="login-footer">
         <span>Conexão protegida por HTTPS</span>
         <span aria-hidden="true">•</span>
-        <span>v<span id="app-version">0.2.3</span></span>
+        <span>v<span id="app-version">0.2.4</span></span>
       </footer>
     </section>
   </main>
@@ -101,10 +111,10 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.2.3"></script>
-  <script src="./js/api.js?v=0.2.3"></script>
-  <script src="./js/auth.js?v=0.2.3"></script>
-  <script src="./js/session.js?v=0.2.3"></script>
+  <script src="./js/config.js?v=0.2.4"></script>
+  <script src="./js/api.js?v=0.2.4"></script>
+  <script src="./js/auth.js?v=0.2.4"></script>
+  <script src="./js/session.js?v=0.2.4"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

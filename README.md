@@ -2,7 +2,7 @@
 
 Frontend web/PWA do Sistema de Audiências.
 
-## Estrutura inicial
+## Estrutura
 
 - `index.html`
 - `manifest.json`
@@ -27,32 +27,39 @@ Frontend web/PWA do Sistema de Audiências.
 
 Nenhuma senha, hash, salt, `PASSWORD_PEPPER`, `SESSION_SECRET`, token da Meta ou outra credencial sensível deve ser armazenada neste repositório.
 
-A autorização real permanece no backend.
+A autenticação, a autorização e a validade real da sessão permanecem controladas pelo backend.
 
 ## Estado atual
 
-Estrutura inicial do frontend criada. Login, sessão e dashboard ainda não foram implementados nesta etapa.
+Login por senha, validação/restauração da sessão, contador visual e logout seguro implementados. Dashboard e Passkey/WebAuthn permanecem para etapas posteriores.
 
-## 0.2.1 - Correcao de integracao do login
+## 0.2.1 - Integração do login
 
 - leitura do token alinhada ao contrato real do Apps Script: `data.sessao.token`;
-- armazenamento temporario em `sessionStorage`;
-- cache do PWA versionado para evitar JavaScript antigo apos deploy;
-- assets do login com cache-busting `v=0.2.1`;
-- backend e regras de autenticacao preservados.
+- armazenamento temporário em `sessionStorage`;
+- cache do PWA versionado para evitar JavaScript antigo após deploy;
+- backend e regras de autenticação preservados.
 
+## 0.2.2 - Controle visual da sessão
 
-## Versao 0.2.3
-- valida sessao existente no backend ao recarregar a pagina;
+- valida sessão existente no backend ao recarregar a página;
 - exibe contador visual de 30 minutos;
-- estados de atencao em 5 minutos e critico em 1 minuto;
-- renova a sessao somente em resposta a atividade do usuario, com limite de chamadas;
-- limpa a sessao local quando expira;
-- preserva login e backend aprovados.
+- estados de atenção em 5 minutos e crítico em 1 minuto;
+- renova a sessão somente em resposta à atividade do usuário, com limite de chamadas;
+- limpa a sessão local quando expira.
 
-
-## v0.2.3
+## 0.2.3 - Restauração da sessão
 
 - evita exibir o formulário de login durante a validação de uma sessão já existente;
-- mostra o estado `Validando sessão...` durante F5/reabertura da página;
+- mostra `Validando sessão...` durante F5/reabertura da página;
 - limita o contador visual ao máximo de `30:00`, preservando a validade real controlada pelo backend.
+
+## 0.2.4 - Logout seguro
+
+- adiciona botão `Sair` somente na área autenticada;
+- exibe imediatamente `Encerrando sessão...`;
+- bloqueia cliques repetidos durante o logout;
+- invalida o token pela rota `POST logout` do backend;
+- limpa os dados locais somente após confirmação do servidor;
+- retorna ao login após o encerramento confirmado;
+- em falha de rede, preserva a sessão local e permite nova tentativa, evitando declarar logout seguro sem confirmação do backend.

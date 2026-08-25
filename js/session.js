@@ -11,6 +11,7 @@
   var validating = false;
   var lastActivityValidationAt = 0;
   var activityBound = false;
+  var loggingOut = false;
 
   function isObject_(value) {
     return value !== null && typeof value === 'object';
@@ -237,13 +238,99 @@
     });
   }
 
+
+  function setLogoutBusy_(busy) {
+    var overlay = document.getElementById('logout-overlay');
+    var button = document.getElementById('logout-button');
+    var message = document.getElementById('logout-message');
+
+    loggingOut = busy;
+
+    if (overlay) {
+      overlay.hidden = !busy;
+    }
+    if (button) {
+      button.disabled = busy;
+      button.setAttribute('aria-disabled', busy ? 'true' : 'false');
+    }
+    if (message && busy) {
+      message.hidden = true;
+      message.textContent = '';
+    }
+  }
+
+  function showLogoutError_() {
+    var message = document.getElementById('logout-message');
+    if (!message) {
+      return;
+    }
+    message.textContent = 'Não foi possível encerrar a sessão agora. Tente novamente.';
+    message.hidden = false;
+  }
+
+  function clearSessionStorage_() {
+    if (window.Auth && typeof window.Auth.clearStoredSession === 'function') {
+      window.Auth.clearStoredSession();
+      return;
+    }
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+    sessionStorage.removeItem(USER_STORAGE_KEY);
+    sessionStorage.removeItem(EXPIRES_STORAGE_KEY);
+  }
+
+  function logout_() {
+    if (loggingOut) {
+      return Promise.resolve(false);
+    }
+
+    var token = getToken_();
+    if (!token) {
+      clearSessionStorage_();
+      window.location.replace('./');
+      return Promise.resolve(true);
+    }
+
+    setLogoutBusy_(true);
+
+    return window.Api.post('logout', { token: token })
+      .then(function (response) {
+        if (!isSuccess_(response)) {
+          throw new Error('LOGOUT_RECUSADO');
+        }
+
+        stopTimer_();
+        clearSessionStorage_();
+        window.location.replace('./');
+        return true;
+      })
+      .catch(function () {
+        setLogoutBusy_(false);
+        showLogoutError_();
+        return false;
+      });
+  }
+
+  function bindLogout_() {
+    var button = document.getElementById('logout-button');
+    if (!button || button.dataset.bound === 'true') {
+      return;
+    }
+
+    button.dataset.bound = 'true';
+    button.addEventListener('click', function () {
+      logout_();
+    });
+  }
+
   function afterLogin_() {
     bindActivity_();
+    bindLogout_();
     startTimer_();
   }
 
   function init_() {
     bindActivity_();
+    bindLogout_();
 
     if (!getToken_()) {
       if (window.Auth && typeof window.Auth.showLogin === 'function') {
@@ -264,6 +351,7 @@
   window.Session = Object.freeze({
     afterLogin: afterLogin_,
     validate: validateSession_,
-    expireLocalSession: expireLocalSession_
+    expireLocalSession: expireLocalSession_,
+    logout: logout_
   });
 }());

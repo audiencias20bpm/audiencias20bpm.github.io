@@ -1,12 +1,12 @@
-const CACHE_NAME = 'audiencias-shell-v0.2.3';
+const CACHE_NAME = 'audiencias-shell-v0.2.4';
 const APP_SHELL = [
   './',
   './index.html',
-  './css/app.css?v=0.2.3',
-  './js/config.js?v=0.2.3',
-  './js/api.js?v=0.2.3',
-  './js/auth.js?v=0.2.3',
-  './js/session.js?v=0.2.3',
+  './css/app.css?v=0.2.4',
+  './js/config.js?v=0.2.4',
+  './js/api.js?v=0.2.4',
+  './js/auth.js?v=0.2.4',
+  './js/session.js?v=0.2.4',
   './manifest.json'
 ];
 

@@ -403,3 +403,79 @@ h1 {
 .session-indicator.session-critical .session-shield {
   color: var(--vermelho);
 }
+
+
+.logout-button {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 18px;
+  padding: 10px 16px;
+  border: 1px solid #B8C8CD;
+  border-radius: 12px;
+  background: #FFFFFF;
+  color: var(--petroleo);
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.logout-button:hover {
+  background: #F6F9FA;
+}
+
+.logout-button:focus-visible {
+  outline: 4px solid rgba(11, 60, 73, 0.16);
+  outline-offset: 2px;
+}
+
+.logout-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.logout-message {
+  margin-top: 16px;
+  padding: 11px 12px;
+  border-left: 4px solid var(--vermelho);
+  border-radius: 9px;
+  background: var(--erro-fundo);
+  color: var(--erro-texto);
+  font-size: 0.84rem;
+  font-weight: 650;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.logout-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(7, 45, 55, 0.38);
+  backdrop-filter: blur(2px);
+}
+
+.logout-dialog {
+  display: grid;
+  width: min(100%, 340px);
+  gap: 10px;
+  justify-items: center;
+  padding: 24px 20px;
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  background: #FFFFFF;
+  box-shadow: var(--sombra);
+  color: var(--petroleo);
+  text-align: center;
+}
+
+.logout-dialog strong {
+  font-size: 1rem;
+}
+
+.logout-dialog span {
+  color: var(--texto-suave);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
