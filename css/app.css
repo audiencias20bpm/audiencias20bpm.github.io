@@ -1542,3 +1542,154 @@ h1 {
     min-width: 760px;
   }
 }
+
+/* Destinatários — Fase 2: manutenção cadastral */
+.destinatarios-actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.table-action-button {
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid #b8cbd1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0b3c49;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.table-action-button:hover,
+.table-action-button:focus-visible {
+  border-color: #0b3c49;
+  background: #eef5f7;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+.modal-shell[hidden] {
+  display: none !important;
+}
+
+.modal-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 29, 36, 0.62);
+}
+
+.modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(680px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border: 1px solid #d5e1e5;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(11, 60, 73, 0.28);
+  padding: 26px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.modal-header h2 {
+  margin: 2px 0 6px;
+  color: #073847;
+}
+
+.modal-header p:last-child {
+  margin: 0;
+  color: #5d6e75;
+}
+
+.icon-button {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #c8d7dc;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0b3c49;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.icon-button:hover,
+.icon-button:focus-visible {
+  background: #eef5f7;
+  border-color: #0b3c49;
+}
+
+.form-grid.two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.recipient-edit-card .form-actions {
+  margin-top: 22px;
+}
+
+@media (min-width: 900px) {
+  .destinatarios-table th:nth-child(1),
+  .destinatarios-table td:nth-child(1) { width: 9%; }
+  .destinatarios-table th:nth-child(2),
+  .destinatarios-table td:nth-child(2) { width: 25%; }
+  .destinatarios-table th:nth-child(3),
+  .destinatarios-table td:nth-child(3) { width: 15%; }
+  .destinatarios-table th:nth-child(4),
+  .destinatarios-table td:nth-child(4) { width: 15%; }
+  .destinatarios-table th:nth-child(5),
+  .destinatarios-table td:nth-child(5) { width: 18%; }
+  .destinatarios-table th:nth-child(6),
+  .destinatarios-table td:nth-child(6) { width: 9%; }
+  .destinatarios-table th:nth-child(7),
+  .destinatarios-table td:nth-child(7) { width: 9%; }
+}
+
+@media (max-width: 640px) {
+  .modal-shell {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .modal-card {
+    width: 100%;
+    max-height: calc(100vh - 24px);
+    border-radius: 18px 18px 12px 12px;
+    padding: 20px 16px;
+  }
+
+  .form-grid.two-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid .full-width {
+    grid-column: auto;
+  }
+}
