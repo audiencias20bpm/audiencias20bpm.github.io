@@ -147,9 +147,17 @@
     status.textContent=message||''; status.className='recipient-lookup-status' + (kind?' '+kind:'');
   }
 
-  function clearRecipientEntry_(keepRg){
+  function clearSuggestions_(){
+    var box=document.getElementById('destinatario-sugestoes');
+    if(!box)return;
+    box.textContent='';
+    box.hidden=true;
+  }
+
+  function clearRecipientEntry_(){
     var fields=recipientInputs_();
-    Object.keys(fields).forEach(function(key){if(fields[key] && !(keepRg&&key==='rg')) fields[key].value='';});
+    Object.keys(fields).forEach(function(key){if(fields[key]) fields[key].value='';});
+    clearSuggestions_();
     setLookupStatus_('');
   }
 
@@ -160,31 +168,74 @@
     if(fields.cpf) fields.cpf.value=item.cpf||'';
     if(fields.telefone) fields.telefone.value=item.telefone||'';
     if(fields.unidade) fields.unidade.value=item.unidade||'';
+    clearSuggestions_();
   }
 
-  function lookupRg_(rg){
-    var normalized=digits_(rg); var token=sessionStorage.getItem(TOKEN_STORAGE_KEY)||'';
+  function renderSuggestions_(items){
+    var box=document.getElementById('destinatario-sugestoes');
+    if(!box)return;
+    box.textContent='';
+    if(!Array.isArray(items)||!items.length){box.hidden=true;return;}
+    items.forEach(function(item){
+      var button=document.createElement('button');
+      button.type='button';
+      button.className='recipient-suggestion';
+      button.setAttribute('role','option');
+      var strong=document.createElement('strong');
+      strong.textContent=item.nome||'Militar';
+      var meta=document.createElement('span');
+      meta.textContent=(item.rg?'RG '+item.rg:'RG não informado')+(item.cpf?' • CPF '+item.cpf:'')+(item.telefone?' • WhatsApp '+item.telefone:'');
+      button.appendChild(strong); button.appendChild(meta);
+      button.addEventListener('click',function(){
+        fillRecipient_(item);
+        setLookupStatus_('Militar localizado. Dados preenchidos automaticamente.','is-found');
+        var phone=recipientInputs_().telefone;
+        if(phone && !phone.value) phone.focus();
+      });
+      box.appendChild(button);
+    });
+    box.hidden=false;
+  }
+
+  function lookupRecipient_(type,value){
+    var token=sessionStorage.getItem(TOKEN_STORAGE_KEY)||'';
     if(!token){handleExpiredSession_();return;}
-    if(normalized.length<3){setLookupStatus_('');return;}
-    var serial=++lookupSerial; setLookupStatus_('Consultando RG...','is-loading');
-    window.Api.post('destinatarios_lookup',{token:token,tipo:'rg',valor:normalized}).then(function(response){
-      if(serial!==lookupSerial) return;
+    var raw=String(value||'').trim();
+    var normalized=type==='nome'?raw:digits_(raw);
+    if((type==='nome'&&normalized.length<3)||(type==='rg'&&normalized.length<3)||(type==='cpf'&&normalized.length<11)){
+      clearSuggestions_(); setLookupStatus_(''); return;
+    }
+    var serial=++lookupSerial;
+    clearSuggestions_();
+    setLookupStatus_('Consultando cadastro...','is-loading');
+    window.Api.post('destinatarios_lookup',{token:token,tipo:type,valor:normalized}).then(function(response){
+      if(serial!==lookupSerial)return;
       if(!isSuccess_(response)){
         var code=getErrorCode_(response);
         if(code==='TOKEN_AUSENTE'||code.indexOf('SESSAO_')===0){handleExpiredSession_();return;}
-        setLookupStatus_('Não foi possível consultar o RG agora.','is-error'); return;
+        setLookupStatus_('Não foi possível consultar o cadastro agora.','is-error');return;
       }
       var data=getData_(response); updateExpiry_(data);
       var items=Array.isArray(data.destinatarios)?data.destinatarios:[];
-      if(items.length){fillRecipient_(items[0]);setLookupStatus_('Militar localizado. Dados preenchidos automaticamente.','is-found');}
-      else {clearRecipientEntry_(true);setLookupStatus_('RG não localizado. Informe Nome e, se disponível, CPF/WhatsApp. O cadastro será gravado ao salvar a audiência.','is-new');}
-    }).catch(function(){if(serial===lookupSerial)setLookupStatus_('Não foi possível consultar o RG agora.','is-error');});
+      if(!items.length){
+        clearSuggestions_();
+        setLookupStatus_('Militar não localizado. Complete RG e Nome; CPF e WhatsApp podem ser informados. Os dados serão gravados ao salvar a audiência.','is-new');
+        return;
+      }
+      if(type==='nome'&&items.length>1){
+        renderSuggestions_(items);
+        setLookupStatus_('Selecione o militar correto na lista de sugestões.','is-found');
+        return;
+      }
+      fillRecipient_(items[0]);
+      setLookupStatus_('Militar localizado. Dados preenchidos automaticamente.','is-found');
+    }).catch(function(){if(serial===lookupSerial)setLookupStatus_('Não foi possível consultar o cadastro agora.','is-error');});
   }
 
-  function scheduleLookup_(){
-    var fields=recipientInputs_(); if(!fields.rg)return;
-    clearTimeout(lookupTimer); var value=fields.rg.value;
-    lookupTimer=setTimeout(function(){lookupRg_(value);},450);
+  function scheduleLookup_(type){
+    var fields=recipientInputs_(); var field=fields[type]; if(!field)return;
+    clearTimeout(lookupTimer); var value=field.value;
+    lookupTimer=setTimeout(function(){lookupRecipient_(type,value);},450);
   }
 
   function recipientEntryData_(){
@@ -201,7 +252,7 @@
       var card=document.createElement('div');card.className='recipient-chip';
       var text=document.createElement('div');text.className='recipient-chip-text';
       var strong=document.createElement('strong');strong.textContent=item.nome; text.appendChild(strong);
-      var meta=document.createElement('span');meta.textContent='RG '+item.rg+(item.cpf?' • CPF '+item.cpf:'')+(item.unidade?' • '+item.unidade:'');text.appendChild(meta);
+      var meta=document.createElement('span');meta.textContent='RG '+item.rg+(item.cpf?' • CPF '+item.cpf:'')+(item.telefone?' • WhatsApp '+item.telefone:'')+(item.unidade?' • '+item.unidade:'');text.appendChild(meta);
       var remove=document.createElement('button');remove.type='button';remove.className='recipient-remove';remove.setAttribute('aria-label','Remover '+item.nome);remove.textContent='Remover';
       remove.addEventListener('click',function(){selectedRecipients.splice(index,1);renderSelectedRecipients_();});
       card.appendChild(text);card.appendChild(remove);container.appendChild(card);
@@ -218,7 +269,6 @@
 
   function formData_(){
     return {
-      codigo:document.getElementById('audiencia-codigo').value.trim(),
       processo:document.getElementById('audiencia-processo').value.trim(),
       assunto:document.getElementById('audiencia-assunto').value.trim(),
       data_hora:document.getElementById('audiencia-data-hora').value,
@@ -267,8 +317,32 @@
   function close(){if(saving)return;setView_('dashboard');}
 
   function init(){
-    var back=document.getElementById('audiencias-back');var retry=document.getElementById('audiencias-retry');var newButton=document.getElementById('audiencias-new');var formBack=document.getElementById('audiencias-form-back');var cancel=document.getElementById('audiencias-form-cancel');var form=document.getElementById('audiencias-form');var add=document.getElementById('destinatario-adicionar');var rg=document.getElementById('destinatario-rg');
-    if(back)back.addEventListener('click',close);if(retry)retry.addEventListener('click',load_);if(newButton)newButton.addEventListener('click',openForm_);if(formBack)formBack.addEventListener('click',closeForm_);if(cancel)cancel.addEventListener('click',closeForm_);if(form)form.addEventListener('submit',submitForm_);if(add)add.addEventListener('click',addRecipient_);if(rg){rg.addEventListener('input',scheduleLookup_);rg.addEventListener('blur',function(){if(digits_(rg.value).length>=3)lookupRg_(rg.value);});}
+    var back=document.getElementById('audiencias-back');
+    var retry=document.getElementById('audiencias-retry');
+    var newButton=document.getElementById('audiencias-new');
+    var formBack=document.getElementById('audiencias-form-back');
+    var cancel=document.getElementById('audiencias-form-cancel');
+    var form=document.getElementById('audiencias-form');
+    var add=document.getElementById('destinatario-adicionar');
+    var fields=recipientInputs_();
+    if(back)back.addEventListener('click',close);
+    if(retry)retry.addEventListener('click',load_);
+    if(newButton)newButton.addEventListener('click',openForm_);
+    if(formBack)formBack.addEventListener('click',closeForm_);
+    if(cancel)cancel.addEventListener('click',closeForm_);
+    if(form)form.addEventListener('submit',submitForm_);
+    if(add)add.addEventListener('click',addRecipient_);
+    ['rg','cpf','nome'].forEach(function(type){
+      var field=fields[type]; if(!field)return;
+      field.addEventListener('input',function(){scheduleLookup_(type);});
+      if(type!=='nome'){
+        field.addEventListener('blur',function(){
+          var value=digits_(field.value);
+          var enough=(type==='rg'&&value.length>=3)||(type==='cpf'&&value.length===11);
+          if(enough) lookupRecipient_(type,field.value);
+        });
+      }
+    });
     renderSelectedRecipients_();
   }
 

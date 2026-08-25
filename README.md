@@ -104,7 +104,7 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - após salvar, a lista é recarregada e exibe o novo registro.
 
 
-## v0.6.0 — Múltiplos militares por audiência
+## v0.6.1 — Múltiplos militares por audiência
 
 - substitui o campo manual `destinatario_id` por seleção operacional de militares via RG;
 - permite adicionar vários militares à mesma audiência;
@@ -115,3 +115,12 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - adiciona coluna Militares à listagem de audiências;
 - base cadastral inicial fornecida pelo responsável pode ser importada uma única vez no Apps Script;
 - nenhum CPF/RG da base é colocado no repositório público do frontend.
+
+
+## v0.6.1 — Busca cadastral e WhatsApp
+
+- campo Código removido do formulário; o backend sempre gera o identificador da audiência;
+- RG, CPF e Nome consultam a mesma base cadastral;
+- busca por nome oferece sugestões quando há mais de um resultado;
+- WhatsApp informado é persistido no cadastro do militar ao salvar a audiência;
+- em usos futuros, o WhatsApp salvo retorna automaticamente junto com RG, CPF e Nome.

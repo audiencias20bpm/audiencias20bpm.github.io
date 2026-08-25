@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.6.0">
-  <link rel="stylesheet" href="./css/app.css?v=0.6.0">
+  <link rel="manifest" href="./manifest.json?v=0.6.1">
+  <link rel="stylesheet" href="./css/app.css?v=0.6.1">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -192,11 +192,6 @@
               <form id="audiencias-form" class="audiencias-form" novalidate>
                 <div class="form-grid">
                   <div class="form-group">
-                    <label for="audiencia-codigo">Código <span class="field-optional">(opcional)</span></label>
-                    <input id="audiencia-codigo" name="codigo" type="text" maxlength="80" autocomplete="off" placeholder="Gerado automaticamente se vazio">
-                  </div>
-
-                  <div class="form-group">
                     <label for="audiencia-processo">Processo</label>
                     <input id="audiencia-processo" name="processo" type="text" maxlength="120" autocomplete="off" required>
                   </div>
@@ -235,7 +230,7 @@
                     <div class="recipients-heading">
                       <div>
                         <label>Militares convocados</label>
-                        <small>Digite o RG. Se o militar já estiver cadastrado, os demais dados serão preenchidos automaticamente.</small>
+                        <small>Localize por RG, CPF ou Nome. Os demais dados, inclusive o WhatsApp quando já cadastrado, serão preenchidos automaticamente.</small>
                       </div>
                       <span id="audiencia-destinatarios-count" class="recipients-count">0 adicionados</span>
                     </div>
@@ -251,12 +246,13 @@
                           <input id="destinatario-nome" type="text" maxlength="200" autocomplete="off" placeholder="Preenchido automaticamente ou informe o nome">
                         </div>
                         <div class="form-group">
-                          <label for="destinatario-cpf">CPF <span class="field-optional">(opcional)</span></label>
+                          <label for="destinatario-cpf">CPF <span class="field-optional">(opcional para novo cadastro)</span></label>
                           <input id="destinatario-cpf" type="text" inputmode="numeric" maxlength="18" autocomplete="off">
                         </div>
                         <div class="form-group">
-                          <label for="destinatario-telefone">WhatsApp <span class="field-optional">(opcional nesta fase)</span></label>
-                          <input id="destinatario-telefone" type="tel" inputmode="tel" maxlength="20" autocomplete="off">
+                          <label for="destinatario-telefone">WhatsApp <span class="field-optional">(opcional)</span></label>
+                          <input id="destinatario-telefone" type="tel" inputmode="tel" maxlength="20" autocomplete="off" placeholder="Ex.: 91999999999">
+                          <small class="field-help">Quando informado, será salvo no cadastro do militar e retornará automaticamente nos próximos usos.</small>
                         </div>
                         <div class="form-group form-group-wide">
                           <label for="destinatario-unidade">Unidade <span class="field-optional">(opcional)</span></label>
@@ -264,6 +260,7 @@
                         </div>
                       </div>
 
+                      <div id="destinatario-sugestoes" class="recipient-suggestions" role="listbox" aria-label="Sugestões de militares" hidden></div>
                       <div id="destinatario-lookup-status" class="recipient-lookup-status" role="status" aria-live="polite"></div>
 
                       <div class="recipient-entry-actions">
@@ -303,7 +300,7 @@
       <footer class="login-footer">
         <span>Conexão protegida por HTTPS</span>
         <span aria-hidden="true">•</span>
-        <span>v<span id="app-version">0.5.0</span></span>
+        <span>v<span id="app-version">0.6.1</span></span>
       </footer>
     </section>
   </main>
@@ -312,12 +309,12 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.6.0"></script>
-  <script src="./js/api.js?v=0.6.0"></script>
-  <script src="./js/audiencias.js?v=0.6.0"></script>
-  <script src="./js/dashboard.js?v=0.6.0"></script>
-  <script src="./js/auth.js?v=0.6.0"></script>
-  <script src="./js/session.js?v=0.6.0"></script>
+  <script src="./js/config.js?v=0.6.1"></script>
+  <script src="./js/api.js?v=0.6.1"></script>
+  <script src="./js/audiencias.js?v=0.6.1"></script>
+  <script src="./js/dashboard.js?v=0.6.1"></script>
+  <script src="./js/auth.js?v=0.6.1"></script>
+  <script src="./js/session.js?v=0.6.1"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
