@@ -150,7 +150,7 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - mantém o botão invisível na tela de login;
 - atualiza versão e cache do frontend para `0.6.4`.
 
-## v0.7.0 — Destinatários Fase 1
+## v0.7.1 — Destinatários Fase 1
 
 - habilita o módulo **Destinatários** no painel;
 - lista a base cadastral dos militares para usuários autenticados;
@@ -160,3 +160,12 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - mantém autorização real no backend para DEV e ADMINISTRADOR;
 - não implementa edição, exclusão ou cadastro manual nesta fase;
 - adiciona `js/destinatarios.js` ao frontend.
+
+## v0.7.1
+
+- padroniza altura e alinhamento dos botões;
+- mantém cards do painel com ações alinhadas;
+- remove scroll horizontal desnecessário das tabelas em desktop;
+- permite quebra controlada de nomes e textos longos;
+- melhora o aproveitamento da largura da tabela de Audiências e Destinatários;
+- preserva rolagem horizontal apenas em telas menores quando necessária.

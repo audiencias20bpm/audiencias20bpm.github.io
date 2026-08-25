@@ -1405,3 +1405,140 @@ h1 {
     width: 100%;
   }
 }
+
+/* v0.7.1 — padronização visual, alinhamento e aproveitamento de espaço */
+.dashboard-grid {
+  align-items: stretch;
+}
+
+.dashboard-module {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dashboard-module p {
+  flex: 1 1 auto;
+}
+
+.module-open-button,
+.primary-button.compact-button,
+.secondary-button,
+.logout-button.global-logout-button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.dashboard-module .module-open-button {
+  margin-top: 14px;
+}
+
+.module-actions {
+  min-height: 44px;
+  align-items: center;
+}
+
+/* Em telas de computador, usa toda a largura disponível e evita scroll horizontal desnecessário. */
+@media (min-width: 721px) {
+  .table-scroll {
+    overflow-x: hidden;
+  }
+
+  .audiencias-table {
+    min-width: 0;
+    width: 100%;
+    table-layout: fixed;
+    font-size: 0.86rem;
+  }
+
+  .audiencias-table th,
+  .audiencias-table td {
+    padding: 0.72rem 0.62rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .audiencias-table th {
+    font-size: 0.71rem;
+    line-height: 1.25;
+  }
+
+  .audiencias-table th:nth-child(1),
+  .audiencias-table td:nth-child(1) { width: 12%; }
+  .audiencias-table th:nth-child(2),
+  .audiencias-table td:nth-child(2) { width: 13%; }
+  .audiencias-table th:nth-child(3),
+  .audiencias-table td:nth-child(3) { width: 12%; }
+  .audiencias-table th:nth-child(4),
+  .audiencias-table td:nth-child(4) { width: 20%; }
+  .audiencias-table th:nth-child(5),
+  .audiencias-table td:nth-child(5) { width: 14%; }
+  .audiencias-table th:nth-child(6),
+  .audiencias-table td:nth-child(6) { width: 11%; }
+  .audiencias-table th:nth-child(7),
+  .audiencias-table td:nth-child(7) { width: 8%; }
+  .audiencias-table th:nth-child(8),
+  .audiencias-table td:nth-child(8) { width: 10%; }
+
+  .audiencias-recipients-cell,
+  .destinatarios-name {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .audiencia-status {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Destinatários também aproveita a largura disponível no desktop. */
+  .destinatarios-table {
+    min-width: 0;
+    table-layout: fixed;
+  }
+
+  .destinatarios-table th:nth-child(1),
+  .destinatarios-table td:nth-child(1) { width: 10%; }
+  .destinatarios-table th:nth-child(2),
+  .destinatarios-table td:nth-child(2) { width: 28%; }
+  .destinatarios-table th:nth-child(3),
+  .destinatarios-table td:nth-child(3) { width: 16%; }
+  .destinatarios-table th:nth-child(4),
+  .destinatarios-table td:nth-child(4) { width: 16%; }
+  .destinatarios-table th:nth-child(5),
+  .destinatarios-table td:nth-child(5) { width: 20%; }
+  .destinatarios-table th:nth-child(6),
+  .destinatarios-table td:nth-child(6) { width: 10%; }
+
+  .destinatarios-table .destinatarios-name {
+    min-width: 0;
+  }
+
+  .destinatarios-table .destinatarios-rg,
+  .destinatarios-table .destinatarios-cpf,
+  .destinatarios-table .destinatarios-phone {
+    white-space: normal;
+  }
+}
+
+/* No mobile, mantém rolagem horizontal apenas quando ela realmente for necessária. */
+@media (max-width: 720px) {
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .audiencias-table {
+    min-width: 760px;
+  }
+
+  .destinatarios-table {
+    min-width: 760px;
+  }
+}
