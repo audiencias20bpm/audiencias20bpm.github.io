@@ -9,13 +9,13 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.6.4">
-  <link rel="stylesheet" href="./css/app.css?v=0.6.4">
+  <link rel="manifest" href="./manifest.json?v=0.7.0">
+  <link rel="stylesheet" href="./css/app.css?v=0.7.0">
 </head>
 <body>
   <main class="app-shell" id="app">
     <section class="login-card" aria-labelledby="login-title">
-      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.6.4</span></span>
+      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.7.0</span></span>
       <header class="login-header">
         <div class="brand-mark" aria-hidden="true">SA</div>
         <div>
@@ -287,6 +287,66 @@
               </form>
             </section>
           </section>
+
+          <section id="destinatarios-view" class="module-view" aria-labelledby="destinatarios-view-title" hidden>
+            <header class="module-view-header">
+              <div>
+                <button id="destinatarios-back" class="back-button" type="button">← Voltar ao painel</button>
+                <p class="dashboard-kicker">Operação</p>
+                <h2 id="destinatarios-view-title">Destinatários</h2>
+                <p class="module-view-subtitle">Consulta da base cadastral dos militares utilizados nas audiências.</p>
+              </div>
+              <div class="module-header-actions">
+                <span id="destinatarios-count" class="module-count">—</span>
+              </div>
+            </header>
+
+            <div class="recipient-directory-search" role="search">
+              <div class="form-group recipient-directory-search-field">
+                <label for="destinatarios-search">Pesquisar militar</label>
+                <input id="destinatarios-search" type="search" autocomplete="off" placeholder="Digite RG, CPF, Nome ou WhatsApp">
+                <small>Pesquisa instantânea nos cadastros carregados.</small>
+              </div>
+              <button id="destinatarios-clear-search" class="secondary-button compact-button" type="button">Limpar pesquisa</button>
+            </div>
+
+            <p id="destinatarios-result-count" class="recipient-directory-result-note" aria-live="polite"></p>
+
+            <div id="destinatarios-loading" class="module-state" role="status" aria-live="polite">
+              <div class="validation-spinner" aria-hidden="true"></div>
+              <strong>Carregando destinatários...</strong>
+              <span>Aguarde enquanto consultamos a base cadastral.</span>
+            </div>
+
+            <div id="destinatarios-error" class="module-error" role="alert" hidden></div>
+
+            <div id="destinatarios-empty" class="module-state" hidden>
+              <strong>Nenhum militar encontrado.</strong>
+              <span>A base cadastral ainda não possui registros.</span>
+            </div>
+
+            <div id="destinatarios-content" class="destinatarios-content" hidden>
+              <div class="table-scroll" tabindex="0" aria-label="Lista de destinatários">
+                <table class="audiencias-table destinatarios-table">
+                  <thead>
+                    <tr>
+                      <th>RG</th>
+                      <th>Nome</th>
+                      <th>CPF</th>
+                      <th>WhatsApp</th>
+                      <th>Unidade</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="destinatarios-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="module-actions">
+              <button id="destinatarios-retry" class="secondary-button" type="button">Atualizar lista</button>
+            </div>
+          </section>
         </section>
 
         <div class="global-auth-actions" aria-label="Ações da sessão">
@@ -314,12 +374,13 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.6.4"></script>
-  <script src="./js/api.js?v=0.6.4"></script>
-  <script src="./js/audiencias.js?v=0.6.4"></script>
-  <script src="./js/dashboard.js?v=0.6.4"></script>
-  <script src="./js/auth.js?v=0.6.4"></script>
-  <script src="./js/session.js?v=0.6.4"></script>
+  <script src="./js/config.js?v=0.7.0"></script>
+  <script src="./js/api.js?v=0.7.0"></script>
+  <script src="./js/audiencias.js?v=0.7.0"></script>
+  <script src="./js/destinatarios.js?v=0.7.0"></script>
+  <script src="./js/dashboard.js?v=0.7.0"></script>
+  <script src="./js/auth.js?v=0.7.0"></script>
+  <script src="./js/session.js?v=0.7.0"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

@@ -3,7 +3,7 @@
 
   var NORMAL_MODULES = [
     { key: 'audiencias', title: 'Audiências', description: 'Consulta e acompanhamento de audiências.', available: true },
-    { key: 'destinatarios', title: 'Destinatários', description: 'Cadastro e consulta dos destinatários das notificações.' },
+    { key: 'destinatarios', title: 'Destinatários', description: 'Consulta da base cadastral dos militares.', available: true },
     { key: 'documentos', title: 'Documentos', description: 'Organização dos ofícios e documentos vinculados.' },
     { key: 'notificacoes', title: 'Notificações', description: 'Acompanhamento das notificações e respectivos status.' },
     { key: 'historico', title: 'Histórico', description: 'Consulta aos eventos e movimentações registradas.' },
@@ -68,6 +68,8 @@
       action.addEventListener('click', function () {
         if (module.key === 'audiencias' && window.Audiencias) {
           window.Audiencias.open();
+        } else if (module.key === 'destinatarios' && window.Destinatarios) {
+          window.Destinatarios.open();
         }
       });
       article.appendChild(action);

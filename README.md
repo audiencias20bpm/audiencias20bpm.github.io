@@ -149,3 +149,14 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - remove o botão de saída exclusivo do painel para evitar duplicidade;
 - mantém o botão invisível na tela de login;
 - atualiza versão e cache do frontend para `0.6.4`.
+
+## v0.7.0 — Destinatários Fase 1
+
+- habilita o módulo **Destinatários** no painel;
+- lista a base cadastral dos militares para usuários autenticados;
+- adiciona pesquisa instantânea por RG, CPF, Nome ou WhatsApp;
+- exibe RG, Nome, CPF, WhatsApp, Unidade e Status;
+- preserva zeros à esquerda em CPF;
+- mantém autorização real no backend para DEV e ADMINISTRADOR;
+- não implementa edição, exclusão ou cadastro manual nesta fase;
+- adiciona `js/destinatarios.js` ao frontend.
