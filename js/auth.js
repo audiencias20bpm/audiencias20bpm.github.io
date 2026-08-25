@@ -3,61 +3,133 @@
 
   var TOKEN_STORAGE_KEY = 'audiencias_session_token';
   var USER_STORAGE_KEY = 'audiencias_session_user';
+  var EXPIRES_STORAGE_KEY = 'audiencias_session_expires_at';
 
   function normalizeLogin_(value) {
     return String(value || '').trim();
   }
 
+  function isObject_(value) {
+    return value !== null && typeof value === 'object';
+  }
+
   function isSuccess_(response) {
     return Boolean(
-      response &&
-      (response.ok === true || response.sucesso === true || response.success === true)
+      isObject_(response) &&
+      (response.success === true || response.sucesso === true || response.ok === true)
     );
   }
 
   function getData_(response) {
-    if (!response || typeof response !== 'object') {
+    if (!isObject_(response)) {
       return {};
     }
 
-    return response.dados || response.data || response.resultado || response;
+    if (isObject_(response.data)) {
+      return response.data;
+    }
+    if (isObject_(response.dados)) {
+      return response.dados;
+    }
+    if (isObject_(response.resultado)) {
+      return response.resultado;
+    }
+
+    return response;
+  }
+
+  function getSession_(response) {
+    var data = getData_(response);
+
+    if (isObject_(data.sessao)) {
+      return data.sessao;
+    }
+    if (isObject_(data.session)) {
+      return data.session;
+    }
+    if (isObject_(response.sessao)) {
+      return response.sessao;
+    }
+    if (isObject_(response.session)) {
+      return response.session;
+    }
+
+    return {};
   }
 
   function getToken_(response) {
     var data = getData_(response);
-    var session =
-      data && typeof data === 'object'
-        ? (data.sessao || data.session || {})
-        : {};
+    var session = getSession_(response);
 
-    return session.token || data.token || response.token || '';
+    return String(
+      session.token ||
+      data.token ||
+      response.token ||
+      ''
+    );
   }
 
   function getUser_(response) {
     var data = getData_(response);
+
     return data.usuario || data.user || response.usuario || response.user || null;
   }
 
-  function saveSession_(token, user) {
+  function getExpiresAt_(response) {
+    var session = getSession_(response);
+    return session.expira_em || session.expires_at || '';
+  }
+
+  function getErrorCode_(response) {
+    var data = getData_(response);
+    return String(
+      data.code ||
+      data.codigo ||
+      response.code ||
+      response.codigo ||
+      ''
+    );
+  }
+
+  function saveSession_(response) {
+    var token = getToken_(response);
+    var user = getUser_(response);
+    var expiresAt = getExpiresAt_(response);
+
+    if (!token) {
+      throw new Error('TOKEN_AUSENTE');
+    }
+
     sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
 
-    if (user && typeof user === 'object') {
-      var safeUser = {
+    if (expiresAt) {
+      sessionStorage.setItem(EXPIRES_STORAGE_KEY, String(expiresAt));
+    } else {
+      sessionStorage.removeItem(EXPIRES_STORAGE_KEY);
+    }
+
+    if (user && isObject_(user)) {
+      sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify({
         id: user.id || '',
         nome: user.nome || user.name || '',
         login: user.login || '',
         perfil: user.perfil || user.role || ''
-      };
-
-      sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(safeUser));
+      }));
     } else {
       sessionStorage.removeItem(USER_STORAGE_KEY);
     }
+
+    return {
+      token: token,
+      user: user,
+      expiresAt: expiresAt
+    };
   }
 
   function clearStoredSession_() {
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     sessionStorage.removeItem(USER_STORAGE_KEY);
+    sessionStorage.removeItem(EXPIRES_STORAGE_KEY);
   }
 
   function login(login, senha) {
@@ -69,30 +141,15 @@
 
     return window.Api.post('login', {
       login: normalizedLogin,
-      senha: senha
+      senha: String(senha)
     }).then(function (response) {
       if (!isSuccess_(response)) {
         var error = new Error('LOGIN_RECUSADO');
-        var errorData = getData_(response);
-        error.code =
-          (errorData && (errorData.code || errorData.codigo)) ||
-          (response && (response.code || response.codigo)) ||
-          '';
+        error.code = getErrorCode_(response);
         throw error;
       }
 
-      var token = getToken_(response);
-      if (!token) {
-        throw new Error('TOKEN_AUSENTE');
-      }
-
-      var user = getUser_(response);
-      saveSession_(token, user);
-
-      return {
-        token: token,
-        user: user
-      };
+      return saveSession_(response);
     });
   }
 
@@ -140,11 +197,11 @@
       var profile = user.perfil || user.role || '';
 
       if (label && profile) {
-        successUser.textContent = label + ' — ' + profile;
+        successUser.textContent = label + ' - ' + profile;
       } else if (label) {
         successUser.textContent = label;
       } else {
-        successUser.textContent = 'Autenticação concluída com sucesso.';
+        successUser.textContent = 'Autenticacao concluida com sucesso.';
       }
 
       form.hidden = true;
@@ -174,7 +231,7 @@
       passwordInput.setAttribute('aria-invalid', passwordValue ? 'false' : 'true');
 
       if (!loginValue || !passwordValue) {
-        setMessage_('Informe usuário e senha para continuar.');
+        setMessage_('Informe usuario e senha para continuar.');
         (!loginValue ? loginInput : passwordInput).focus();
         return;
       }
@@ -192,11 +249,15 @@
           passwordInput.value = '';
 
           if (error && error.name === 'AbortError') {
-            setMessage_('Não foi possível concluir o acesso agora. Tente novamente.');
-          } else if (error && (error.message === 'RESPOSTA_INVALIDA' || error.message === 'RESPOSTA_VAZIA' || error.message === 'TOKEN_AUSENTE')) {
-            setMessage_('Não foi possível concluir o acesso agora. Tente novamente.');
+            setMessage_('Nao foi possivel concluir o acesso agora. Tente novamente.');
+          } else if (error && error.message === 'LOGIN_RECUSADO') {
+            if (error.code === 'ACESSO_TEMPORARIAMENTE_BLOQUEADO' || error.code === 'ACESSO_INDISPONIVEL') {
+              setMessage_('Acesso temporariamente indisponivel. Tente novamente mais tarde.');
+            } else {
+              setMessage_('Nao foi possivel entrar. Verifique suas credenciais e tente novamente.');
+            }
           } else {
-            setMessage_('Não foi possível entrar. Verifique suas credenciais e tente novamente.');
+            setMessage_('Nao foi possivel concluir o acesso agora. Tente novamente.');
           }
 
           passwordInput.focus();

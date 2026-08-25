@@ -1,24 +1,10 @@
 (function () {
   'use strict';
 
-  var REQUEST_TIMEOUT_MS = 20000;
+  var REQUEST_TIMEOUT_MS = 25000;
 
   function getBaseUrl() {
     return window.APP_CONFIG.API_BASE_URL;
-  }
-
-  function withTimeout_(promise, timeoutMs) {
-    var controller = new AbortController();
-    var timer = window.setTimeout(function () {
-      controller.abort();
-    }, timeoutMs);
-
-    return {
-      signal: controller.signal,
-      promise: promise(controller.signal).finally(function () {
-        window.clearTimeout(timer);
-      })
-    };
   }
 
   function parseJsonResponse_(response) {
@@ -36,32 +22,34 @@
   }
 
   function post(action, payload) {
-    var body = Object.assign({}, payload || {}, {
-      action: action
-    });
-
-    var request = withTimeout_(function (signal) {
-      return fetch(getBaseUrl(), {
-        method: 'POST',
-        mode: 'cors',
-        credentials: 'omit',
-        cache: 'no-store',
-        redirect: 'follow',
-        headers: {
-          'Content-Type': 'text/plain;charset=UTF-8',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(body),
-        signal: signal
-      });
+    var controller = new AbortController();
+    var timer = window.setTimeout(function () {
+      controller.abort();
     }, REQUEST_TIMEOUT_MS);
 
-    return request.promise.then(function (response) {
+    var body = Object.assign({}, payload || {}, {
+      action: String(action || '').trim()
+    });
+
+    return fetch(getBaseUrl(), {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'omit',
+      cache: 'no-store',
+      redirect: 'follow',
+      headers: {
+        'Content-Type': 'text/plain;charset=UTF-8',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal
+    }).then(function (response) {
       if (!response.ok) {
         throw new Error('HTTP_' + response.status);
       }
-
       return parseJsonResponse_(response);
+    }).finally(function () {
+      window.clearTimeout(timer);
     });
   }
 

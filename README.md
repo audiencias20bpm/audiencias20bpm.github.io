@@ -32,3 +32,11 @@ A autorização real permanece no backend.
 ## Estado atual
 
 Estrutura inicial do frontend criada. Login, sessão e dashboard ainda não foram implementados nesta etapa.
+
+## 0.2.1 - Correcao de integracao do login
+
+- leitura do token alinhada ao contrato real do Apps Script: `data.sessao.token`;
+- armazenamento temporario em `sessionStorage`;
+- cache do PWA versionado para evitar JavaScript antigo apos deploy;
+- assets do login com cache-busting `v=0.2.1`;
+- backend e regras de autenticacao preservados.
