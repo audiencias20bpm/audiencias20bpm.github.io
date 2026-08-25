@@ -9,13 +9,13 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.6.3">
-  <link rel="stylesheet" href="./css/app.css?v=0.6.3">
+  <link rel="manifest" href="./manifest.json?v=0.6.4">
+  <link rel="stylesheet" href="./css/app.css?v=0.6.4">
 </head>
 <body>
   <main class="app-shell" id="app">
     <section class="login-card" aria-labelledby="login-title">
-      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.6.3</span></span>
+      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.6.4</span></span>
       <header class="login-header">
         <div class="brand-mark" aria-hidden="true">SA</div>
         <div>
@@ -99,7 +99,6 @@
               <span>Sessão</span>
               <strong id="session-timer">30:00</strong>
             </div>
-            <button id="logout-button" class="logout-button dashboard-logout" type="button">Sair</button>
           </div>
 
           <div id="logout-message" class="logout-message" role="status" aria-live="polite" hidden></div>
@@ -289,6 +288,10 @@
             </section>
           </section>
         </section>
+
+        <div class="global-auth-actions" aria-label="Ações da sessão">
+          <button id="logout-button" class="logout-button global-logout-button" type="button">Sair</button>
+        </div>
       </section>
 
       <div id="logout-overlay" class="logout-overlay" role="status" aria-live="assertive" aria-busy="true" hidden>
@@ -311,12 +314,12 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.6.3"></script>
-  <script src="./js/api.js?v=0.6.3"></script>
-  <script src="./js/audiencias.js?v=0.6.3"></script>
-  <script src="./js/dashboard.js?v=0.6.3"></script>
-  <script src="./js/auth.js?v=0.6.3"></script>
-  <script src="./js/session.js?v=0.6.3"></script>
+  <script src="./js/config.js?v=0.6.4"></script>
+  <script src="./js/api.js?v=0.6.4"></script>
+  <script src="./js/audiencias.js?v=0.6.4"></script>
+  <script src="./js/dashboard.js?v=0.6.4"></script>
+  <script src="./js/auth.js?v=0.6.4"></script>
+  <script src="./js/session.js?v=0.6.4"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

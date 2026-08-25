@@ -1309,3 +1309,29 @@ h1 {
     right: 16px;
   }
 }
+
+
+/* v0.6.4 — saída rápida disponível em todas as telas autenticadas */
+.global-auth-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #d9e1e5;
+}
+
+.global-logout-button {
+  min-width: 92px;
+}
+
+@media (max-width: 640px) {
+  .global-auth-actions {
+    margin-top: 14px;
+    padding-top: 14px;
+  }
+
+  .global-logout-button {
+    width: 100%;
+  }
+}

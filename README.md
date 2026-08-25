@@ -140,3 +140,12 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - adiciona identificação institucional do Sistema de Audiências • 20º BPM;
 - informa desenvolvimento pelo P4/20º BPM;
 - adiciona canal clicável para dúvidas, sugestões ou problemas: audiencias.20.bpm@gmail.com.
+
+
+## v0.6.4 — Saída rápida global
+
+- adiciona botão **Sair** em posição consistente ao final de todas as telas autenticadas;
+- reutiliza o logout seguro já aprovado, sem duplicar lógica;
+- remove o botão de saída exclusivo do painel para evitar duplicidade;
+- mantém o botão invisível na tela de login;
+- atualiza versão e cache do frontend para `0.6.4`.
