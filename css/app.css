@@ -1240,3 +1240,33 @@ h1 {
   color: #60747d;
   font-size: 0.80rem;
 }
+
+
+/* v0.6.2 — limpeza de cadastro e preservação de CPF com zero inicial */
+.recipient-entry-actions {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.recipient-clear-button {
+  background: #ffffff;
+  border-color: #c7d5da;
+  color: #4b626b;
+}
+
+.recipient-clear-button:hover,
+.recipient-clear-button:focus-visible {
+  border-color: #9fb4bc;
+  background: #f5f9fa;
+}
+
+@media (max-width: 720px) {
+  .recipient-entry-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .recipient-entry-actions .compact-button {
+    width: 100%;
+  }
+}

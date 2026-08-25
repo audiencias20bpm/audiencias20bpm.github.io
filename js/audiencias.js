@@ -27,6 +27,16 @@
   }
   function escapeText_(value) { return String(value === null || value === undefined ? '' : value); }
   function digits_(value) { return escapeText_(value).replace(/\D+/g, ''); }
+  function normalizeCpf_(value) {
+    var cpf = digits_(value);
+    if (!cpf) return '';
+    return cpf.length <= 11 ? cpf.padStart(11, '0') : cpf;
+  }
+  function formatCpf_(value) {
+    var cpf = normalizeCpf_(value);
+    if (cpf.length !== 11) return cpf;
+    return cpf.slice(0,3)+'.'+cpf.slice(3,6)+'.'+cpf.slice(6,9)+'-'+cpf.slice(9);
+  }
   function formatDate_(value) {
     if (!value) return 'Não informada';
     var date = new Date(value);
@@ -165,7 +175,7 @@
     var fields=recipientInputs_();
     if(fields.rg) fields.rg.value=item.rg||'';
     if(fields.nome) fields.nome.value=item.nome||'';
-    if(fields.cpf) fields.cpf.value=item.cpf||'';
+    if(fields.cpf) fields.cpf.value=formatCpf_(item.cpf||'');
     if(fields.telefone) fields.telefone.value=item.telefone||'';
     if(fields.unidade) fields.unidade.value=item.unidade||'';
     clearSuggestions_();
@@ -184,7 +194,7 @@
       var strong=document.createElement('strong');
       strong.textContent=item.nome||'Militar';
       var meta=document.createElement('span');
-      meta.textContent=(item.rg?'RG '+item.rg:'RG não informado')+(item.cpf?' • CPF '+item.cpf:'')+(item.telefone?' • WhatsApp '+item.telefone:'');
+      meta.textContent=(item.rg?'RG '+item.rg:'RG não informado')+(item.cpf?' • CPF '+formatCpf_(item.cpf):'')+(item.telefone?' • WhatsApp '+item.telefone:'');
       button.appendChild(strong); button.appendChild(meta);
       button.addEventListener('click',function(){
         fillRecipient_(item);
@@ -240,7 +250,7 @@
 
   function recipientEntryData_(){
     var fields=recipientInputs_();
-    return {rg:digits_(fields.rg?fields.rg.value:''),nome:(fields.nome?fields.nome.value:'').trim(),cpf:digits_(fields.cpf?fields.cpf.value:''),telefone:digits_(fields.telefone?fields.telefone.value:''),unidade:(fields.unidade?fields.unidade.value:'').trim()};
+    return {rg:digits_(fields.rg?fields.rg.value:''),nome:(fields.nome?fields.nome.value:'').trim(),cpf:normalizeCpf_(fields.cpf?fields.cpf.value:''),telefone:digits_(fields.telefone?fields.telefone.value:''),unidade:(fields.unidade?fields.unidade.value:'').trim()};
   }
 
   function renderSelectedRecipients_(){
@@ -252,7 +262,7 @@
       var card=document.createElement('div');card.className='recipient-chip';
       var text=document.createElement('div');text.className='recipient-chip-text';
       var strong=document.createElement('strong');strong.textContent=item.nome; text.appendChild(strong);
-      var meta=document.createElement('span');meta.textContent='RG '+item.rg+(item.cpf?' • CPF '+item.cpf:'')+(item.telefone?' • WhatsApp '+item.telefone:'')+(item.unidade?' • '+item.unidade:'');text.appendChild(meta);
+      var meta=document.createElement('span');meta.textContent='RG '+item.rg+(item.cpf?' • CPF '+formatCpf_(item.cpf):'')+(item.telefone?' • WhatsApp '+item.telefone:'')+(item.unidade?' • '+item.unidade:'');text.appendChild(meta);
       var remove=document.createElement('button');remove.type='button';remove.className='recipient-remove';remove.setAttribute('aria-label','Remover '+item.nome);remove.textContent='Remover';
       remove.addEventListener('click',function(){selectedRecipients.splice(index,1);renderSelectedRecipients_();});
       card.appendChild(text);card.appendChild(remove);container.appendChild(card);
@@ -323,6 +333,7 @@
     var formBack=document.getElementById('audiencias-form-back');
     var cancel=document.getElementById('audiencias-form-cancel');
     var form=document.getElementById('audiencias-form');
+    var clear=document.getElementById('destinatario-limpar');
     var add=document.getElementById('destinatario-adicionar');
     var fields=recipientInputs_();
     if(back)back.addEventListener('click',close);
@@ -331,6 +342,13 @@
     if(formBack)formBack.addEventListener('click',closeForm_);
     if(cancel)cancel.addEventListener('click',closeForm_);
     if(form)form.addEventListener('submit',submitForm_);
+    if(clear)clear.addEventListener('click',function(){
+      clearTimeout(lookupTimer);
+      lookupSerial += 1;
+      clearRecipientEntry_();
+      var current=recipientInputs_();
+      if(current.rg) current.rg.focus();
+    });
     if(add)add.addEventListener('click',addRecipient_);
     ['rg','cpf','nome'].forEach(function(type){
       var field=fields[type]; if(!field)return;

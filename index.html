@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.6.1">
-  <link rel="stylesheet" href="./css/app.css?v=0.6.1">
+  <link rel="manifest" href="./manifest.json?v=0.6.2">
+  <link rel="stylesheet" href="./css/app.css?v=0.6.2">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -264,6 +264,7 @@
                       <div id="destinatario-lookup-status" class="recipient-lookup-status" role="status" aria-live="polite"></div>
 
                       <div class="recipient-entry-actions">
+                        <button id="destinatario-limpar" class="secondary-button compact-button recipient-clear-button" type="button">Limpar dados</button>
                         <button id="destinatario-adicionar" class="secondary-button compact-button" type="button">+ Adicionar militar</button>
                       </div>
                     </div>
@@ -300,7 +301,7 @@
       <footer class="login-footer">
         <span>Conexão protegida por HTTPS</span>
         <span aria-hidden="true">•</span>
-        <span>v<span id="app-version">0.6.1</span></span>
+        <span>v<span id="app-version">0.6.2</span></span>
       </footer>
     </section>
   </main>
@@ -309,12 +310,12 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.6.1"></script>
-  <script src="./js/api.js?v=0.6.1"></script>
-  <script src="./js/audiencias.js?v=0.6.1"></script>
-  <script src="./js/dashboard.js?v=0.6.1"></script>
-  <script src="./js/auth.js?v=0.6.1"></script>
-  <script src="./js/session.js?v=0.6.1"></script>
+  <script src="./js/config.js?v=0.6.2"></script>
+  <script src="./js/api.js?v=0.6.2"></script>
+  <script src="./js/audiencias.js?v=0.6.2"></script>
+  <script src="./js/dashboard.js?v=0.6.2"></script>
+  <script src="./js/auth.js?v=0.6.2"></script>
+  <script src="./js/session.js?v=0.6.2"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
