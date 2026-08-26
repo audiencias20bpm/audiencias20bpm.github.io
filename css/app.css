@@ -671,15 +671,6 @@ h1 {
   border-top: 1px solid #F0DCDC;
 }
 
-.dashboard-security-note {
-  margin: 26px 0 0;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: #F5F8F9;
-  color: var(--texto-suave);
-  font-size: 0.78rem;
-  line-height: 1.5;
-}
 
 @media (min-width: 640px) {
   .dashboard-grid {
@@ -1711,4 +1702,56 @@ body.modal-open {
   color: #53676e;
   font-size: 0.86rem;
   line-height: 1.45;
+}
+
+
+/* Audiências v0.8.2 — pesquisa rápida */
+.audiencias-search-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+.audiencias-search-field {
+  flex: 1 1 520px;
+  min-width: 0;
+}
+.audiencias-search-field label {
+  display: block;
+  margin: 0 0 6px;
+  color: var(--petroleo);
+  font-weight: 800;
+  font-size: 0.86rem;
+}
+.audiencias-search-field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 13px;
+  border: 1px solid #bfd0d5;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--petroleo);
+  font: inherit;
+}
+.audiencias-search-field input:focus {
+  outline: 3px solid rgba(198, 40, 40, 0.14);
+  border-color: var(--vermelho);
+}
+.audiencias-search-summary {
+  min-height: 1.25rem;
+  margin: 0 0 10px;
+  color: var(--texto-suave);
+  font-size: 0.82rem;
+}
+.audiencias-search-empty {
+  margin: 0 0 12px;
+}
+@media (max-width: 640px) {
+  .audiencias-search-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .audiencias-search-bar .compact-button {
+    width: 100%;
+  }
 }

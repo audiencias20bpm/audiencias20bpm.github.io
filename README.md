@@ -184,3 +184,14 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - WhatsApp, Unidade e Status permanecem editáveis.
 - O backend ignora tentativas de alteração dos dados fixos nessa rota e preserva os valores já cadastrados.
 - WhatsApp informado durante uma audiência continua podendo atualizar o cadastro para retornar automaticamente nos próximos usos.
+
+
+## v0.8.2 — Pesquisa de audiências e limpeza do painel
+
+- adiciona pesquisa instantânea na lista de audiências;
+- permite localizar audiências por RG, CPF ou Nome do militar;
+- também pesquisa por código, processo, assunto, local, modalidade e status;
+- mostra quantidade de resultados filtrados;
+- adiciona ação para limpar a busca;
+- remove texto explicativo desnecessário do painel principal;
+- não altera backend, autenticação, sessões ou regras de negócio.

@@ -9,13 +9,13 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.8.1">
-  <link rel="stylesheet" href="./css/app.css?v=0.8.1">
+  <link rel="manifest" href="./manifest.json?v=0.8.2">
+  <link rel="stylesheet" href="./css/app.css?v=0.8.2">
 </head>
 <body>
   <main class="app-shell" id="app">
     <section class="login-card" aria-labelledby="login-title">
-      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.8.1</span></span>
+      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.8.2</span></span>
       <header class="login-header">
         <div class="brand-mark" aria-hidden="true">SA</div>
         <div>
@@ -125,7 +125,6 @@
             <div id="dashboard-dev-modules" class="dashboard-grid"></div>
           </section>
 
-          <p class="dashboard-security-note">Os módulos acima representam a navegação do painel. As permissões reais continuam sendo validadas no backend.</p>
           </div>
 
           <section id="audiencias-view" class="module-view" aria-labelledby="audiencias-view-title" hidden>
@@ -158,7 +157,19 @@
             </div>
 
             <div id="audiencias-content" class="audiencias-content" hidden>
-              <div class="table-scroll" tabindex="0" aria-label="Lista de audiências">
+              <div class="audiencias-search-bar" role="search" aria-label="Pesquisar audiências">
+                <div class="audiencias-search-field">
+                  <label for="audiencias-search">Pesquisar audiências</label>
+                  <input id="audiencias-search" type="search" autocomplete="off" placeholder="RG, CPF, nome, processo, assunto ou código">
+                </div>
+                <button id="audiencias-search-clear" class="secondary-button compact-button" type="button" hidden>Limpar busca</button>
+              </div>
+              <p id="audiencias-search-summary" class="audiencias-search-summary" aria-live="polite"></p>
+              <div id="audiencias-search-empty" class="module-state audiencias-search-empty" hidden>
+                <strong>Nenhuma audiência encontrada.</strong>
+                <span>Tente outro RG, CPF, nome ou termo de pesquisa.</span>
+              </div>
+              <div id="audiencias-table-wrap" class="table-scroll" tabindex="0" aria-label="Lista de audiências">
                 <table class="audiencias-table">
                   <thead>
                     <tr>
@@ -432,13 +443,13 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.8.1"></script>
-  <script src="./js/api.js?v=0.8.1"></script>
-  <script src="./js/audiencias.js?v=0.8.1"></script>
-  <script src="./js/destinatarios.js?v=0.8.1"></script>
-  <script src="./js/dashboard.js?v=0.8.1"></script>
-  <script src="./js/auth.js?v=0.8.1"></script>
-  <script src="./js/session.js?v=0.8.1"></script>
+  <script src="./js/config.js?v=0.8.2"></script>
+  <script src="./js/api.js?v=0.8.2"></script>
+  <script src="./js/audiencias.js?v=0.8.2"></script>
+  <script src="./js/destinatarios.js?v=0.8.2"></script>
+  <script src="./js/dashboard.js?v=0.8.2"></script>
+  <script src="./js/auth.js?v=0.8.2"></script>
+  <script src="./js/session.js?v=0.8.2"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

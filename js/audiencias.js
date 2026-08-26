@@ -6,6 +6,7 @@
   var lookupTimer = null;
   var lookupSerial = 0;
   var selectedRecipients = [];
+  var allAudiencias = [];
   var DATE_FORMATTER = new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Belem',
     day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -43,6 +44,21 @@
     return Number.isNaN(date.getTime()) ? escapeText_(value) : DATE_FORMATTER.format(date);
   }
   function normalizeStatus_(value) { return String(value || '').trim().toUpperCase() || 'SEM_STATUS'; }
+  function normalizeSearch_(value) {
+    return String(value === null || value === undefined ? '' : value)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+  function searchTextForAudience_(item) {
+    var recipients = Array.isArray(item.destinatarios) ? item.destinatarios : [];
+    var parts = [item.codigo, item.processo, item.assunto, item.local, item.modalidade, item.status];
+    recipients.forEach(function (recipient) {
+      parts.push(recipient.nome, recipient.rg, recipient.cpf, recipient.telefone, recipient.unidade);
+    });
+    return normalizeSearch_(parts.filter(Boolean).join(' '));
+  }
   function statusLabel_(status) {
     var labels = { AGENDADA:'Agendada', CIENCIA_CONFIRMADA:'Ciência confirmada', REALIZADA:'Realizada', CANCELADA:'Cancelada', SEM_STATUS:'Sem status' };
     return labels[status] || status.replace(/_/g, ' ');
@@ -114,7 +130,28 @@
       badge.textContent=statusLabel_(status);
       statusCell.appendChild(badge); tr.appendChild(statusCell); tbody.appendChild(tr);
     });
-    if(count) count.textContent=items.length===1?'1 audiência':items.length+' audiências';
+    if(count) count.textContent=allAudiencias.length===1?'1 audiência':allAudiencias.length+' audiências';
+  }
+
+  function applySearch_(){
+    var input=document.getElementById('audiencias-search');
+    var clear=document.getElementById('audiencias-search-clear');
+    var summary=document.getElementById('audiencias-search-summary');
+    var empty=document.getElementById('audiencias-search-empty');
+    var tableWrap=document.getElementById('audiencias-table-wrap');
+    var query=normalizeSearch_(input?input.value:'');
+    var filtered=!query ? allAudiencias.slice() : allAudiencias.filter(function(item){
+      return searchTextForAudience_(item).indexOf(query)!==-1;
+    });
+    if(clear) clear.hidden=!query;
+    if(summary){
+      if(!query) summary.textContent='';
+      else summary.textContent=filtered.length===1?'1 audiência encontrada.':filtered.length+' audiências encontradas.';
+    }
+    if(empty) empty.hidden=filtered.length!==0;
+    if(tableWrap) tableWrap.hidden=filtered.length===0;
+    if(filtered.length) renderRows_(filtered);
+    else { var tbody=document.getElementById('audiencias-table-body'); if(tbody) tbody.textContent=''; }
   }
 
   function handleExpiredSession_(){
@@ -134,8 +171,9 @@
         throw new Error(code||'ERRO_AO_LISTAR_AUDIENCIAS');
       }
       var data=getData_(response); var items=Array.isArray(data.audiencias)?data.audiencias:[]; updateExpiry_(data);
+      allAudiencias=items.slice();
       if(!items.length){var count=document.getElementById('audiencias-count');if(count)count.textContent='0 audiências';setState_('empty');return true;}
-      renderRows_(items); setState_('content'); return true;
+      setState_('content'); applySearch_(); return true;
     }).catch(function(){setState_('error','Não foi possível carregar as audiências agora. Tente novamente.');return false;});
   }
 
@@ -336,12 +374,19 @@
     var clear=document.getElementById('destinatario-limpar');
     var add=document.getElementById('destinatario-adicionar');
     var fields=recipientInputs_();
+    var search=document.getElementById('audiencias-search');
+    var searchClear=document.getElementById('audiencias-search-clear');
     if(back)back.addEventListener('click',close);
     if(retry)retry.addEventListener('click',load_);
     if(newButton)newButton.addEventListener('click',openForm_);
     if(formBack)formBack.addEventListener('click',closeForm_);
     if(cancel)cancel.addEventListener('click',closeForm_);
     if(form)form.addEventListener('submit',submitForm_);
+    if(search)search.addEventListener('input',applySearch_);
+    if(searchClear)searchClear.addEventListener('click',function(){
+      if(search){search.value='';search.focus();}
+      applySearch_();
+    });
     if(clear)clear.addEventListener('click',function(){
       clearTimeout(lookupTimer);
       lookupSerial += 1;
