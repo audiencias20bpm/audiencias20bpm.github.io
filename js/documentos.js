@@ -55,15 +55,82 @@
     }
     next.value = String(l + 1).padStart(3, '0') + '/' + y;
   }
+  var lastNameSelection_ = { start: 0, end: 0 };
+
+  function escapeHtml_(value) {
+    return String(value || '').replace(/[&<>"']/g, function (char) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+    });
+  }
+
+  function updateNamePreview_() {
+    var input = document.getElementById('signatario-nome');
+    var hidden = document.getElementById('signatario-nome-guerra');
+    var preview = document.getElementById('signatario-nome-preview');
+    if (!input || !hidden || !preview) return;
+    var name = input.value.trim();
+    var war = hidden.value.trim();
+    if (!name) { preview.textContent = '—'; return; }
+    if (!war) { preview.textContent = name; return; }
+    var lowerName = name.toLocaleLowerCase('pt-BR');
+    var lowerWar = war.toLocaleLowerCase('pt-BR');
+    var idx = lowerName.indexOf(lowerWar);
+    if (idx < 0) { hidden.value = ''; preview.textContent = name; return; }
+    preview.innerHTML = escapeHtml_(name.slice(0, idx)) + '<strong>' + escapeHtml_(name.slice(idx, idx + war.length)) + '</strong>' + escapeHtml_(name.slice(idx + war.length));
+  }
+
+  function rememberNameSelection_() {
+    var input = document.getElementById('signatario-nome');
+    if (!input) return;
+    lastNameSelection_.start = Number(input.selectionStart || 0);
+    lastNameSelection_.end = Number(input.selectionEnd || 0);
+  }
+
+  function markWarName_() {
+    var input = document.getElementById('signatario-nome');
+    var hidden = document.getElementById('signatario-nome-guerra');
+    if (!input || !hidden) return;
+    var start = Number(input.selectionStart);
+    var end = Number(input.selectionEnd);
+    if (!Number.isInteger(start) || !Number.isInteger(end) || end <= start) { start = lastNameSelection_.start; end = lastNameSelection_.end; }
+    var selected = input.value.slice(start, end).trim();
+    if (!selected) {
+      setError_('Selecione no campo Nome o trecho que corresponde ao nome de guerra.');
+      input.focus();
+      return;
+    }
+    hidden.value = selected;
+    setError_('');
+    updateNamePreview_();
+  }
+
+  function clearWarName_() {
+    var hidden = document.getElementById('signatario-nome-guerra');
+    if (hidden) hidden.value = '';
+    updateNamePreview_();
+  }
+
+  function clearSignatory_() {
+    ['signatario-nome', 'signatario-posto', 'signatario-rg', 'signatario-cargo', 'signatario-nome-guerra'].forEach(function (id) {
+      var el = document.getElementById(id); if (el) el.value = '';
+    });
+    setError_(''); setSuccess_('');
+    updateNamePreview_();
+    var input = document.getElementById('signatario-nome');
+    if (input) input.focus();
+  }
+
   function fill_(config) {
     var c = config || {};
     document.getElementById('oficio-ano').value = c.oficio_ano || new Date().getFullYear();
     document.getElementById('oficio-ultimo-numero').value = c.oficio_ultimo_numero !== undefined && c.oficio_ultimo_numero !== '' ? c.oficio_ultimo_numero : 0;
     document.getElementById('signatario-nome').value = c.signatario_nome || '';
+    document.getElementById('signatario-nome-guerra').value = c.signatario_nome_guerra || '';
     document.getElementById('signatario-posto').value = c.signatario_posto_graduacao || '';
     document.getElementById('signatario-rg').value = c.signatario_rg || '';
     document.getElementById('signatario-cargo').value = c.signatario_cargo || '';
     updateNextNumber_();
+    updateNamePreview_();
     var status = document.getElementById('documentos-config-status');
     if (status) status.textContent = c.configurada ? 'Configurado' : 'Configuração inicial';
   }
@@ -97,6 +164,7 @@
       oficio_ano: year,
       oficio_ultimo_numero: last,
       signatario_nome: document.getElementById('signatario-nome').value.trim(),
+      signatario_nome_guerra: document.getElementById('signatario-nome-guerra').value.trim(),
       signatario_posto_graduacao: document.getElementById('signatario-posto').value.trim(),
       signatario_rg: document.getElementById('signatario-rg').value.replace(/\D+/g, ''),
       signatario_cargo: document.getElementById('signatario-cargo').value.trim()
@@ -146,10 +214,28 @@
     var form = document.getElementById('documentos-config-form');
     var year = document.getElementById('oficio-ano');
     var last = document.getElementById('oficio-ultimo-numero');
+    var name = document.getElementById('signatario-nome');
+    var mark = document.getElementById('signatario-marcar-nome-guerra');
+    var unmark = document.getElementById('signatario-remover-nome-guerra');
+    var clear = document.getElementById('documentos-config-clear');
     if (backButton) backButton.addEventListener('click', back);
     if (form) form.addEventListener('submit', submit_);
     if (year) year.addEventListener('input', updateNextNumber_);
     if (last) last.addEventListener('input', updateNextNumber_);
+    if (name) {
+      ['select', 'keyup', 'mouseup', 'touchend'].forEach(function (eventName) { name.addEventListener(eventName, rememberNameSelection_); });
+      name.addEventListener('input', updateNamePreview_);
+      name.addEventListener('keydown', function (event) {
+        if (event.ctrlKey && (String(event.key).toLowerCase() === 'b' || String(event.key).toLowerCase() === 'n')) {
+          event.preventDefault();
+          rememberNameSelection_();
+          markWarName_();
+        }
+      });
+    }
+    if (mark) mark.addEventListener('click', markWarName_);
+    if (unmark) unmark.addEventListener('click', clearWarName_);
+    if (clear) clear.addEventListener('click', clearSignatory_);
   }
   document.addEventListener('DOMContentLoaded', bind_);
   window.Documentos = Object.freeze({ open: open, back: back, reload: load_ });

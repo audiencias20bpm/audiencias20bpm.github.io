@@ -1962,3 +1962,50 @@ body.modal-open {
     padding: 16px;
   }
 }
+
+
+/* v0.9.1 — Nome de guerra e troca rápida do signatário */
+.signatory-name-tools {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.signatory-name-tools .compact-button {
+  width: auto;
+  min-height: 40px;
+}
+
+.signatory-preview {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid #d7e2e6;
+  border-radius: 10px;
+  background: #f7fafb;
+  color: #0b3c49;
+  overflow-wrap: anywhere;
+}
+
+.signatory-preview-label {
+  color: #687980;
+  margin-right: 6px;
+}
+
+.form-actions-between {
+  justify-content: space-between;
+}
+
+@media (max-width: 640px) {
+  .signatory-name-tools,
+  .form-actions-between {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .signatory-name-tools .compact-button,
+  .form-actions-between .primary-button,
+  .form-actions-between .secondary-button {
+    width: 100%;
+  }
+}

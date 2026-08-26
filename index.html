@@ -9,13 +9,13 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.0">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.0">
+  <link rel="manifest" href="./manifest.json?v=0.9.1">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.1">
 </head>
 <body>
   <main class="app-shell" id="app">
     <section class="login-card" aria-labelledby="login-title">
-      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.9.0</span></span>
+      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.9.1</span></span>
       <header class="login-header">
         <div class="brand-mark" aria-hidden="true">SA</div>
         <div>
@@ -442,14 +442,28 @@
                 <div class="detail-section-heading"><div><p class="dashboard-kicker">Assinatura</p><h3>Signatário padrão</h3></div></div>
                 <p class="document-config-help">Esses dados serão preenchidos automaticamente nos ofícios e poderão ser atualizados quando houver mudança de comando.</p>
                 <div class="form-grid two-columns">
-                  <div class="form-group full-width"><label for="signatario-nome">Nome</label><input id="signatario-nome" type="text" maxlength="200" autocomplete="off" required></div>
+                  <div class="form-group full-width signatory-name-group">
+                    <label for="signatario-nome">Nome</label>
+                    <input id="signatario-nome" type="text" maxlength="200" autocomplete="off" required aria-describedby="signatario-nome-help">
+                    <div class="signatory-name-tools" aria-label="Formatação do nome do signatário">
+                      <button id="signatario-marcar-nome-guerra" class="secondary-button compact-button" type="button">Marcar nome de guerra em negrito</button>
+                      <button id="signatario-remover-nome-guerra" class="secondary-button compact-button" type="button">Remover negrito</button>
+                    </div>
+                    <small id="signatario-nome-help" class="field-help">Selecione no campo Nome o trecho usado como nome de guerra e toque em “Marcar nome de guerra”. No desktop, Ctrl+B ou Ctrl+N também funcionam.</small>
+                    <div class="signatory-preview" aria-live="polite">
+                      <span class="signatory-preview-label">Prévia:</span>
+                      <span id="signatario-nome-preview">—</span>
+                    </div>
+                    <input id="signatario-nome-guerra" type="hidden" value="">
+                  </div>
                   <div class="form-group"><label for="signatario-posto">Posto/Graduação</label><input id="signatario-posto" type="text" maxlength="80" list="postos-graduacoes" autocomplete="off" required></div>
                   <div class="form-group"><label for="signatario-rg">RG</label><input id="signatario-rg" type="text" maxlength="20" inputmode="numeric" autocomplete="off" required></div>
                   <div class="form-group full-width"><label for="signatario-cargo">Cargo</label><input id="signatario-cargo" type="text" maxlength="160" autocomplete="off" placeholder="Ex.: Comandante do 20º BPM" required></div>
                 </div>
               </section>
 
-              <div class="form-actions">
+              <div class="form-actions form-actions-between">
+                <button id="documentos-config-clear" class="secondary-button" type="button">Limpar dados</button>
                 <button id="documentos-config-save" class="primary-button" type="submit">Salvar configuração</button>
               </div>
             </form>
@@ -545,14 +559,14 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.0"></script>
-  <script src="./js/api.js?v=0.9.0"></script>
-  <script src="./js/audiencias.js?v=0.9.0"></script>
-  <script src="./js/destinatarios.js?v=0.9.0"></script>
-  <script src="./js/documentos.js?v=0.9.0"></script>
-  <script src="./js/dashboard.js?v=0.9.0"></script>
-  <script src="./js/auth.js?v=0.9.0"></script>
-  <script src="./js/session.js?v=0.9.0"></script>
+  <script src="./js/config.js?v=0.9.1"></script>
+  <script src="./js/api.js?v=0.9.1"></script>
+  <script src="./js/audiencias.js?v=0.9.1"></script>
+  <script src="./js/destinatarios.js?v=0.9.1"></script>
+  <script src="./js/documentos.js?v=0.9.1"></script>
+  <script src="./js/dashboard.js?v=0.9.1"></script>
+  <script src="./js/auth.js?v=0.9.1"></script>
+  <script src="./js/session.js?v=0.9.1"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

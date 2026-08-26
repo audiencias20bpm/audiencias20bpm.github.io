@@ -217,3 +217,14 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - preserva RG, CPF e Nome como dados fixos;
 - prepara as abas CONFIGURACOES e OFICIOS no backend;
 - não gera PDF nem envia WhatsApp nesta fase.
+
+
+## v0.9.1 — Nome de guerra do signatário
+
+- mantém o nome completo do signatário como texto puro;
+- adiciona marcação separada do nome de guerra para renderização em negrito no ofício;
+- permite selecionar o trecho e usar botão visível em desktop/mobile;
+- aceita Ctrl+B e Ctrl+N no desktop;
+- adiciona prévia da assinatura;
+- adiciona botão Limpar dados para facilitar mudança de comando;
+- não gera PDF nem envia WhatsApp nesta fase.
