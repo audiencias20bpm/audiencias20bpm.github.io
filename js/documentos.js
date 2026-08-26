@@ -3,6 +3,9 @@
 
   var TOKEN_STORAGE_KEY = 'audiencias_session_token';
   var currentConfig_ = null;
+  var generationAudiences_ = [];
+  var selectedGenerationAudience_ = null;
+  var selectedGenerationMilitary_ = null;
 
   function isObject_(value) { return value !== null && typeof value === 'object'; }
   function isSuccess_(response) {
@@ -154,16 +157,19 @@
   function renderHome_(config) {
     var home = document.getElementById('documentos-home');
     var form = document.getElementById('documentos-config-form');
+    var generateView = document.getElementById('documentos-generate-view');
     var subtitle = document.getElementById('documentos-view-subtitle');
     var status = document.getElementById('documentos-config-status');
     if (!config || !config.configurada) {
       if (home) home.hidden = true;
+      if (generateView) generateView.hidden = true;
       if (form) form.hidden = false;
       if (subtitle) subtitle.textContent = 'Faça a configuração inicial para preparar a numeração e o signatário dos ofícios.';
       if (status) status.textContent = 'Configuração inicial';
       return;
     }
     if (form) form.hidden = true;
+    if (generateView) generateView.hidden = true;
     if (home) home.hidden = false;
     if (subtitle) subtitle.textContent = 'Gerencie a emissão dos ofícios vinculados às audiências.';
     if (status) status.textContent = 'Configurado';
@@ -175,8 +181,10 @@
   function showConfig_() {
     var home = document.getElementById('documentos-home');
     var form = document.getElementById('documentos-config-form');
+    var generateView = document.getElementById('documentos-generate-view');
     var subtitle = document.getElementById('documentos-view-subtitle');
     if (home) home.hidden = true;
+    if (generateView) generateView.hidden = true;
     if (form) form.hidden = false;
     if (subtitle) subtitle.textContent = 'Configuração da numeração anual e do signatário padrão.';
     setError_(''); setSuccess_('');
@@ -184,6 +192,8 @@
 
   function showHome_() {
     if (!currentConfig_ || !currentConfig_.configurada) { showConfig_(); return; }
+    var generateView = document.getElementById('documentos-generate-view');
+    if (generateView) generateView.hidden = true;
     setError_(''); setSuccess_('');
     renderHome_(currentConfig_);
   }
@@ -260,6 +270,238 @@
       if (button) { button.disabled = false; button.textContent = 'Salvar configuração'; }
     });
   }
+  function formatDateTimePt_(value) {
+    if (!value) return '—';
+    var date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return new Intl.DateTimeFormat('pt-BR', {
+      timeZone: 'America/Belem', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    }).format(date);
+  }
+
+  function todayInputValue_() {
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = String(now.getMonth() + 1).padStart(2, '0');
+    var day = String(now.getDate()).padStart(2, '0');
+    return year + '-' + month + '-' + day;
+  }
+
+  function formatLongDate_(value) {
+    if (!value) return '—';
+    var parts = String(value).split('-');
+    if (parts.length !== 3) return value;
+    var months = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+    var monthIndex = Number(parts[1]) - 1;
+    if (monthIndex < 0 || monthIndex > 11) return value;
+    return Number(parts[2]) + ' de ' + months[monthIndex] + ' de ' + parts[0];
+  }
+
+  function setGenerateError_(message) {
+    var el = document.getElementById('documentos-generate-error');
+    if (!el) return;
+    el.hidden = !message;
+    el.textContent = message || '';
+  }
+
+  function setGenerateLoading_(loading) {
+    var el = document.getElementById('documentos-generate-loading');
+    if (el) el.hidden = !loading;
+  }
+
+  function setElementText_(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = value || '—';
+  }
+
+  function recipientDisplay_(item) {
+    var parts = [];
+    if (item && item.posto_graduacao) parts.push(item.posto_graduacao);
+    if (item && item.rg) parts.push('RG ' + item.rg);
+    if (item && item.nome) parts.push(item.nome);
+    return parts.join(' ') || 'Militar';
+  }
+
+  function renderGenerateSignatory_() {
+    var target = document.getElementById('documentos-preview-signatario');
+    if (!target || !currentConfig_) return;
+    var name = String(currentConfig_.signatario_nome || '').trim();
+    var war = String(currentConfig_.signatario_nome_guerra || '').trim();
+    var prefix = [];
+    if (currentConfig_.signatario_posto_graduacao) prefix.push(currentConfig_.signatario_posto_graduacao);
+    if (currentConfig_.signatario_rg) prefix.push('RG ' + currentConfig_.signatario_rg);
+    var prefixText = prefix.length ? ' - ' + prefix.join(' ') : '';
+    if (!name) { target.textContent = '—'; return; }
+    if (!war) { target.textContent = name + prefixText; return; }
+    var lowerName = name.toLocaleLowerCase('pt-BR');
+    var lowerWar = war.toLocaleLowerCase('pt-BR');
+    var idx = lowerName.indexOf(lowerWar);
+    if (idx < 0) { target.textContent = name + prefixText; return; }
+    target.innerHTML = escapeHtml_(name.slice(0, idx)) + '<strong>' + escapeHtml_(name.slice(idx, idx + war.length)) + '</strong>' + escapeHtml_(name.slice(idx + war.length) + prefixText);
+  }
+
+  function updateGeneratePreview_() {
+    var preview = document.getElementById('documentos-preview');
+    var empty = document.getElementById('documentos-preview-empty');
+    if (!selectedGenerationAudience_ || !selectedGenerationMilitary_) {
+      if (preview) preview.hidden = true;
+      if (empty) empty.hidden = false;
+      return;
+    }
+    if (preview) preview.hidden = false;
+    if (empty) empty.hidden = true;
+
+    var dateInput = document.getElementById('documentos-data-emissao');
+    var destination = document.getElementById('documentos-destino-judicial');
+    var optional = document.getElementById('documentos-trecho-opcional');
+    var number = document.getElementById('documentos-numero-preview');
+
+    setElementText_('documentos-preview-data', formatLongDate_(dateInput ? dateInput.value : ''));
+    setElementText_('documentos-preview-numero', number ? number.value : '—');
+    setElementText_('documentos-preview-destino', destination && destination.value.trim() ? destination.value.trim() : '[Informe o destinatário do ofício]');
+    setElementText_('documentos-preview-militar', recipientDisplay_(selectedGenerationMilitary_));
+    setElementText_('documentos-preview-processo', selectedGenerationAudience_.processo || '—');
+    setElementText_('documentos-preview-cargo', currentConfig_ && currentConfig_.signatario_cargo ? currentConfig_.signatario_cargo : '—');
+    renderGenerateSignatory_();
+
+    var optionalEl = document.getElementById('documentos-preview-complemento');
+    if (optionalEl) {
+      var text = optional ? optional.value.trim() : '';
+      optionalEl.textContent = text ? ' ' + text : '';
+    }
+  }
+
+  function fillGenerationAudienceSummary_() {
+    var summary = document.getElementById('documentos-audiencia-resumo');
+    if (!selectedGenerationAudience_) {
+      if (summary) summary.hidden = true;
+      return;
+    }
+    if (summary) summary.hidden = false;
+    setElementText_('documentos-resumo-processo', selectedGenerationAudience_.processo || '—');
+    setElementText_('documentos-resumo-data', formatDateTimePt_(selectedGenerationAudience_.data_hora));
+    setElementText_('documentos-resumo-local', selectedGenerationAudience_.local || '—');
+  }
+
+  function fillGenerationMilitarySummary_() {
+    var summary = document.getElementById('documentos-militar-resumo');
+    if (!selectedGenerationMilitary_) {
+      if (summary) summary.hidden = true;
+      return;
+    }
+    if (summary) summary.hidden = false;
+    setElementText_('documentos-resumo-posto', selectedGenerationMilitary_.posto_graduacao || 'Não cadastrado');
+    setElementText_('documentos-resumo-rg', selectedGenerationMilitary_.rg ? 'RG ' + selectedGenerationMilitary_.rg : '—');
+    setElementText_('documentos-resumo-whatsapp', selectedGenerationMilitary_.telefone || 'Não informado');
+  }
+
+  function populateMilitarySelect_() {
+    var select = document.getElementById('documentos-militar-select');
+    if (!select) return;
+    select.textContent = '';
+    selectedGenerationMilitary_ = null;
+    fillGenerationMilitarySummary_();
+    var recipients = selectedGenerationAudience_ && Array.isArray(selectedGenerationAudience_.destinatarios) ? selectedGenerationAudience_.destinatarios : [];
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = recipients.length ? 'Selecione o militar...' : 'Esta audiência não possui militar vinculado';
+    select.appendChild(placeholder);
+    select.disabled = recipients.length === 0;
+    recipients.forEach(function (item, index) {
+      var option = document.createElement('option');
+      option.value = String(index);
+      option.textContent = recipientDisplay_(item);
+      select.appendChild(option);
+    });
+    updateGeneratePreview_();
+  }
+
+  function onAudienceChange_() {
+    var select = document.getElementById('documentos-audiencia-select');
+    var index = select ? parseInt(select.value, 10) : NaN;
+    selectedGenerationAudience_ = Number.isInteger(index) ? generationAudiences_[index] : null;
+    fillGenerationAudienceSummary_();
+    populateMilitarySelect_();
+  }
+
+  function onMilitaryChange_() {
+    var select = document.getElementById('documentos-militar-select');
+    var index = select ? parseInt(select.value, 10) : NaN;
+    var recipients = selectedGenerationAudience_ && Array.isArray(selectedGenerationAudience_.destinatarios) ? selectedGenerationAudience_.destinatarios : [];
+    selectedGenerationMilitary_ = Number.isInteger(index) ? recipients[index] : null;
+    fillGenerationMilitarySummary_();
+    updateGeneratePreview_();
+  }
+
+  function populateAudienceSelect_() {
+    var select = document.getElementById('documentos-audiencia-select');
+    if (!select) return;
+    select.textContent = '';
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = generationAudiences_.length ? 'Selecione uma audiência...' : 'Nenhuma audiência disponível';
+    select.appendChild(placeholder);
+    generationAudiences_.forEach(function (item, index) {
+      var option = document.createElement('option');
+      option.value = String(index);
+      var parts = [];
+      if (item.data_hora) parts.push(formatDateTimePt_(item.data_hora));
+      if (item.processo) parts.push('Processo ' + item.processo);
+      if (item.assunto) parts.push(item.assunto);
+      option.textContent = parts.join(' • ') || item.codigo || ('Audiência ' + (index + 1));
+      select.appendChild(option);
+    });
+  }
+
+  function loadGenerationAudiences_() {
+    var token = sessionStorage.getItem(TOKEN_STORAGE_KEY) || '';
+    if (!token) { handleExpiredSession_(); return Promise.resolve(false); }
+    setGenerateLoading_(true);
+    setGenerateError_('');
+    return window.Api.post('audiencias_list', { token: token }).then(function (response) {
+      if (!isSuccess_(response)) {
+        var code = getErrorCode_(response);
+        if (code === 'TOKEN_AUSENTE' || code.indexOf('SESSAO_') === 0) { handleExpiredSession_(); return false; }
+        throw new Error(getSafeMessage_(response, 'Não foi possível carregar as audiências.'));
+      }
+      var data = getData_(response);
+      updateExpiry_(data);
+      generationAudiences_ = Array.isArray(data.audiencias) ? data.audiencias.slice() : [];
+      populateAudienceSelect_();
+      return true;
+    }).catch(function (error) {
+      setGenerateError_(error && error.message ? error.message : 'Não foi possível carregar as audiências.');
+      return false;
+    }).finally(function () { setGenerateLoading_(false); });
+  }
+
+  function showGenerate_() {
+    if (!currentConfig_ || !currentConfig_.configurada) { showConfig_(); return; }
+    var home = document.getElementById('documentos-home');
+    var form = document.getElementById('documentos-config-form');
+    var generateView = document.getElementById('documentos-generate-view');
+    var subtitle = document.getElementById('documentos-view-subtitle');
+    if (home) home.hidden = true;
+    if (form) form.hidden = true;
+    if (generateView) generateView.hidden = false;
+    if (subtitle) subtitle.textContent = 'Prepare o conteúdo do ofício e revise a prévia antes da geração do PDF.';
+    setError_(''); setSuccess_(''); setGenerateError_('');
+    selectedGenerationAudience_ = null;
+    selectedGenerationMilitary_ = null;
+    var dateInput = document.getElementById('documentos-data-emissao');
+    if (dateInput && !dateInput.value) dateInput.value = todayInputValue_();
+    var number = document.getElementById('documentos-numero-preview');
+    if (number && currentConfig_) number.value = String(currentConfig_.oficio_proximo_numero || 0).padStart(3, '0') + '/' + currentConfig_.oficio_ano;
+    var destination = document.getElementById('documentos-destino-judicial');
+    var optional = document.getElementById('documentos-trecho-opcional');
+    if (destination) destination.value = '';
+    if (optional) optional.value = '';
+    fillGenerationAudienceSummary_();
+    fillGenerationMilitarySummary_();
+    updateGeneratePreview_();
+    loadGenerationAudiences_();
+  }
+
   function open() {
     var dashboard = document.getElementById('dashboard-home');
     var audiencias = document.getElementById('audiencias-view');
@@ -288,6 +530,14 @@
     var clear = document.getElementById('documentos-config-clear');
     var openConfig = document.getElementById('documentos-open-config');
     var closeConfig = document.getElementById('documentos-close-config');
+    var generate = document.getElementById('documentos-generate');
+    var generateBack = document.getElementById('documentos-generate-back');
+    var audienceSelect = document.getElementById('documentos-audiencia-select');
+    var militarySelect = document.getElementById('documentos-militar-select');
+    var previewRefresh = document.getElementById('documentos-preview-refresh');
+    var issueDate = document.getElementById('documentos-data-emissao');
+    var destination = document.getElementById('documentos-destino-judicial');
+    var optional = document.getElementById('documentos-trecho-opcional');
     if (backButton) backButton.addEventListener('click', back);
     if (form) form.addEventListener('submit', submit_);
     if (year) year.addEventListener('input', updateNextNumber_);
@@ -308,7 +558,13 @@
     if (clear) clear.addEventListener('click', clearSignatory_);
     if (openConfig) openConfig.addEventListener('click', showConfig_);
     if (closeConfig) closeConfig.addEventListener('click', showHome_);
+    if (generate) generate.addEventListener('click', showGenerate_);
+    if (generateBack) generateBack.addEventListener('click', showHome_);
+    if (audienceSelect) audienceSelect.addEventListener('change', onAudienceChange_);
+    if (militarySelect) militarySelect.addEventListener('change', onMilitaryChange_);
+    if (previewRefresh) previewRefresh.addEventListener('click', updateGeneratePreview_);
+    [issueDate, destination, optional].forEach(function (element) { if (element) element.addEventListener('input', updateGeneratePreview_); });
   }
   document.addEventListener('DOMContentLoaded', bind_);
-  window.Documentos = Object.freeze({ open: open, back: back, reload: load_, showConfig: showConfig_, showHome: showHome_ });
+  window.Documentos = Object.freeze({ open: open, back: back, reload: load_, showConfig: showConfig_, showHome: showHome_, showGenerate: showGenerate_ });
 }());

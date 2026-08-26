@@ -238,3 +238,16 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - Instalações ainda não configuradas continuam abrindo diretamente a configuração inicial.
 - Geração de PDF e histórico permanecem preparados visualmente para as próximas etapas, sem funções simuladas.
 - Nenhuma alteração de backend nesta versão.
+
+
+## v0.9.4 — Preparação e prévia de Ofícios
+
+- habilita a ação **Gerar ofício** no painel operacional;
+- carrega as audiências já cadastradas sem criar nova rota;
+- permite selecionar um militar vinculado à audiência;
+- preenche automaticamente processo, data, local, posto/graduação, RG e WhatsApp disponíveis;
+- usa a próxima numeração configurada apenas como prévia, sem consumi-la;
+- solicita somente o destinatário judicial e, opcionalmente, o trecho complementar em vermelho;
+- monta prévia do conteúdo com texto-base padronizado e assinatura configurada;
+- mantém a geração de PDF desabilitada até a próxima fase;
+- não altera o Google Apps Script nesta versão.

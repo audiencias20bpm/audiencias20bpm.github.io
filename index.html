@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.3">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.3">
+  <link rel="manifest" href="./manifest.json?v=0.9.4">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.4">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -454,8 +454,8 @@
                     <span class="module-card-badge">Ofício</span>
                     <h3>Gerar ofício</h3>
                     <p>Selecione uma audiência e prepare os ofícios dos militares convocados.</p>
-                    <button id="documentos-generate" class="primary-button" type="button" disabled aria-disabled="true">Gerar ofício</button>
-                    <small>Será habilitado na etapa de geração do PDF.</small>
+                    <button id="documentos-generate" class="primary-button" type="button">Gerar ofício</button>
+                    <small>Selecione a audiência, confira o militar e revise a prévia antes da geração do PDF.</small>
                   </article>
                   <article class="documents-action-card">
                     <span class="module-card-badge">Consulta</span>
@@ -473,6 +473,100 @@
                   </article>
                 </div>
               </section>
+            </section>
+
+            <section id="documentos-generate-view" class="document-generate-view" hidden>
+              <div class="documents-config-toolbar">
+                <div>
+                  <p class="dashboard-kicker">Preparação</p>
+                  <h3>Gerar ofício</h3>
+                  <p>Selecione a audiência e o militar. O sistema preencherá automaticamente o que já estiver cadastrado.</p>
+                </div>
+                <button id="documentos-generate-back" class="secondary-button compact-button" type="button">← Voltar aos Ofícios</button>
+              </div>
+
+              <div id="documentos-generate-loading" class="module-state compact-state" role="status" aria-live="polite" hidden>
+                <div class="validation-spinner" aria-hidden="true"></div><strong>Carregando audiências...</strong>
+              </div>
+              <div id="documentos-generate-error" class="module-error" role="alert" hidden></div>
+
+              <div class="document-generate-grid">
+                <section class="document-generate-form-card">
+                  <div class="detail-section-heading"><div><p class="dashboard-kicker">1. Audiência</p><h3>Selecione a audiência</h3></div></div>
+                  <div class="form-group">
+                    <label for="documentos-audiencia-select">Audiência</label>
+                    <select id="documentos-audiencia-select">
+                      <option value="">Selecione uma audiência...</option>
+                    </select>
+                  </div>
+
+                  <div id="documentos-audiencia-resumo" class="document-selection-summary" hidden>
+                    <div><span>Processo</span><strong id="documentos-resumo-processo">—</strong></div>
+                    <div><span>Data e hora</span><strong id="documentos-resumo-data">—</strong></div>
+                    <div><span>Local</span><strong id="documentos-resumo-local">—</strong></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="documentos-militar-select">Militar</label>
+                    <select id="documentos-militar-select" disabled>
+                      <option value="">Selecione primeiro a audiência...</option>
+                    </select>
+                    <small class="field-help">Cada militar terá seu próprio ofício e confirmação individual.</small>
+                  </div>
+
+                  <div id="documentos-militar-resumo" class="document-selection-summary" hidden>
+                    <div><span>Posto/Graduação</span><strong id="documentos-resumo-posto">—</strong></div>
+                    <div><span>RG</span><strong id="documentos-resumo-rg">—</strong></div>
+                    <div><span>WhatsApp</span><strong id="documentos-resumo-whatsapp">—</strong></div>
+                  </div>
+
+                  <div class="detail-section-heading document-step-heading"><div><p class="dashboard-kicker">2. Dados variáveis</p><h3>Complete somente o necessário</h3></div></div>
+                  <div class="form-grid two-columns">
+                    <div class="form-group">
+                      <label for="documentos-data-emissao">Data do ofício</label>
+                      <input id="documentos-data-emissao" type="date">
+                    </div>
+                    <div class="form-group">
+                      <label for="documentos-numero-preview">Número previsto</label>
+                      <input id="documentos-numero-preview" type="text" readonly aria-readonly="true">
+                      <small class="field-help">A prévia não consome a numeração.</small>
+                    </div>
+                    <div class="form-group full-width">
+                      <label for="documentos-destino-judicial">Destinatário do ofício</label>
+                      <input id="documentos-destino-judicial" type="text" maxlength="300" autocomplete="off" placeholder="Ex.: Ao Exmo. Sr. Dr. Juiz de Direito, Titular da 3ª Vara Criminal de Ananindeua.">
+                    </div>
+                    <div class="form-group full-width">
+                      <label for="documentos-trecho-opcional">Trecho complementar <span class="label-optional">(opcional)</span></label>
+                      <textarea id="documentos-trecho-opcional" rows="3" maxlength="500" placeholder="Ex.: onde configura como réu: NOME DO RÉU."></textarea>
+                      <small class="field-help">Quando preenchido, este trecho aparecerá em vermelho ao final do corpo do ofício.</small>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="document-preview-card" aria-labelledby="documentos-preview-title">
+                  <div class="detail-section-heading"><div><p class="dashboard-kicker">Prévia</p><h3 id="documentos-preview-title">Conteúdo do ofício</h3></div></div>
+                  <div id="documentos-preview-empty" class="document-preview-empty">Selecione uma audiência e um militar para montar a prévia.</div>
+                  <article id="documentos-preview" class="oficio-preview" hidden>
+                    <div class="oficio-preview-top">
+                      <div><strong>GOVERNO DO ESTADO DO PARÁ</strong><br>SECRETARIA DE ESTADO DE SEGURANÇA PÚBLICA E DEFESA SOCIAL<br>POLÍCIA MILITAR DO PARÁ<br><strong>20º BATALHÃO DE POLÍCIA MILITAR – BATALHÃO COMUNITÁRIO</strong></div>
+                    </div>
+                    <p class="oficio-preview-date">Belém, <span id="documentos-preview-data">—</span>.</p>
+                    <p>OFÍCIO <strong id="documentos-preview-numero">—</strong> – 1ª Seção</p>
+                    <p id="documentos-preview-destino">—</p>
+                    <p><strong>Assunto: Apresentação de Praças.</strong></p>
+                    <p class="oficio-preview-saudacao">Senhor Juiz,</p>
+                    <p class="oficio-preview-body">Honrado em cumprimentar V. Ex.ª apresento o policial militar <strong id="documentos-preview-militar">—</strong>, para ser ouvido na qualidade de testemunha nos autos do processo nº. <strong id="documentos-preview-processo">—</strong><span id="documentos-preview-complemento" class="oficio-optional-text"></span></p>
+                    <p class="oficio-preview-respect">Respeitosamente,</p>
+                    <p class="oficio-preview-signature"><span id="documentos-preview-signatario">—</span><br><span id="documentos-preview-cargo">—</span></p>
+                    <div class="oficio-preview-footer"><strong>20º BATALHÃO DE POLÍCIA MILITAR – BATALHÃO COMUNITÁRIO</strong><br>Tv. Pe. Eutiquio, nº 3000, Condor - Belém /PA. CEP: 66045-225.<br>Contato: email: oficio2024bpm@gmail.com</div>
+                  </article>
+                  <div class="document-preview-actions">
+                    <button id="documentos-preview-refresh" class="secondary-button" type="button">Atualizar prévia</button>
+                    <button class="primary-button" type="button" disabled aria-disabled="true">Gerar PDF</button>
+                  </div>
+                  <small class="field-help">Nesta etapa, a prévia não grava ofício nem consome número. O PDF será habilitado na próxima fase.</small>
+                </section>
+              </div>
             </section>
 
             <form id="documentos-config-form" class="document-config-card" novalidate hidden>
@@ -612,14 +706,14 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.3"></script>
-  <script src="./js/api.js?v=0.9.3"></script>
-  <script src="./js/audiencias.js?v=0.9.3"></script>
-  <script src="./js/destinatarios.js?v=0.9.3"></script>
-  <script src="./js/documentos.js?v=0.9.3"></script>
-  <script src="./js/dashboard.js?v=0.9.3"></script>
-  <script src="./js/auth.js?v=0.9.3"></script>
-  <script src="./js/session.js?v=0.9.3"></script>
+  <script src="./js/config.js?v=0.9.4"></script>
+  <script src="./js/api.js?v=0.9.4"></script>
+  <script src="./js/audiencias.js?v=0.9.4"></script>
+  <script src="./js/destinatarios.js?v=0.9.4"></script>
+  <script src="./js/documentos.js?v=0.9.4"></script>
+  <script src="./js/dashboard.js?v=0.9.4"></script>
+  <script src="./js/auth.js?v=0.9.4"></script>
+  <script src="./js/session.js?v=0.9.4"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
