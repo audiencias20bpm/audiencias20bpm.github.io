@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.4">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.4">
+  <link rel="manifest" href="./manifest.json?v=0.9.5">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.5">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -515,9 +515,15 @@
                   </div>
 
                   <div id="documentos-militar-resumo" class="document-selection-summary" hidden>
-                    <div><span>Posto/Graduação</span><strong id="documentos-resumo-posto">—</strong></div>
+                    <div><span>Posto/Graduação atual</span><strong id="documentos-resumo-posto">—</strong></div>
                     <div><span>RG</span><strong id="documentos-resumo-rg">—</strong></div>
                     <div><span>WhatsApp</span><strong id="documentos-resumo-whatsapp">—</strong></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="documentos-militar-posto">Posto/Graduação do militar</label>
+                    <input id="documentos-militar-posto" type="text" maxlength="80" list="postos-graduacoes" autocomplete="off" placeholder="Ex.: SD, CB, 3º SGT, 2º TEN..." disabled>
+                    <small class="field-help">Preenchido automaticamente quando cadastrado. Se houver promoção ou estiver vazio, informe o posto/graduação atual; o cadastro será atualizado ao gerar o PDF.</small>
                   </div>
 
                   <div class="detail-section-heading document-step-heading"><div><p class="dashboard-kicker">2. Dados variáveis</p><h3>Complete somente o necessário</h3></div></div>
@@ -547,24 +553,34 @@
                   <div class="detail-section-heading"><div><p class="dashboard-kicker">Prévia</p><h3 id="documentos-preview-title">Conteúdo do ofício</h3></div></div>
                   <div id="documentos-preview-empty" class="document-preview-empty">Selecione uma audiência e um militar para montar a prévia.</div>
                   <article id="documentos-preview" class="oficio-preview" hidden>
-                    <div class="oficio-preview-top">
-                      <div><strong>GOVERNO DO ESTADO DO PARÁ</strong><br>SECRETARIA DE ESTADO DE SEGURANÇA PÚBLICA E DEFESA SOCIAL<br>POLÍCIA MILITAR DO PARÁ<br><strong>20º BATALHÃO DE POLÍCIA MILITAR – BATALHÃO COMUNITÁRIO</strong></div>
-                    </div>
+                    <header class="oficio-preview-header">
+                      <img class="oficio-preview-emblem oficio-preview-emblem-left" src="./assets/oficios/brasao-estado-para.png" alt="Brasão do Estado do Pará">
+                      <div class="oficio-preview-top">
+                        <div>GOVERNO DO ESTADO DO PARÁ</div>
+                        <div>SECRETARIA DE ESTADO DE SEGURANÇA PÚBLICA E DEFESA SOCIAL</div>
+                        <div>POLÍCIA MILITAR DO PARÁ</div>
+                        <div class="oficio-preview-unit">20º BATALHÃO DE POLÍCIA MILITAR – BATALHÃO COMUNITÁRIO</div>
+                      </div>
+                      <img class="oficio-preview-emblem oficio-preview-emblem-right" src="./assets/oficios/brasao-pmpa.png" alt="Brasão da Polícia Militar do Pará">
+                    </header>
                     <p class="oficio-preview-date">Belém, <span id="documentos-preview-data">—</span>.</p>
-                    <p>OFÍCIO <strong id="documentos-preview-numero">—</strong> – 1ª Seção</p>
+                    <p>OFÍCIO <span id="documentos-preview-numero">—</span> – 1ª Seção</p>
                     <p id="documentos-preview-destino">—</p>
-                    <p><strong>Assunto: Apresentação de Praças.</strong></p>
+                    <p class="oficio-preview-subject"><strong>Assunto: Apresentação de Praças.</strong></p>
                     <p class="oficio-preview-saudacao">Senhor Juiz,</p>
-                    <p class="oficio-preview-body">Honrado em cumprimentar V. Ex.ª apresento o policial militar <strong id="documentos-preview-militar">—</strong>, para ser ouvido na qualidade de testemunha nos autos do processo nº. <strong id="documentos-preview-processo">—</strong><span id="documentos-preview-complemento" class="oficio-optional-text"></span></p>
+                    <p class="oficio-preview-body">Honrado em cumprimentar V. Ex.ª apresento o policial militar <span id="documentos-preview-militar">—</span>, para ser ouvido na qualidade de testemunha nos autos do processo nº. <span id="documentos-preview-processo">—</span><span id="documentos-preview-complemento" class="oficio-optional-text"></span></p>
                     <p class="oficio-preview-respect">Respeitosamente,</p>
-                    <p class="oficio-preview-signature"><span id="documentos-preview-signatario">—</span><br><span id="documentos-preview-cargo">—</span></p>
-                    <div class="oficio-preview-footer"><strong>20º BATALHÃO DE POLÍCIA MILITAR – BATALHÃO COMUNITÁRIO</strong><br>Tv. Pe. Eutiquio, nº 3000, Condor - Belém /PA. CEP: 66045-225.<br>Contato: email: oficio2024bpm@gmail.com</div>
+                    <div class="oficio-preview-signature-row">
+                      <img class="oficio-preview-footer-emblem" src="./assets/oficios/brasao-20bpm.png" alt="Brasão do 20º BPM">
+                      <p class="oficio-preview-signature"><span id="documentos-preview-signatario">—</span><br><span id="documentos-preview-cargo">—</span></p>
+                    </div>
+                    <div class="oficio-preview-footer"><strong>20º BATALHÃO DE POLÍCIA MILITAR – BATALHÃO COMUNITÁRIO</strong><br>Tv. Pe. Eutiquio, nº 3000, Condor - Belém /PA. CEP: 66045-225. (esq. PSG. S. Antônio).<br>Contato: email: oficio2024bpm@gmail.com</div>
                   </article>
                   <div class="document-preview-actions">
                     <button id="documentos-preview-refresh" class="secondary-button" type="button">Atualizar prévia</button>
-                    <button class="primary-button" type="button" disabled aria-disabled="true">Gerar PDF</button>
+                    <button id="documentos-generate-pdf" class="primary-button" type="button">Gerar PDF</button>
                   </div>
-                  <small class="field-help">Nesta etapa, a prévia não grava ofício nem consome número. O PDF será habilitado na próxima fase.</small>
+                  <small class="field-help">Ao gerar, o sistema reserva o próximo número, grava o ofício no histórico, salva o PDF no Drive e baixa uma cópia no dispositivo.</small>
                 </section>
               </div>
             </section>
@@ -706,14 +722,14 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.4"></script>
-  <script src="./js/api.js?v=0.9.4"></script>
-  <script src="./js/audiencias.js?v=0.9.4"></script>
-  <script src="./js/destinatarios.js?v=0.9.4"></script>
-  <script src="./js/documentos.js?v=0.9.4"></script>
-  <script src="./js/dashboard.js?v=0.9.4"></script>
-  <script src="./js/auth.js?v=0.9.4"></script>
-  <script src="./js/session.js?v=0.9.4"></script>
+  <script src="./js/config.js?v=0.9.5"></script>
+  <script src="./js/api.js?v=0.9.5"></script>
+  <script src="./js/audiencias.js?v=0.9.5"></script>
+  <script src="./js/destinatarios.js?v=0.9.5"></script>
+  <script src="./js/documentos.js?v=0.9.5"></script>
+  <script src="./js/dashboard.js?v=0.9.5"></script>
+  <script src="./js/auth.js?v=0.9.5"></script>
+  <script src="./js/session.js?v=0.9.5"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

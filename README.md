@@ -251,3 +251,14 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - monta prévia do conteúdo com texto-base padronizado e assinatura configurada;
 - mantém a geração de PDF desabilitada até a próxima fase;
 - não altera o Google Apps Script nesta versão.
+
+
+## v0.9.5 — Ofício fiel ao modelo e geração de PDF
+
+- usa os três brasões extraídos do modelo oficial fornecido;
+- inclui campo editável de Posto/Graduação do militar, preenchido automaticamente quando disponível;
+- atualiza o Posto/Graduação cadastral quando alterado durante a emissão;
+- remove negrito indevido do militar, processo e número;
+- preserva negrito institucional do cabeçalho, Assunto e nome de guerra do signatário;
+- gera PDF A4 real no navegador, salva cópia no Google Drive via backend e baixa uma cópia no dispositivo;
+- reserva a numeração anual atomicamente antes da emissão e registra o ofício para histórico.

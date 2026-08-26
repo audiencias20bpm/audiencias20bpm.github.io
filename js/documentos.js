@@ -6,6 +6,8 @@
   var generationAudiences_ = [];
   var selectedGenerationAudience_ = null;
   var selectedGenerationMilitary_ = null;
+  var pendingOficioReservation_ = null;
+  var generationBusy_ = false;
 
   function isObject_(value) { return value !== null && typeof value === 'object'; }
   function isSuccess_(response) {
@@ -314,9 +316,15 @@
     if (el) el.textContent = value || '—';
   }
 
-  function recipientDisplay_(item) {
+  function getGenerationPost_() {
+    var input = document.getElementById('documentos-militar-posto');
+    return input ? String(input.value || '').trim() : '';
+  }
+
+  function recipientDisplay_(item, postoOverride) {
     var parts = [];
-    if (item && item.posto_graduacao) parts.push(item.posto_graduacao);
+    var posto = String(postoOverride || (item && item.posto_graduacao) || '').trim();
+    if (posto) parts.push(posto);
     if (item && item.rg) parts.push('RG ' + item.rg);
     if (item && item.nome) parts.push(item.nome);
     return parts.join(' ') || 'Militar';
@@ -359,7 +367,7 @@
     setElementText_('documentos-preview-data', formatLongDate_(dateInput ? dateInput.value : ''));
     setElementText_('documentos-preview-numero', number ? number.value : '—');
     setElementText_('documentos-preview-destino', destination && destination.value.trim() ? destination.value.trim() : '[Informe o destinatário do ofício]');
-    setElementText_('documentos-preview-militar', recipientDisplay_(selectedGenerationMilitary_));
+    setElementText_('documentos-preview-militar', recipientDisplay_(selectedGenerationMilitary_, getGenerationPost_()));
     setElementText_('documentos-preview-processo', selectedGenerationAudience_.processo || '—');
     setElementText_('documentos-preview-cargo', currentConfig_ && currentConfig_.signatario_cargo ? currentConfig_.signatario_cargo : '—');
     renderGenerateSignatory_();
@@ -387,12 +395,19 @@
     var summary = document.getElementById('documentos-militar-resumo');
     if (!selectedGenerationMilitary_) {
       if (summary) summary.hidden = true;
+      var postoInputVazio = document.getElementById('documentos-militar-posto');
+      if (postoInputVazio) { postoInputVazio.value = ''; postoInputVazio.disabled = true; }
       return;
     }
     if (summary) summary.hidden = false;
     setElementText_('documentos-resumo-posto', selectedGenerationMilitary_.posto_graduacao || 'Não cadastrado');
     setElementText_('documentos-resumo-rg', selectedGenerationMilitary_.rg ? 'RG ' + selectedGenerationMilitary_.rg : '—');
     setElementText_('documentos-resumo-whatsapp', selectedGenerationMilitary_.telefone || 'Não informado');
+    var postoInput = document.getElementById('documentos-militar-posto');
+    if (postoInput) {
+      postoInput.disabled = false;
+      postoInput.value = selectedGenerationMilitary_.posto_graduacao || '';
+    }
   }
 
   function populateMilitarySelect_() {
@@ -400,6 +415,7 @@
     if (!select) return;
     select.textContent = '';
     selectedGenerationMilitary_ = null;
+    pendingOficioReservation_ = null;
     fillGenerationMilitarySummary_();
     var recipients = selectedGenerationAudience_ && Array.isArray(selectedGenerationAudience_.destinatarios) ? selectedGenerationAudience_.destinatarios : [];
     var placeholder = document.createElement('option');
@@ -420,6 +436,7 @@
     var select = document.getElementById('documentos-audiencia-select');
     var index = select ? parseInt(select.value, 10) : NaN;
     selectedGenerationAudience_ = Number.isInteger(index) ? generationAudiences_[index] : null;
+    pendingOficioReservation_ = null;
     fillGenerationAudienceSummary_();
     populateMilitarySelect_();
   }
@@ -429,6 +446,7 @@
     var index = select ? parseInt(select.value, 10) : NaN;
     var recipients = selectedGenerationAudience_ && Array.isArray(selectedGenerationAudience_.destinatarios) ? selectedGenerationAudience_.destinatarios : [];
     selectedGenerationMilitary_ = Number.isInteger(index) ? recipients[index] : null;
+    pendingOficioReservation_ = null;
     fillGenerationMilitarySummary_();
     updateGeneratePreview_();
   }
@@ -475,6 +493,344 @@
     }).finally(function () { setGenerateLoading_(false); });
   }
 
+  function setGenerateBusy_(busy) {
+    generationBusy_ = Boolean(busy);
+    var button = document.getElementById('documentos-generate-pdf');
+    if (button) {
+      button.disabled = generationBusy_;
+      button.setAttribute('aria-busy', generationBusy_ ? 'true' : 'false');
+      button.textContent = generationBusy_ ? 'Gerando PDF...' : 'Gerar PDF';
+    }
+  }
+
+  function validateGeneration_() {
+    if (!selectedGenerationAudience_) return 'Selecione a audiência.';
+    if (!selectedGenerationMilitary_ || !selectedGenerationMilitary_.id) return 'Selecione o militar.';
+    var posto = getGenerationPost_();
+    if (!posto) return 'Informe o Posto/Graduação atual do militar.';
+    var data = document.getElementById('documentos-data-emissao');
+    if (!data || !data.value) return 'Informe a data do ofício.';
+    var destino = document.getElementById('documentos-destino-judicial');
+    if (!destino || !destino.value.trim()) return 'Informe o destinatário do ofício.';
+    return '';
+  }
+
+  function updateMilitaryPostIfNeeded_() {
+    var posto = getGenerationPost_();
+    var atual = String(selectedGenerationMilitary_ && selectedGenerationMilitary_.posto_graduacao || '').trim();
+    if (!selectedGenerationMilitary_ || !selectedGenerationMilitary_.id || !posto || posto === atual) return Promise.resolve(true);
+    var token = sessionStorage.getItem(TOKEN_STORAGE_KEY) || '';
+    return window.Api.post('destinatarios_update', {
+      token: token,
+      id: selectedGenerationMilitary_.id,
+      posto_graduacao: posto,
+      telefone: selectedGenerationMilitary_.telefone || '',
+      unidade: selectedGenerationMilitary_.unidade || '',
+      status: selectedGenerationMilitary_.status || 'ATIVO'
+    }).then(function (response) {
+      if (!isSuccess_(response)) throw new Error(getSafeMessage_(response, 'Não foi possível atualizar o Posto/Graduação do militar.'));
+      var data = getData_(response);
+      updateExpiry_(data);
+      selectedGenerationMilitary_.posto_graduacao = posto;
+      setElementText_('documentos-resumo-posto', posto);
+      return true;
+    });
+  }
+
+  function reserveOficio_() {
+    if (pendingOficioReservation_) return Promise.resolve(pendingOficioReservation_);
+    var token = sessionStorage.getItem(TOKEN_STORAGE_KEY) || '';
+    var date = document.getElementById('documentos-data-emissao');
+    var destination = document.getElementById('documentos-destino-judicial');
+    var optional = document.getElementById('documentos-trecho-opcional');
+    return window.Api.post('oficios_reservar', {
+      token: token,
+      audiencia_id: selectedGenerationAudience_.id,
+      destinatario_id: selectedGenerationMilitary_.id,
+      data_emissao: date ? date.value : '',
+      destino_judicial: destination ? destination.value.trim() : '',
+      trecho_opcional: optional ? optional.value.trim() : '',
+      posto_graduacao: getGenerationPost_()
+    }).then(function (response) {
+      if (!isSuccess_(response)) {
+        var code = getErrorCode_(response);
+        if (code === 'TOKEN_AUSENTE' || code.indexOf('SESSAO_') === 0) { handleExpiredSession_(); throw new Error('Sessão expirada.'); }
+        throw new Error(getSafeMessage_(response, 'Não foi possível reservar o número do ofício.'));
+      }
+      var data = getData_(response);
+      updateExpiry_(data);
+      pendingOficioReservation_ = data.oficio || data.reserva || null;
+      if (!pendingOficioReservation_ || !pendingOficioReservation_.id) throw new Error('O servidor não devolveu a reserva do ofício.');
+      var number = document.getElementById('documentos-numero-preview');
+      if (number && pendingOficioReservation_.numero_formatado) number.value = pendingOficioReservation_.numero_formatado;
+      updateGeneratePreview_();
+      return pendingOficioReservation_;
+    });
+  }
+
+  function loadImage_(src) {
+    return new Promise(function (resolve, reject) {
+      var image = new Image();
+      image.onload = function () { resolve(image); };
+      image.onerror = function () { reject(new Error('Não foi possível carregar os brasões do ofício.')); };
+      image.src = src;
+    });
+  }
+
+  function splitWords_(segments) {
+    var words = [];
+    segments.forEach(function (segment) {
+      String(segment.text || '').trim().split(/\s+/).filter(Boolean).forEach(function (word) {
+        words.push({ text: word, color: segment.color || '#111111', bold: Boolean(segment.bold) });
+      });
+    });
+    return words;
+  }
+
+  function setCanvasFont_(ctx, size, bold) {
+    ctx.font = (bold ? '700 ' : '400 ') + size + 'px Arial, Helvetica, sans-serif';
+  }
+
+  function drawCenteredText_(ctx, text, x, y, size, bold, color) {
+    setCanvasFont_(ctx, size, bold);
+    ctx.fillStyle = color || '#111111';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText(String(text || ''), x, y);
+  }
+
+  function drawRichCentered_(ctx, segments, centerX, y, size) {
+    var widths = segments.map(function (seg) { setCanvasFont_(ctx, size, seg.bold); return ctx.measureText(seg.text).width; });
+    var x = centerX - widths.reduce(function (a, b) { return a + b; }, 0) / 2;
+    ctx.textAlign = 'left';
+    segments.forEach(function (seg, i) {
+      setCanvasFont_(ctx, size, seg.bold);
+      ctx.fillStyle = seg.color || '#111111';
+      ctx.fillText(seg.text, x, y);
+      x += widths[i];
+    });
+  }
+
+  function wrapSimpleText_(ctx, text, maxWidth, size, bold) {
+    setCanvasFont_(ctx, size, bold);
+    var words = String(text || '').split(/\s+/).filter(Boolean);
+    var lines = [];
+    var line = '';
+    words.forEach(function (word) {
+      var test = line ? line + ' ' + word : word;
+      if (line && ctx.measureText(test).width > maxWidth) { lines.push(line); line = word; }
+      else line = test;
+    });
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function drawJustifiedSegments_(ctx, segments, x, y, maxWidth, size, lineHeight, firstIndent) {
+    var words = splitWords_(segments);
+    var lines = [];
+    var current = [];
+    var lineIndex = 0;
+    words.forEach(function (word) {
+      var available = maxWidth - (lineIndex === 0 ? firstIndent : 0);
+      var width = 0;
+      current.forEach(function (w, i) { setCanvasFont_(ctx, size, w.bold); width += ctx.measureText(w.text).width + (i ? ctx.measureText(' ').width : 0); });
+      setCanvasFont_(ctx, size, word.bold);
+      var add = ctx.measureText(word.text).width + (current.length ? ctx.measureText(' ').width : 0);
+      if (current.length && width + add > available) { lines.push(current); current = [word]; lineIndex += 1; }
+      else current.push(word);
+    });
+    if (current.length) lines.push(current);
+
+    lines.forEach(function (line, idx) {
+      var indent = idx === 0 ? firstIndent : 0;
+      var available = maxWidth - indent;
+      var widths = line.map(function (w) { setCanvasFont_(ctx, size, w.bold); return ctx.measureText(w.text).width; });
+      var total = widths.reduce(function (a, b) { return a + b; }, 0);
+      var gap = line.length > 1 ? ctx.measureText(' ').width : 0;
+      if (idx < lines.length - 1 && line.length > 1) gap = Math.max(gap, (available - total) / (line.length - 1));
+      var px = x + indent;
+      ctx.textAlign = 'left';
+      line.forEach(function (w, wi) {
+        setCanvasFont_(ctx, size, w.bold);
+        ctx.fillStyle = w.color || '#111111';
+        ctx.fillText(w.text, px, y + idx * lineHeight);
+        px += widths[wi] + gap;
+      });
+    });
+    return y + Math.max(1, lines.length) * lineHeight;
+  }
+
+  function createOficioCanvas_() {
+    var canvas = document.createElement('canvas');
+    canvas.width = 1240;
+    canvas.height = 1754;
+    var ctx = canvas.getContext('2d');
+    var scale = canvas.width / 210;
+    function mm(value) { return value * scale; }
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    return Promise.all([
+      loadImage_('./assets/oficios/brasao-estado-para.png'),
+      loadImage_('./assets/oficios/brasao-pmpa.png'),
+      loadImage_('./assets/oficios/brasao-20bpm.png')
+    ]).then(function (images) {
+      var left = images[0], right = images[1], footerLogo = images[2];
+      var center = canvas.width / 2;
+      var black = '#111111';
+      ctx.drawImage(left, mm(6), mm(6), mm(14), mm(21));
+      ctx.drawImage(right, mm(190), mm(6), mm(14), mm(20.5));
+      drawCenteredText_(ctx, 'GOVERNO DO ESTADO DO PARÁ', center, mm(10), 20, false, black);
+      drawCenteredText_(ctx, 'SECRETARIA DE ESTADO DE SEGURANÇA PÚBLICA E DEFESA SOCIAL', center, mm(14), 19, false, black);
+      drawCenteredText_(ctx, 'POLÍCIA MILITAR DO PARÁ', center, mm(18), 19, false, black);
+      drawCenteredText_(ctx, '20º BATALHÃO DE POLÍCIA MILITAR – BATALHÃO COMUNITÁRIO', center, mm(22), 19, true, black);
+      ctx.strokeStyle = '#111111'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(mm(20), mm(25)); ctx.lineTo(mm(190), mm(25)); ctx.stroke();
+
+      var dateText = formatLongDate_(document.getElementById('documentos-data-emissao').value);
+      setCanvasFont_(ctx, 20, false); ctx.fillStyle = black; ctx.textAlign = 'right'; ctx.fillText('Belém, ' + dateText + '.', mm(185), mm(35));
+      ctx.textAlign = 'left'; ctx.fillText('OFÍCIO ' + document.getElementById('documentos-numero-preview').value + ' – 1ª Seção', mm(20), mm(44));
+
+      var destination = document.getElementById('documentos-destino-judicial').value.trim();
+      var destLines = wrapSimpleText_(ctx, destination, mm(170), 20, false);
+      destLines.forEach(function (line, i) { ctx.fillText(line, mm(20), mm(56) + i * 28); });
+      var y = mm(56) + destLines.length * 28 + mm(8);
+      setCanvasFont_(ctx, 20, true); ctx.fillText('Assunto: Apresentação de Praças.', mm(20), y); y += mm(24);
+      drawCenteredText_(ctx, 'Senhor Juiz,', center, y, 20, false, black); y += mm(18);
+
+      var posto = getGenerationPost_();
+      var military = recipientDisplay_(selectedGenerationMilitary_, posto);
+      var proc = String(selectedGenerationAudience_.processo || '').trim();
+      var optional = String(document.getElementById('documentos-trecho-opcional').value || '').trim();
+      var segments = [
+        { text: 'Honrado em cumprimentar V. Ex.ª apresento o policial militar ' },
+        { text: military },
+        { text: ', para ser ouvido na qualidade de testemunha nos autos do processo nº. ' },
+        { text: proc + (optional ? ',' : '.') }
+      ];
+      if (optional) segments.push({ text: optional, color: '#c62828' });
+      y = drawJustifiedSegments_(ctx, segments, mm(28), y, mm(154), 20, 31, mm(22));
+      y += mm(18);
+      drawCenteredText_(ctx, 'Respeitosamente,', center, y, 20, false, black); y += mm(42);
+
+      var name = String(currentConfig_.signatario_nome || '').trim();
+      var war = String(currentConfig_.signatario_nome_guerra || '').trim();
+      var signPost = String(currentConfig_.signatario_posto_graduacao || '').trim();
+      var signRg = String(currentConfig_.signatario_rg || '').trim();
+      var lowerName = name.toLocaleLowerCase('pt-BR');
+      var lowerWar = war.toLocaleLowerCase('pt-BR');
+      var warIndex = war ? lowerName.indexOf(lowerWar) : -1;
+      var signSegments = [];
+      if (warIndex >= 0) {
+        signSegments.push({ text: name.slice(0, warIndex), bold: false });
+        signSegments.push({ text: name.slice(warIndex, warIndex + war.length), bold: true });
+        signSegments.push({ text: name.slice(warIndex + war.length) + ' - ' + signPost + ' RG ' + signRg, bold: false });
+      } else signSegments.push({ text: name + ' - ' + signPost + ' RG ' + signRg, bold: false });
+      ctx.drawImage(footerLogo, mm(4), y - mm(8), mm(13), mm(18));
+      drawRichCentered_(ctx, signSegments, center, y, 20);
+      y += 30;
+      drawCenteredText_(ctx, currentConfig_.signatario_cargo || '', center, y, 20, false, black);
+
+      var footerY = mm(270);
+      drawCenteredText_(ctx, '20º BATALHÃO DE POLÍCIA MILITAR – BATALHÃO COMUNITÁRIO', center, footerY, 17, true, black);
+      drawCenteredText_(ctx, 'Tv. Pe. Eutiquio, nº 3000, Condor - Belém /PA. CEP: 66045-225. (esq. PSG. S. Antônio).', center, footerY + 23, 15, false, black);
+      drawCenteredText_(ctx, 'Contato: email: oficio2024bpm@gmail.com', center, footerY + 46, 15, false, black);
+      return canvas;
+    });
+  }
+
+  function concatBytes_(parts) {
+    var length = parts.reduce(function (sum, part) { return sum + part.length; }, 0);
+    var output = new Uint8Array(length); var offset = 0;
+    parts.forEach(function (part) { output.set(part, offset); offset += part.length; });
+    return output;
+  }
+
+  function textBytes_(text) { return new TextEncoder().encode(text); }
+
+  function jpegDataUrlToPdfBlob_(dataUrl, width, height) {
+    var base64 = dataUrl.split(',')[1] || '';
+    var binary = atob(base64); var jpg = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i += 1) jpg[i] = binary.charCodeAt(i);
+    var pageW = '595.28', pageH = '841.89';
+    var content = 'q\n' + pageW + ' 0 0 ' + pageH + ' 0 0 cm\n/Im0 Do\nQ\n';
+    var objects = [];
+    objects[1] = [textBytes_('<< /Type /Catalog /Pages 2 0 R >>')];
+    objects[2] = [textBytes_('<< /Type /Pages /Kids [3 0 R] /Count 1 >>')];
+    objects[3] = [textBytes_('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pageW + ' ' + pageH + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>')];
+    objects[4] = [textBytes_('<< /Type /XObject /Subtype /Image /Width ' + width + ' /Height ' + height + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpg.length + ' >>\nstream\n'), jpg, textBytes_('\nendstream')];
+    objects[5] = [textBytes_('<< /Length ' + textBytes_(content).length + ' >>\nstream\n' + content + 'endstream')];
+    var chunks = [textBytes_('%PDF-1.4\n%âãÏÓ\n')];
+    var offsets = [0]; var currentOffset = chunks[0].length;
+    for (var n = 1; n <= 5; n += 1) {
+      offsets[n] = currentOffset;
+      var head = textBytes_(n + ' 0 obj\n'); var tail = textBytes_('\nendobj\n');
+      var body = concatBytes_(objects[n]); var obj = concatBytes_([head, body, tail]);
+      chunks.push(obj); currentOffset += obj.length;
+    }
+    var xrefOffset = currentOffset;
+    var xref = 'xref\n0 6\n0000000000 65535 f \n';
+    for (var r = 1; r <= 5; r += 1) xref += String(offsets[r]).padStart(10, '0') + ' 00000 n \n';
+    xref += 'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xrefOffset + '\n%%EOF';
+    chunks.push(textBytes_(xref));
+    return new Blob([concatBytes_(chunks)], { type: 'application/pdf' });
+  }
+
+  function blobToBase64_(blob) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(String(reader.result || '').split(',')[1] || ''); };
+      reader.onerror = function () { reject(new Error('Não foi possível preparar o PDF para armazenamento.')); };
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  function downloadBlob_(blob, fileName) {
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a'); link.href = url; link.download = fileName;
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+  }
+
+  function finalizeOficioPdf_(reservation, blob, fileName) {
+    var token = sessionStorage.getItem(TOKEN_STORAGE_KEY) || '';
+    return blobToBase64_(blob).then(function (base64) {
+      return window.Api.post('oficios_pdf_finalizar', { token: token, oficio_id: reservation.id, pdf_nome: fileName, pdf_base64: base64 });
+    }).then(function (response) {
+      if (!isSuccess_(response)) throw new Error(getSafeMessage_(response, 'Não foi possível salvar o PDF no Drive.'));
+      var data = getData_(response); updateExpiry_(data); return data;
+    });
+  }
+
+  function generatePdf_() {
+    if (generationBusy_) return;
+    setGenerateError_(''); setSuccess_('');
+    var validation = validateGeneration_();
+    if (validation) { setGenerateError_(validation); return; }
+    setGenerateBusy_(true);
+    updateGeneratePreview_();
+    updateMilitaryPostIfNeeded_()
+      .then(reserveOficio_)
+      .then(function (reservation) {
+        return createOficioCanvas_().then(function (canvas) {
+          var jpeg = canvas.toDataURL('image/jpeg', 0.94);
+          var blob = jpegDataUrlToPdfBlob_(jpeg, canvas.width, canvas.height);
+          var safeNumber = String(reservation.numero_formatado || 'oficio').replace(/[\\/:*?"<>|]+/g, '-');
+          var rg = String(selectedGenerationMilitary_.rg || '').replace(/\D+/g, '');
+          var fileName = 'OFICIO-' + safeNumber + (rg ? '-RG-' + rg : '') + '.pdf';
+          return finalizeOficioPdf_(reservation, blob, fileName).then(function () {
+            downloadBlob_(blob, fileName);
+            setSuccess_('Ofício ' + (reservation.numero_formatado || '') + ' gerado, salvo no Drive e baixado no dispositivo.');
+            pendingOficioReservation_ = null;
+            if (currentConfig_) {
+              currentConfig_.oficio_ultimo_numero = reservation.numero;
+              currentConfig_.oficio_proximo_numero = Number(reservation.numero || 0) + 1;
+            }
+            return true;
+          });
+        });
+      })
+      .catch(function (error) { setGenerateError_(error && error.message ? error.message : 'Não foi possível gerar o PDF.'); })
+      .finally(function () { setGenerateBusy_(false); });
+  }
+
   function showGenerate_() {
     if (!currentConfig_ || !currentConfig_.configurada) { showConfig_(); return; }
     var home = document.getElementById('documentos-home');
@@ -488,6 +844,7 @@
     setError_(''); setSuccess_(''); setGenerateError_('');
     selectedGenerationAudience_ = null;
     selectedGenerationMilitary_ = null;
+    pendingOficioReservation_ = null;
     var dateInput = document.getElementById('documentos-data-emissao');
     if (dateInput && !dateInput.value) dateInput.value = todayInputValue_();
     var number = document.getElementById('documentos-numero-preview');
@@ -538,6 +895,8 @@
     var issueDate = document.getElementById('documentos-data-emissao');
     var destination = document.getElementById('documentos-destino-judicial');
     var optional = document.getElementById('documentos-trecho-opcional');
+    var militaryPost = document.getElementById('documentos-militar-posto');
+    var generatePdf = document.getElementById('documentos-generate-pdf');
     if (backButton) backButton.addEventListener('click', back);
     if (form) form.addEventListener('submit', submit_);
     if (year) year.addEventListener('input', updateNextNumber_);
@@ -563,7 +922,9 @@
     if (audienceSelect) audienceSelect.addEventListener('change', onAudienceChange_);
     if (militarySelect) militarySelect.addEventListener('change', onMilitaryChange_);
     if (previewRefresh) previewRefresh.addEventListener('click', updateGeneratePreview_);
-    [issueDate, destination, optional].forEach(function (element) { if (element) element.addEventListener('input', updateGeneratePreview_); });
+    if (militaryPost) militaryPost.addEventListener('input', function () { pendingOficioReservation_ = null; updateGeneratePreview_(); });
+    if (generatePdf) generatePdf.addEventListener('click', generatePdf_);
+    [issueDate, destination, optional].forEach(function (element) { if (element) element.addEventListener('input', function () { pendingOficioReservation_ = null; updateGeneratePreview_(); }); });
   }
   document.addEventListener('DOMContentLoaded', bind_);
   window.Documentos = Object.freeze({ open: open, back: back, reload: load_, showConfig: showConfig_, showHome: showHome_, showGenerate: showGenerate_ });
