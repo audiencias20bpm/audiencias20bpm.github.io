@@ -91,7 +91,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - nenhuma criacao, edicao ou exclusao nesta fase;
 - backend: adicionar `Audiencias.gs` e substituir `Router.gs` pela versao entregue.
 
-
 ## v0.5.0 — Cadastro de Audiências
 
 - mantém listagem segura da v0.4.0;
@@ -102,7 +101,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - campos técnicos e de auditoria são preenchidos pelo servidor;
 - criação exige sessão válida e perfil DEV ou ADMINISTRADOR;
 - após salvar, a lista é recarregada e exibe o novo registro.
-
 
 ## v0.6.3 — Múltiplos militares por audiência
 
@@ -116,7 +114,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - base cadastral inicial fornecida pelo responsável pode ser importada uma única vez no Apps Script;
 - nenhum CPF/RG da base é colocado no repositório público do frontend.
 
-
 ## v0.6.3 — Busca cadastral e WhatsApp
 
 - campo Código removido do formulário; o backend sempre gera o identificador da audiência;
@@ -125,13 +122,12 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - WhatsApp informado é persistido no cadastro do militar ao salvar a audiência;
 - em usos futuros, o WhatsApp salvo retorna automaticamente junto com RG, CPF e Nome.
 
-
 ## v0.6.3
+
 - adiciona botão **Limpar dados** no cadastro do militar;
 - preserva CPFs com zero à esquerda;
 - mantém busca por RG, CPF ou Nome;
 - mantém gravação e retorno automático do WhatsApp.
-
 
 ## v0.6.3 — Rodapé institucional
 
@@ -140,7 +136,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - adiciona identificação institucional do Sistema de Audiências • 20º BPM;
 - informa desenvolvimento pelo P4/20º BPM;
 - adiciona canal clicável para dúvidas, sugestões ou problemas: audiencias.20.bpm@gmail.com.
-
 
 ## v0.6.4 — Saída rápida global
 
@@ -170,13 +165,12 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - melhora o aproveitamento da largura da tabela de Audiências e Destinatários;
 - preserva rolagem horizontal apenas em telas menores quando necessária.
 
-
 ## v0.8.0
+
 - Destinatários Fase 2: edição segura de cadastro.
 - Permite atualizar RG, CPF, Nome, WhatsApp, Unidade e Status.
 - Preserva IDs e vínculos existentes com audiências.
 - Não há exclusão física de destinatários.
-
 
 ## v0.8.1 — Dados fixos e contato atualizável
 
@@ -184,7 +178,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - WhatsApp, Unidade e Status permanecem editáveis.
 - O backend ignora tentativas de alteração dos dados fixos nessa rota e preserva os valores já cadastrados.
 - WhatsApp informado durante uma audiência continua podendo atualizar o cadastro para retornar automaticamente nos próximos usos.
-
 
 ## v0.8.2 — Pesquisa de audiências e limpeza do painel
 
@@ -196,7 +189,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - remove texto explicativo desnecessário do painel principal;
 - não altera backend, autenticação, sessões ou regras de negócio.
 
-
 ## v0.8.3 — Detalhes completos da audiência
 
 - adiciona ação **Ver detalhes** na listagem de audiências;
@@ -205,7 +197,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - usa os dados já retornados pela API de listagem, sem criar nova rota ou chamadas extras;
 - mantém busca, cadastro, destinatários, sessão e logout já aprovados;
 - não altera o Google Apps Script nesta etapa.
-
 
 ## v0.9.0 — Estrutura de Ofícios
 
@@ -218,7 +209,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - prepara as abas CONFIGURACOES e OFICIOS no backend;
 - não gera PDF nem envia WhatsApp nesta fase.
 
-
 ## v0.9.2 — Nome de guerra do signatário
 
 - mantém o nome completo do signatário como texto puro;
@@ -229,7 +219,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - adiciona botão Limpar dados para facilitar mudança de comando;
 - não gera PDF nem envia WhatsApp nesta fase.
 
-
 ## v0.9.3 — Painel operacional de Ofícios
 
 - Ofícios abre em visão operacional quando a configuração já existe.
@@ -238,7 +227,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - Instalações ainda não configuradas continuam abrindo diretamente a configuração inicial.
 - Geração de PDF e histórico permanecem preparados visualmente para as próximas etapas, sem funções simuladas.
 - Nenhuma alteração de backend nesta versão.
-
 
 ## v0.9.4 — Preparação e prévia de Ofícios
 
@@ -252,7 +240,6 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - mantém a geração de PDF desabilitada até a próxima fase;
 - não altera o Google Apps Script nesta versão.
 
-
 ## v0.9.7 — Ofício fiel ao modelo e geração de PDF
 
 - usa os três brasões extraídos do modelo oficial fornecido;
@@ -264,6 +251,7 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - reserva a numeração anual atomicamente antes da emissão e registra o ofício para histórico.
 
 ## v0.9.7 — estabilização da reserva e prévia A4
+
 - consolida o backend de Ofícios com as funções auxiliares exigidas pela emissão;
 - evita falha `ERRO_RESERVA_OFICIO` causada por função ausente;
 - adiciona rollback defensivo para não consumir numeração em caso de falha;
@@ -271,8 +259,11 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - em larguras intermediárias, formulário e prévia passam a empilhar para evitar documento excessivamente estreito.
 
 ## v0.9.7
+
 - mantém a prévia do ofício sempre abaixo do formulário;
 - centraliza a folha em proporção A4 e limita sua largura visual;
 - melhora a leitura em desktop, tablet, Android e iOS;
 - evita a mensagem técnica de AbortSignal e apresenta mensagem amigável em timeout;
 - aumenta o timeout de comunicação com o Apps Script para 45 segundos.
+
+Deploy retry: v0.9.7
