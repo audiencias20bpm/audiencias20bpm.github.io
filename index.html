@@ -9,13 +9,13 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.8.3">
-  <link rel="stylesheet" href="./css/app.css?v=0.8.3">
+  <link rel="manifest" href="./manifest.json?v=0.9.0">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.0">
 </head>
 <body>
   <main class="app-shell" id="app">
     <section class="login-card" aria-labelledby="login-title">
-      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.8.3</span></span>
+      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.9.0</span></span>
       <header class="login-header">
         <div class="brand-mark" aria-hidden="true">SA</div>
         <div>
@@ -258,6 +258,10 @@
                           <input id="destinatario-nome" type="text" maxlength="200" autocomplete="off" placeholder="Preenchido automaticamente ou informe o nome">
                         </div>
                         <div class="form-group">
+                          <label for="destinatario-posto-graduacao">Posto/Graduação <span class="field-optional">(atualizável)</span></label>
+                          <input id="destinatario-posto-graduacao" type="text" maxlength="80" autocomplete="off" list="postos-graduacoes" placeholder="Ex.: SD, CB, 3º SGT, TEN CEL">
+                        </div>
+                        <div class="form-group">
                           <label for="destinatario-cpf">CPF <span class="field-optional">(opcional para novo cadastro)</span></label>
                           <input id="destinatario-cpf" type="text" inputmode="numeric" maxlength="18" autocomplete="off">
                         </div>
@@ -272,6 +276,11 @@
                         </div>
                       </div>
 
+                      <datalist id="postos-graduacoes">
+                        <option value="CEL"></option><option value="TEN CEL"></option><option value="MAJ"></option><option value="CAP"></option>
+                        <option value="1º TEN"></option><option value="2º TEN"></option><option value="ASP OF"></option><option value="SUBTEN"></option>
+                        <option value="1º SGT"></option><option value="2º SGT"></option><option value="3º SGT"></option><option value="CB"></option><option value="SD"></option>
+                      </datalist>
                       <div id="destinatario-sugestoes" class="recipient-suggestions" role="listbox" aria-label="Sugestões de militares" hidden></div>
                       <div id="destinatario-lookup-status" class="recipient-lookup-status" role="status" aria-live="polite"></div>
 
@@ -344,6 +353,7 @@
                     <tr>
                       <th>RG</th>
                       <th>Nome</th>
+                      <th>Posto/Graduação</th>
                       <th>CPF</th>
                       <th>WhatsApp</th>
                       <th>Unidade</th>
@@ -399,6 +409,57 @@
           </div>
         </section>
 
+          <section id="documentos-view" class="module-view" aria-labelledby="documentos-view-title" hidden>
+            <header class="module-view-header">
+              <div>
+                <button id="documentos-back" class="back-button" type="button">← Voltar ao painel</button>
+                <p class="dashboard-kicker">Documentos</p>
+                <h2 id="documentos-view-title">Ofícios</h2>
+                <p class="module-view-subtitle">Configuração inicial da numeração anual e do signatário. A geração do PDF será implementada na próxima fase.</p>
+              </div>
+              <div class="module-header-actions"><span id="documentos-config-status" class="module-count">Configuração</span></div>
+            </header>
+
+            <div id="documentos-loading" class="module-state" role="status" aria-live="polite" hidden>
+              <div class="validation-spinner" aria-hidden="true"></div><strong>Carregando configuração...</strong><span>Aguarde.</span>
+            </div>
+            <div id="documentos-error" class="module-error" role="alert" hidden></div>
+            <div id="documentos-success" class="module-success" role="status" hidden></div>
+
+            <form id="documentos-config-form" class="document-config-card" novalidate>
+              <section class="document-config-section">
+                <div class="detail-section-heading"><div><p class="dashboard-kicker">Numeração anual</p><h3>Continuidade dos ofícios</h3></div></div>
+                <p class="document-config-help">Informe apenas o ponto de partida. Depois, o sistema poderá controlar a sequência automaticamente sem renumerar ofícios antigos.</p>
+                <div class="form-grid three-columns">
+                  <div class="form-group"><label for="oficio-ano">Ano</label><input id="oficio-ano" type="number" min="2020" max="2100" inputmode="numeric" required></div>
+                  <div class="form-group"><label for="oficio-ultimo-numero">Último número já utilizado</label><input id="oficio-ultimo-numero" type="number" min="0" step="1" inputmode="numeric" required></div>
+                  <div class="form-group"><label for="oficio-proximo-numero">Próximo número</label><input id="oficio-proximo-numero" type="text" readonly aria-readonly="true"></div>
+                </div>
+                <small class="field-help">Exemplo: se o último utilizado foi 372 em 2026, o próximo será 373/2026. Nenhum número é consumido nesta tela.</small>
+              </section>
+
+              <section class="document-config-section">
+                <div class="detail-section-heading"><div><p class="dashboard-kicker">Assinatura</p><h3>Signatário padrão</h3></div></div>
+                <p class="document-config-help">Esses dados serão preenchidos automaticamente nos ofícios e poderão ser atualizados quando houver mudança de comando.</p>
+                <div class="form-grid two-columns">
+                  <div class="form-group full-width"><label for="signatario-nome">Nome</label><input id="signatario-nome" type="text" maxlength="200" autocomplete="off" required></div>
+                  <div class="form-group"><label for="signatario-posto">Posto/Graduação</label><input id="signatario-posto" type="text" maxlength="80" list="postos-graduacoes" autocomplete="off" required></div>
+                  <div class="form-group"><label for="signatario-rg">RG</label><input id="signatario-rg" type="text" maxlength="20" inputmode="numeric" autocomplete="off" required></div>
+                  <div class="form-group full-width"><label for="signatario-cargo">Cargo</label><input id="signatario-cargo" type="text" maxlength="160" autocomplete="off" placeholder="Ex.: Comandante do 20º BPM" required></div>
+                </div>
+              </section>
+
+              <div class="form-actions">
+                <button id="documentos-config-save" class="primary-button" type="submit">Salvar configuração</button>
+              </div>
+            </form>
+
+            <section class="document-next-step">
+              <strong>Próxima fase</strong>
+              <p>Gerar um ofício individual por militar, no padrão oficial enviado, mantendo apenas os campos variáveis editáveis e sem consumir numeração até a confirmação da geração.</p>
+            </section>
+          </section>
+
         <div class="global-auth-actions" aria-label="Ações da sessão">
           <button id="logout-button" class="logout-button global-logout-button" type="button">Sair</button>
         </div>
@@ -433,7 +494,11 @@
                     <label for="destinatarios-edit-nome">Nome</label>
                     <input id="destinatarios-edit-nome" autocomplete="off" readonly aria-readonly="true">
                   </div>
-                  <p class="fixed-data-note full-width">RG, CPF e Nome são dados fixos do cadastro. Para preservar o histórico, somente WhatsApp, Unidade e Status podem ser alterados nesta tela.</p>
+                  <p class="fixed-data-note full-width">RG, CPF e Nome são dados fixos do cadastro. Posto/Graduação, WhatsApp, Unidade e Status podem ser atualizados quando houver mudança funcional ou de contato.</p>
+                  <div class="form-group">
+                    <label for="destinatarios-edit-posto-graduacao">Posto/Graduação</label>
+                    <input id="destinatarios-edit-posto-graduacao" autocomplete="off" maxlength="80" list="postos-graduacoes" placeholder="Ex.: SD, CB, 3º SGT, TEN CEL">
+                  </div>
                   <div class="form-group">
                     <label for="destinatarios-edit-whatsapp">WhatsApp</label>
                     <input id="destinatarios-edit-whatsapp" inputmode="tel" autocomplete="off" placeholder="Ex.: 91999999999">
@@ -480,13 +545,14 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.8.3"></script>
-  <script src="./js/api.js?v=0.8.3"></script>
-  <script src="./js/audiencias.js?v=0.8.3"></script>
-  <script src="./js/destinatarios.js?v=0.8.3"></script>
-  <script src="./js/dashboard.js?v=0.8.3"></script>
-  <script src="./js/auth.js?v=0.8.3"></script>
-  <script src="./js/session.js?v=0.8.3"></script>
+  <script src="./js/config.js?v=0.9.0"></script>
+  <script src="./js/api.js?v=0.9.0"></script>
+  <script src="./js/audiencias.js?v=0.9.0"></script>
+  <script src="./js/destinatarios.js?v=0.9.0"></script>
+  <script src="./js/documentos.js?v=0.9.0"></script>
+  <script src="./js/dashboard.js?v=0.9.0"></script>
+  <script src="./js/auth.js?v=0.9.0"></script>
+  <script src="./js/session.js?v=0.9.0"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

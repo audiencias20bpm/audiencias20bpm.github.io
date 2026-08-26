@@ -1895,3 +1895,70 @@ body.modal-open {
     grid-column: auto;
   }
 }
+
+
+/* v0.9.0 — Estrutura de Ofícios */
+.document-config-card {
+  display: grid;
+  gap: 18px;
+}
+
+.document-config-section,
+.document-next-step {
+  border: 1px solid #d7e2e6;
+  border-radius: 16px;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.document-config-section h3 {
+  margin: 2px 0 0;
+  color: #073b4a;
+  font-size: 1.15rem;
+}
+
+.document-config-help {
+  margin: 8px 0 18px;
+  color: #53656e;
+  line-height: 1.55;
+}
+
+.form-grid.three-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.document-next-step {
+  margin-top: 18px;
+  background: #f5f9fa;
+}
+
+.document-next-step strong {
+  display: block;
+  color: #073b4a;
+  margin-bottom: 6px;
+}
+
+.document-next-step p {
+  margin: 0;
+  color: #53656e;
+  line-height: 1.5;
+}
+
+.destinatarios-rank {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .form-grid.three-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .document-config-section,
+  .document-next-step {
+    padding: 16px;
+  }
+}

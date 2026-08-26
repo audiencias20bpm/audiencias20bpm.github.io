@@ -55,7 +55,7 @@
     var recipients = Array.isArray(item.destinatarios) ? item.destinatarios : [];
     var parts = [item.codigo, item.processo, item.assunto, item.local, item.modalidade, item.status];
     recipients.forEach(function (recipient) {
-      parts.push(recipient.nome, recipient.rg, recipient.cpf, recipient.telefone, recipient.unidade);
+      parts.push(recipient.nome, recipient.rg, recipient.cpf, recipient.posto_graduacao, recipient.telefone, recipient.unidade);
     });
     return normalizeSearch_(parts.filter(Boolean).join(' '));
   }
@@ -172,6 +172,7 @@
       var meta=document.createElement('div');
       meta.className='detail-recipient-meta';
       var values=[];
+      if(item.posto_graduacao) values.push(item.posto_graduacao);
       if(item.rg) values.push('RG '+item.rg);
       if(item.cpf) values.push('CPF '+formatCpf_(item.cpf));
       if(item.telefone) values.push('WhatsApp '+item.telefone);
@@ -276,7 +277,8 @@
       nome: document.getElementById('destinatario-nome'),
       cpf: document.getElementById('destinatario-cpf'),
       telefone: document.getElementById('destinatario-telefone'),
-      unidade: document.getElementById('destinatario-unidade')
+      unidade: document.getElementById('destinatario-unidade'),
+      posto_graduacao: document.getElementById('destinatario-posto-graduacao')
     };
   }
 
@@ -305,6 +307,7 @@
     if(fields.nome) fields.nome.value=item.nome||'';
     if(fields.cpf) fields.cpf.value=formatCpf_(item.cpf||'');
     if(fields.telefone) fields.telefone.value=item.telefone||'';
+    if(fields.posto_graduacao) fields.posto_graduacao.value=item.posto_graduacao||'';
     if(fields.unidade) fields.unidade.value=item.unidade||'';
     clearSuggestions_();
   }
@@ -378,7 +381,7 @@
 
   function recipientEntryData_(){
     var fields=recipientInputs_();
-    return {rg:digits_(fields.rg?fields.rg.value:''),nome:(fields.nome?fields.nome.value:'').trim(),cpf:normalizeCpf_(fields.cpf?fields.cpf.value:''),telefone:digits_(fields.telefone?fields.telefone.value:''),unidade:(fields.unidade?fields.unidade.value:'').trim()};
+    return {rg:digits_(fields.rg?fields.rg.value:''),nome:(fields.nome?fields.nome.value:'').trim(),cpf:normalizeCpf_(fields.cpf?fields.cpf.value:''),posto_graduacao:(fields.posto_graduacao?fields.posto_graduacao.value:'').trim(),telefone:digits_(fields.telefone?fields.telefone.value:''),unidade:(fields.unidade?fields.unidade.value:'').trim()};
   }
 
   function renderSelectedRecipients_(){
@@ -390,7 +393,7 @@
       var card=document.createElement('div');card.className='recipient-chip';
       var text=document.createElement('div');text.className='recipient-chip-text';
       var strong=document.createElement('strong');strong.textContent=item.nome; text.appendChild(strong);
-      var meta=document.createElement('span');meta.textContent='RG '+item.rg+(item.cpf?' • CPF '+formatCpf_(item.cpf):'')+(item.telefone?' • WhatsApp '+item.telefone:'')+(item.unidade?' • '+item.unidade:'');text.appendChild(meta);
+      var meta=document.createElement('span');meta.textContent=(item.posto_graduacao?item.posto_graduacao+' • ':'')+'RG '+item.rg+(item.cpf?' • CPF '+formatCpf_(item.cpf):'')+(item.telefone?' • WhatsApp '+item.telefone:'')+(item.unidade?' • '+item.unidade:'');text.appendChild(meta);
       var remove=document.createElement('button');remove.type='button';remove.className='recipient-remove';remove.setAttribute('aria-label','Remover '+item.nome);remove.textContent='Remover';
       remove.addEventListener('click',function(){selectedRecipients.splice(index,1);renderSelectedRecipients_();});
       card.appendChild(text);card.appendChild(remove);container.appendChild(card);

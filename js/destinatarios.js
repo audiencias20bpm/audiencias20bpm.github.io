@@ -120,6 +120,7 @@
       var tr = document.createElement('tr');
       tr.appendChild(createCell_(item.rg || item.identificacao || '—', 'destinatarios-rg'));
       tr.appendChild(createCell_(item.nome || '—', 'destinatarios-name'));
+      tr.appendChild(createCell_(item.posto_graduacao || '—', 'destinatarios-rank'));
       tr.appendChild(createCell_(formatCpf_(item.cpf), 'destinatarios-cpf'));
       tr.appendChild(createCell_(formatPhone_(item.telefone), 'destinatarios-phone'));
       tr.appendChild(createCell_(item.unidade || '—'));
@@ -175,11 +176,13 @@
       var cpf = normalizeCpf_(item.cpf);
       var name = text_(item.nome).toLocaleUpperCase('pt-BR');
       var phone = digits_(item.telefone);
+      var posto = text_(item.posto_graduacao).toLocaleUpperCase('pt-BR');
 
       return name.indexOf(upper) !== -1 ||
         (queryDigits && rg.indexOf(queryDigits) !== -1) ||
         (queryDigits && cpf.indexOf(normalizedCpf) !== -1) ||
-        (queryDigits && phone.indexOf(queryDigits) !== -1);
+        (queryDigits && phone.indexOf(queryDigits) !== -1) ||
+        posto.indexOf(upper) !== -1;
     });
 
     render_(filtered);
@@ -239,6 +242,7 @@
     document.getElementById('destinatarios-edit-rg').value = text_(item.rg || item.identificacao);
     document.getElementById('destinatarios-edit-cpf').value = normalizeCpf_(item.cpf);
     document.getElementById('destinatarios-edit-nome').value = text_(item.nome);
+    document.getElementById('destinatarios-edit-posto-graduacao').value = text_(item.posto_graduacao);
     document.getElementById('destinatarios-edit-whatsapp').value = digits_(item.telefone);
     document.getElementById('destinatarios-edit-unidade').value = text_(item.unidade);
     document.getElementById('destinatarios-edit-status').value = String(item.status || 'ATIVO').toUpperCase() === 'INATIVO' ? 'INATIVO' : 'ATIVO';
@@ -269,6 +273,7 @@
     }
 
     var id = text_(document.getElementById('destinatarios-edit-id').value).trim();
+    var postoGraduacao = text_(document.getElementById('destinatarios-edit-posto-graduacao').value).trim();
     var telefone = digits_(document.getElementById('destinatarios-edit-whatsapp').value);
     var unidade = text_(document.getElementById('destinatarios-edit-unidade').value).trim();
     var status = text_(document.getElementById('destinatarios-edit-status').value).toUpperCase();
@@ -292,6 +297,7 @@
     window.Api.post('destinatarios_update', {
       token: token,
       id: id,
+      posto_graduacao: postoGraduacao,
       telefone: telefone,
       unidade: unidade,
       status: status

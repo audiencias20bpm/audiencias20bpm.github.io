@@ -205,3 +205,15 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - usa os dados já retornados pela API de listagem, sem criar nova rota ou chamadas extras;
 - mantém busca, cadastro, destinatários, sessão e logout já aprovados;
 - não altera o Google Apps Script nesta etapa.
+
+
+## v0.9.0 — Estrutura de Ofícios
+
+- habilita o módulo Documentos/Ofícios;
+- adiciona configuração inicial do ano e último número já utilizado;
+- calcula o próximo número sem consumi-lo;
+- adiciona configuração do signatário padrão;
+- adiciona Posto/Graduação como dado atualizável do militar;
+- preserva RG, CPF e Nome como dados fixos;
+- prepara as abas CONFIGURACOES e OFICIOS no backend;
+- não gera PDF nem envia WhatsApp nesta fase.
