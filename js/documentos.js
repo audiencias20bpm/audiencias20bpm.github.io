@@ -2,6 +2,7 @@
   'use strict';
 
   var TOKEN_STORAGE_KEY = 'audiencias_session_token';
+  var currentConfig_ = null;
 
   function isObject_(value) { return value !== null && typeof value === 'object'; }
   function isSuccess_(response) {
@@ -31,9 +32,7 @@
   }
   function setLoading_(loading) {
     var el = document.getElementById('documentos-loading');
-    var form = document.getElementById('documentos-config-form');
     if (el) el.hidden = !loading;
-    if (form) form.hidden = loading;
   }
   function setError_(message) {
     var el = document.getElementById('documentos-error');
@@ -125,8 +124,73 @@
     if (input) input.focus();
   }
 
+  function renderSignatorySummary_(config) {
+    var nameEl = document.getElementById('documentos-home-signatory');
+    var detailEl = document.getElementById('documentos-home-signatory-detail');
+    if (!nameEl || !detailEl) return;
+    var name = String(config.signatario_nome || '').trim();
+    var war = String(config.signatario_nome_guerra || '').trim();
+    if (!name) {
+      nameEl.textContent = '—';
+    } else if (war) {
+      var lowerName = name.toLocaleLowerCase('pt-BR');
+      var lowerWar = war.toLocaleLowerCase('pt-BR');
+      var idx = lowerName.indexOf(lowerWar);
+      if (idx >= 0) {
+        nameEl.innerHTML = escapeHtml_(name.slice(0, idx)) + '<strong>' + escapeHtml_(name.slice(idx, idx + war.length)) + '</strong>' + escapeHtml_(name.slice(idx + war.length));
+      } else {
+        nameEl.textContent = name;
+      }
+    } else {
+      nameEl.textContent = name;
+    }
+    var parts = [];
+    if (config.signatario_posto_graduacao) parts.push(config.signatario_posto_graduacao);
+    if (config.signatario_rg) parts.push('RG ' + config.signatario_rg);
+    if (config.signatario_cargo) parts.push(config.signatario_cargo);
+    detailEl.textContent = parts.join(' • ') || '—';
+  }
+
+  function renderHome_(config) {
+    var home = document.getElementById('documentos-home');
+    var form = document.getElementById('documentos-config-form');
+    var subtitle = document.getElementById('documentos-view-subtitle');
+    var status = document.getElementById('documentos-config-status');
+    if (!config || !config.configurada) {
+      if (home) home.hidden = true;
+      if (form) form.hidden = false;
+      if (subtitle) subtitle.textContent = 'Faça a configuração inicial para preparar a numeração e o signatário dos ofícios.';
+      if (status) status.textContent = 'Configuração inicial';
+      return;
+    }
+    if (form) form.hidden = true;
+    if (home) home.hidden = false;
+    if (subtitle) subtitle.textContent = 'Gerencie a emissão dos ofícios vinculados às audiências.';
+    if (status) status.textContent = 'Configurado';
+    var next = document.getElementById('documentos-home-next-number');
+    if (next) next.textContent = String(config.oficio_proximo_numero || 0).padStart(3, '0') + '/' + config.oficio_ano;
+    renderSignatorySummary_(config);
+  }
+
+  function showConfig_() {
+    var home = document.getElementById('documentos-home');
+    var form = document.getElementById('documentos-config-form');
+    var subtitle = document.getElementById('documentos-view-subtitle');
+    if (home) home.hidden = true;
+    if (form) form.hidden = false;
+    if (subtitle) subtitle.textContent = 'Configuração da numeração anual e do signatário padrão.';
+    setError_(''); setSuccess_('');
+  }
+
+  function showHome_() {
+    if (!currentConfig_ || !currentConfig_.configurada) { showConfig_(); return; }
+    setError_(''); setSuccess_('');
+    renderHome_(currentConfig_);
+  }
+
   function fill_(config) {
     var c = config || {};
+    currentConfig_ = c;
     document.getElementById('oficio-ano').value = c.oficio_ano || new Date().getFullYear();
     document.getElementById('oficio-ultimo-numero').value = c.oficio_ultimo_numero !== undefined && c.oficio_ultimo_numero !== '' ? c.oficio_ultimo_numero : 0;
     document.getElementById('signatario-nome').value = c.signatario_nome || '';
@@ -136,8 +200,7 @@
     document.getElementById('signatario-cargo').value = c.signatario_cargo || '';
     updateNextNumber_();
     updateNamePreview_();
-    var status = document.getElementById('documentos-config-status');
-    if (status) status.textContent = c.configurada ? 'Configurado' : 'Configuração inicial';
+    renderHome_(c);
   }
   function load_() {
     var token = sessionStorage.getItem(TOKEN_STORAGE_KEY) || '';
@@ -223,6 +286,8 @@
     var mark = document.getElementById('signatario-marcar-nome-guerra');
     var unmark = document.getElementById('signatario-remover-nome-guerra');
     var clear = document.getElementById('documentos-config-clear');
+    var openConfig = document.getElementById('documentos-open-config');
+    var closeConfig = document.getElementById('documentos-close-config');
     if (backButton) backButton.addEventListener('click', back);
     if (form) form.addEventListener('submit', submit_);
     if (year) year.addEventListener('input', updateNextNumber_);
@@ -241,7 +306,9 @@
     if (mark) mark.addEventListener('click', markWarName_);
     if (unmark) unmark.addEventListener('click', clearWarName_);
     if (clear) clear.addEventListener('click', clearSignatory_);
+    if (openConfig) openConfig.addEventListener('click', showConfig_);
+    if (closeConfig) closeConfig.addEventListener('click', showHome_);
   }
   document.addEventListener('DOMContentLoaded', bind_);
-  window.Documentos = Object.freeze({ open: open, back: back, reload: load_ });
+  window.Documentos = Object.freeze({ open: open, back: back, reload: load_, showConfig: showConfig_, showHome: showHome_ });
 }());

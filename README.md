@@ -228,3 +228,13 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - adiciona prévia da assinatura;
 - adiciona botão Limpar dados para facilitar mudança de comando;
 - não gera PDF nem envia WhatsApp nesta fase.
+
+
+## v0.9.3 — Painel operacional de Ofícios
+
+- Ofícios abre em visão operacional quando a configuração já existe.
+- Exibe próximo número, signatário atual e situação da configuração.
+- A configuração fica acessível por botão próprio e deixa de ser a tela principal do uso diário.
+- Instalações ainda não configuradas continuam abrindo diretamente a configuração inicial.
+- Geração de PDF e histórico permanecem preparados visualmente para as próximas etapas, sem funções simuladas.
+- Nenhuma alteração de backend nesta versão.

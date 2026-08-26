@@ -2009,3 +2009,135 @@ body.modal-open {
     width: 100%;
   }
 }
+
+
+/* v0.9.3 — Painel operacional de Ofícios */
+.documents-home {
+  display: grid;
+  gap: 20px;
+}
+.documents-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.documents-summary-card {
+  border: 1px solid #d7e2e6;
+  border-radius: 16px;
+  padding: 18px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 142px;
+}
+.documents-summary-primary {
+  border-color: #b9d7d3;
+  background: #f5fbfa;
+}
+.documents-summary-label {
+  color: #c62828;
+  font-size: .76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.documents-summary-value {
+  color: #073b4a;
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
+.documents-summary-name,
+.documents-summary-state {
+  color: #073b4a;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+.documents-summary-name strong {
+  font-weight: 800;
+}
+.documents-summary-card > span:last-child {
+  color: #53656e;
+  font-size: .9rem;
+  line-height: 1.45;
+}
+.documents-actions-panel {
+  border: 1px solid #d7e2e6;
+  border-radius: 16px;
+  padding: 20px;
+  background: #fff;
+}
+.documents-action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.documents-action-card {
+  border: 1px solid #d7e2e6;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  min-height: 240px;
+}
+.documents-action-card h3 {
+  margin: 0;
+  color: #073b4a;
+  font-size: 1.05rem;
+}
+.documents-action-card p {
+  margin: 0;
+  color: #53656e;
+  line-height: 1.5;
+  flex: 1;
+}
+.documents-action-card small {
+  color: #71828a;
+  line-height: 1.4;
+}
+.documents-action-featured {
+  border-color: #b9d7d3;
+  background: #f8fcfb;
+}
+.documents-action-card button:disabled {
+  opacity: .58;
+  cursor: not-allowed;
+}
+.documents-config-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid #d7e2e6;
+  border-radius: 16px;
+  padding: 18px 20px;
+  background: #f7fafb;
+}
+.documents-config-toolbar h3 {
+  margin: 2px 0 4px;
+  color: #073b4a;
+}
+.documents-config-toolbar p:last-child {
+  margin: 0;
+  color: #53656e;
+}
+@media (max-width: 860px) {
+  .documents-summary-grid,
+  .documents-action-grid {
+    grid-template-columns: 1fr;
+  }
+  .documents-action-card {
+    min-height: auto;
+  }
+}
+@media (max-width: 640px) {
+  .documents-config-toolbar {
+    flex-direction: column;
+  }
+  .documents-config-toolbar .compact-button {
+    width: 100%;
+  }
+}

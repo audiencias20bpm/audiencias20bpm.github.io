@@ -9,13 +9,13 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.2">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.2">
+  <link rel="manifest" href="./manifest.json?v=0.9.3">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.3">
 </head>
 <body>
   <main class="app-shell" id="app">
     <section class="login-card" aria-labelledby="login-title">
-      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.9.2</span></span>
+      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.9.3</span></span>
       <header class="login-header">
         <div class="brand-mark" aria-hidden="true">SA</div>
         <div>
@@ -415,18 +415,76 @@
                 <button id="documentos-back" class="back-button" type="button">← Voltar ao painel</button>
                 <p class="dashboard-kicker">Documentos</p>
                 <h2 id="documentos-view-title">Ofícios</h2>
-                <p class="module-view-subtitle">Configuração inicial da numeração anual e do signatário. A geração do PDF será implementada na próxima fase.</p>
+                <p id="documentos-view-subtitle" class="module-view-subtitle">Gerencie a emissão dos ofícios vinculados às audiências.</p>
               </div>
-              <div class="module-header-actions"><span id="documentos-config-status" class="module-count">Configuração</span></div>
+              <div class="module-header-actions"><span id="documentos-config-status" class="module-count">Carregando...</span></div>
             </header>
 
             <div id="documentos-loading" class="module-state" role="status" aria-live="polite" hidden>
-              <div class="validation-spinner" aria-hidden="true"></div><strong>Carregando configuração...</strong><span>Aguarde.</span>
+              <div class="validation-spinner" aria-hidden="true"></div><strong>Carregando Ofícios...</strong><span>Aguarde.</span>
             </div>
             <div id="documentos-error" class="module-error" role="alert" hidden></div>
             <div id="documentos-success" class="module-success" role="status" hidden></div>
 
-            <form id="documentos-config-form" class="document-config-card" novalidate>
+            <section id="documentos-home" class="documents-home" hidden>
+              <div class="documents-summary-grid">
+                <article class="documents-summary-card documents-summary-primary">
+                  <span class="documents-summary-label">Próximo ofício</span>
+                  <strong id="documentos-home-next-number" class="documents-summary-value">—</strong>
+                  <span>Numeração preparada para a próxima emissão.</span>
+                </article>
+                <article class="documents-summary-card">
+                  <span class="documents-summary-label">Signatário atual</span>
+                  <strong id="documentos-home-signatory" class="documents-summary-name">—</strong>
+                  <span id="documentos-home-signatory-detail">—</span>
+                </article>
+                <article class="documents-summary-card">
+                  <span class="documents-summary-label">Situação</span>
+                  <strong class="documents-summary-state">Configuração concluída</strong>
+                  <span>O módulo está preparado para a geração dos documentos.</span>
+                </article>
+              </div>
+
+              <section class="documents-actions-panel" aria-labelledby="documentos-actions-title">
+                <div class="detail-section-heading">
+                  <div><p class="dashboard-kicker">Ações</p><h3 id="documentos-actions-title">O que deseja fazer?</h3></div>
+                </div>
+                <div class="documents-action-grid">
+                  <article class="documents-action-card documents-action-featured">
+                    <span class="module-card-badge">Ofício</span>
+                    <h3>Gerar ofício</h3>
+                    <p>Selecione uma audiência e prepare os ofícios dos militares convocados.</p>
+                    <button id="documentos-generate" class="primary-button" type="button" disabled aria-disabled="true">Gerar ofício</button>
+                    <small>Será habilitado na etapa de geração do PDF.</small>
+                  </article>
+                  <article class="documents-action-card">
+                    <span class="module-card-badge">Consulta</span>
+                    <h3>Histórico de ofícios</h3>
+                    <p>Consulte os documentos emitidos e seus respectivos números e status.</p>
+                    <button id="documentos-history" class="secondary-button" type="button" disabled aria-disabled="true">Ver histórico</button>
+                    <small>Será habilitado junto com a emissão dos primeiros ofícios.</small>
+                  </article>
+                  <article class="documents-action-card">
+                    <span class="module-card-badge">Ajustes</span>
+                    <h3>Configuração</h3>
+                    <p>Atualize numeração anual, signatário e nome de guerra quando necessário.</p>
+                    <button id="documentos-open-config" class="secondary-button" type="button">Abrir configuração</button>
+                    <small>Use apenas quando houver mudança de comando ou ajuste de sequência.</small>
+                  </article>
+                </div>
+              </section>
+            </section>
+
+            <form id="documentos-config-form" class="document-config-card" novalidate hidden>
+              <div class="documents-config-toolbar">
+                <div>
+                  <p class="dashboard-kicker">Configuração</p>
+                  <h3>Configuração dos ofícios</h3>
+                  <p>Altere estes dados somente quando necessário.</p>
+                </div>
+                <button id="documentos-close-config" class="secondary-button compact-button" type="button">← Voltar aos Ofícios</button>
+              </div>
+
               <section class="document-config-section">
                 <div class="detail-section-heading"><div><p class="dashboard-kicker">Numeração anual</p><h3>Continuidade dos ofícios</h3></div></div>
                 <p class="document-config-help">Informe apenas o ponto de partida. Depois, o sistema poderá controlar a sequência automaticamente sem renumerar ofícios antigos.</p>
@@ -435,7 +493,7 @@
                   <div class="form-group"><label for="oficio-ultimo-numero">Último número já utilizado</label><input id="oficio-ultimo-numero" type="number" min="0" step="1" inputmode="numeric" required></div>
                   <div class="form-group"><label for="oficio-proximo-numero">Próximo número</label><input id="oficio-proximo-numero" type="text" readonly aria-readonly="true"></div>
                 </div>
-                <small class="field-help">Exemplo: se o último utilizado foi 372 em 2026, o próximo será 373/2026. Nenhum número é consumido nesta tela.</small>
+                <small class="field-help">Nenhum número é consumido nesta tela. O próximo número será usado somente na geração efetiva de um ofício.</small>
               </section>
 
               <section class="document-config-section">
@@ -467,11 +525,6 @@
                 <button id="documentos-config-save" class="primary-button" type="submit">Salvar configuração</button>
               </div>
             </form>
-
-            <section class="document-next-step">
-              <strong>Próxima fase</strong>
-              <p>Gerar um ofício individual por militar, no padrão oficial enviado, mantendo apenas os campos variáveis editáveis e sem consumir numeração até a confirmação da geração.</p>
-            </section>
           </section>
 
         <div class="global-auth-actions" aria-label="Ações da sessão">
@@ -559,14 +612,14 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.2"></script>
-  <script src="./js/api.js?v=0.9.2"></script>
-  <script src="./js/audiencias.js?v=0.9.2"></script>
-  <script src="./js/destinatarios.js?v=0.9.2"></script>
-  <script src="./js/documentos.js?v=0.9.2"></script>
-  <script src="./js/dashboard.js?v=0.9.2"></script>
-  <script src="./js/auth.js?v=0.9.2"></script>
-  <script src="./js/session.js?v=0.9.2"></script>
+  <script src="./js/config.js?v=0.9.3"></script>
+  <script src="./js/api.js?v=0.9.3"></script>
+  <script src="./js/audiencias.js?v=0.9.3"></script>
+  <script src="./js/destinatarios.js?v=0.9.3"></script>
+  <script src="./js/documentos.js?v=0.9.3"></script>
+  <script src="./js/dashboard.js?v=0.9.3"></script>
+  <script src="./js/auth.js?v=0.9.3"></script>
+  <script src="./js/session.js?v=0.9.3"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
