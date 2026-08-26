@@ -253,7 +253,7 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - não altera o Google Apps Script nesta versão.
 
 
-## v0.9.6 — Ofício fiel ao modelo e geração de PDF
+## v0.9.7 — Ofício fiel ao modelo e geração de PDF
 
 - usa os três brasões extraídos do modelo oficial fornecido;
 - inclui campo editável de Posto/Graduação do militar, preenchido automaticamente quando disponível;
@@ -263,9 +263,16 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - gera PDF A4 real no navegador, salva cópia no Google Drive via backend e baixa uma cópia no dispositivo;
 - reserva a numeração anual atomicamente antes da emissão e registra o ofício para histórico.
 
-## v0.9.6 — estabilização da reserva e prévia A4
+## v0.9.7 — estabilização da reserva e prévia A4
 - consolida o backend de Ofícios com as funções auxiliares exigidas pela emissão;
 - evita falha `ERRO_RESERVA_OFICIO` causada por função ausente;
 - adiciona rollback defensivo para não consumir numeração em caso de falha;
 - ajusta a prévia para uma apresentação visual mais próxima de uma folha A4;
 - em larguras intermediárias, formulário e prévia passam a empilhar para evitar documento excessivamente estreito.
+
+## v0.9.7
+- mantém a prévia do ofício sempre abaixo do formulário;
+- centraliza a folha em proporção A4 e limita sua largura visual;
+- melhora a leitura em desktop, tablet, Android e iOS;
+- evita a mensagem técnica de AbortSignal e apresenta mensagem amigável em timeout;
+- aumenta o timeout de comunicação com o Apps Script para 45 segundos.

@@ -2454,3 +2454,88 @@ body.modal-open {
     font-size: 0.76rem;
   }
 }
+
+/* v0.9.7 - Prévia sempre abaixo do formulário, responsiva e próxima do A4 */
+.document-generate-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 18px;
+}
+
+.document-preview-card {
+  position: static !important;
+  width: 100%;
+}
+
+.oficio-preview {
+  width: min(100%, 620px);
+  margin-inline: auto;
+  aspect-ratio: 210 / 297;
+  min-height: 0;
+  padding: clamp(20px, 5vw, 46px) clamp(16px, 6vw, 56px);
+  font-size: clamp(0.72rem, 1.6vw, 0.9rem);
+  line-height: 1.42;
+}
+
+@media (max-width: 640px) {
+  .document-generate-form-card,
+  .document-preview-card {
+    padding: 12px;
+  }
+
+  .oficio-preview {
+    width: 100%;
+    padding: 20px 14px;
+    font-size: 0.72rem;
+    line-height: 1.36;
+    box-shadow: none;
+  }
+
+  .oficio-preview-header {
+    grid-template-columns: 38px minmax(0, 1fr) 38px;
+    gap: 5px;
+  }
+
+  .oficio-preview-emblem {
+    max-width: 38px;
+    max-height: 52px;
+  }
+
+  .oficio-preview-top {
+    font-size: 0.6rem;
+    line-height: 1.12;
+  }
+
+  .oficio-preview p {
+    margin: 18px 0;
+  }
+
+  .oficio-preview-saudacao,
+  .oficio-preview-respect {
+    margin-top: 28px !important;
+  }
+
+  .oficio-preview-signature-row {
+    margin-top: 36px;
+  }
+
+  .oficio-preview-footer {
+    margin-top: 48px;
+    font-size: 0.58rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .oficio-preview {
+    padding: 16px 10px;
+    font-size: 0.68rem;
+  }
+
+  .oficio-preview-header {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+  }
+
+  .oficio-preview-emblem {
+    max-width: 32px;
+    max-height: 46px;
+  }
+}

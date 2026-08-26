@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var REQUEST_TIMEOUT_MS = 25000;
+  var REQUEST_TIMEOUT_MS = 45000;
 
   function getBaseUrl() {
     return window.APP_CONFIG.API_BASE_URL;
@@ -48,6 +48,11 @@
         throw new Error('HTTP_' + response.status);
       }
       return parseJsonResponse_(response);
+    }).catch(function (error) {
+      if (error && (error.name === 'AbortError' || /aborted/i.test(String(error.message || '')))) {
+        throw new Error('A conexão demorou mais que o esperado. Tente novamente.');
+      }
+      throw error;
     }).finally(function () {
       window.clearTimeout(timer);
     });
