@@ -2405,3 +2405,52 @@ body.modal-open {
     font-size: 0.66rem;
   }
 }
+
+
+/* v0.9.6 - Prévia do ofício com proporção visual A4 */
+@media (min-width: 1181px) {
+  .document-generate-grid {
+    grid-template-columns: minmax(360px, 0.78fr) minmax(600px, 1.22fr);
+  }
+}
+
+@media (max-width: 1180px) {
+  .document-generate-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .document-preview-card {
+    position: static;
+  }
+}
+
+.document-preview-card {
+  overflow: hidden;
+}
+
+.oficio-preview {
+  width: min(100%, 680px);
+  margin-left: auto;
+  margin-right: auto;
+  aspect-ratio: 210 / 297;
+  min-height: 0;
+  padding: 42px 54px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .oficio-preview {
+    width: 100%;
+    padding: 28px 22px;
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 480px) {
+  .oficio-preview {
+    padding: 22px 16px;
+    font-size: 0.76rem;
+  }
+}
