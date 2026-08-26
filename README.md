@@ -195,3 +195,13 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - adiciona ação para limpar a busca;
 - remove texto explicativo desnecessário do painel principal;
 - não altera backend, autenticação, sessões ou regras de negócio.
+
+
+## v0.8.3 — Detalhes completos da audiência
+
+- adiciona ação **Ver detalhes** na listagem de audiências;
+- exibe Processo, Assunto, Data/hora, Modalidade, Local, Link, Observações e Status;
+- lista todos os militares vinculados com RG, CPF, WhatsApp e Unidade disponíveis;
+- usa os dados já retornados pela API de listagem, sem criar nova rota ou chamadas extras;
+- mantém busca, cadastro, destinatários, sessão e logout já aprovados;
+- não altera o Google Apps Script nesta etapa.

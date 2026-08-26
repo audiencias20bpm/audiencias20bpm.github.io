@@ -1755,3 +1755,143 @@ body.modal-open {
     width: 100%;
   }
 }
+
+/* Audiências v0.8.3 — detalhes completos */
+.table-actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.audiencia-detail-card {
+  width: min(780px, 100%);
+}
+
+.audiencia-detail-code {
+  margin-top: 4px !important;
+  font-weight: 800;
+  color: #0b3c49 !important;
+  overflow-wrap: anywhere;
+}
+
+.audiencia-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.audiencia-detail-field {
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #d9e4e7;
+  border-radius: 12px;
+  background: #f8fafb;
+}
+
+.audiencia-detail-field.detail-wide {
+  grid-column: 1 / -1;
+}
+
+.audiencia-detail-field > span {
+  display: block;
+  margin-bottom: 5px;
+  color: #667980;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.035em;
+}
+
+.audiencia-detail-field strong,
+.audiencia-detail-field p,
+.audiencia-detail-field a {
+  margin: 0;
+  color: #123f4c;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.audiencia-detail-field a {
+  font-weight: 800;
+}
+
+.audiencia-detail-recipients {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #dce6e9;
+}
+
+.detail-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.detail-section-heading h3 {
+  margin: 0;
+  color: #073847;
+  font-size: 1.04rem;
+}
+
+.detail-recipient-list {
+  display: grid;
+  gap: 10px;
+}
+
+.detail-recipient-card {
+  padding: 12px 14px;
+  border: 1px solid #d8e4e7;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.detail-recipient-card strong {
+  display: block;
+  color: #0b3c49;
+  overflow-wrap: anywhere;
+}
+
+.detail-recipient-meta {
+  margin-top: 4px;
+  color: #5d7077;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.detail-empty {
+  margin: 0;
+  color: #697b82;
+}
+
+@media (min-width: 721px) {
+  .audiencias-table th:nth-child(1),
+  .audiencias-table td:nth-child(1) { width: 10%; }
+  .audiencias-table th:nth-child(2),
+  .audiencias-table td:nth-child(2) { width: 12%; }
+  .audiencias-table th:nth-child(3),
+  .audiencias-table td:nth-child(3) { width: 11%; }
+  .audiencias-table th:nth-child(4),
+  .audiencias-table td:nth-child(4) { width: 18%; }
+  .audiencias-table th:nth-child(5),
+  .audiencias-table td:nth-child(5) { width: 13%; }
+  .audiencias-table th:nth-child(6),
+  .audiencias-table td:nth-child(6) { width: 10%; }
+  .audiencias-table th:nth-child(7),
+  .audiencias-table td:nth-child(7) { width: 8%; }
+  .audiencias-table th:nth-child(8),
+  .audiencias-table td:nth-child(8) { width: 9%; }
+  .audiencias-table th:nth-child(9),
+  .audiencias-table td:nth-child(9) { width: 9%; }
+}
+
+@media (max-width: 640px) {
+  .audiencia-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .audiencia-detail-field.detail-wide {
+    grid-column: auto;
+  }
+}

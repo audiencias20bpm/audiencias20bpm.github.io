@@ -128,9 +128,99 @@
       var badge=document.createElement('span');
       badge.className='audiencia-status status-' + status.toLowerCase().replace(/_/g,'-');
       badge.textContent=statusLabel_(status);
-      statusCell.appendChild(badge); tr.appendChild(statusCell); tbody.appendChild(tr);
+      statusCell.appendChild(badge); tr.appendChild(statusCell);
+
+      var actionsCell=document.createElement('td');
+      actionsCell.className='table-actions-cell';
+      var detailButton=document.createElement('button');
+      detailButton.type='button';
+      detailButton.className='secondary-button compact-button table-action-button';
+      detailButton.textContent='Ver detalhes';
+      detailButton.addEventListener('click',function(){openDetails_(item);});
+      actionsCell.appendChild(detailButton);
+      tr.appendChild(actionsCell);
+      tbody.appendChild(tr);
     });
     if(count) count.textContent=allAudiencias.length===1?'1 audiência':allAudiencias.length+' audiências';
+  }
+
+
+  function setText_(id,value){
+    var element=document.getElementById(id);
+    if(element) element.textContent=value||'—';
+  }
+
+  function renderDetailRecipients_(items){
+    var list=document.getElementById('audiencias-detail-recipients-list');
+    var count=document.getElementById('audiencias-detail-recipients-count');
+    var recipients=Array.isArray(items)?items:[];
+    if(count) count.textContent=recipients.length===1?'1 militar':recipients.length+' militares';
+    if(!list) return;
+    list.textContent='';
+    if(!recipients.length){
+      var empty=document.createElement('p');
+      empty.className='detail-empty';
+      empty.textContent='Nenhum militar vinculado a esta audiência.';
+      list.appendChild(empty);
+      return;
+    }
+    recipients.forEach(function(item){
+      var card=document.createElement('article');
+      card.className='detail-recipient-card';
+      var name=document.createElement('strong');
+      name.textContent=item.nome||'Militar';
+      var meta=document.createElement('div');
+      meta.className='detail-recipient-meta';
+      var values=[];
+      if(item.rg) values.push('RG '+item.rg);
+      if(item.cpf) values.push('CPF '+formatCpf_(item.cpf));
+      if(item.telefone) values.push('WhatsApp '+item.telefone);
+      if(item.unidade) values.push(item.unidade);
+      meta.textContent=values.length?values.join(' • '):'Sem dados complementares.';
+      card.appendChild(name);
+      card.appendChild(meta);
+      list.appendChild(card);
+    });
+  }
+
+  function openDetails_(item){
+    if(!item) return;
+    var dialog=document.getElementById('audiencias-detail-dialog');
+    if(!dialog) return;
+    setText_('audiencias-detail-code',item.codigo||'Audiência');
+    setText_('audiencias-detail-processo',item.processo);
+    setText_('audiencias-detail-status',statusLabel_(normalizeStatus_(item.status)));
+    setText_('audiencias-detail-assunto',item.assunto);
+    setText_('audiencias-detail-data',formatDate_(item.data_hora));
+    setText_('audiencias-detail-modalidade',item.modalidade);
+    setText_('audiencias-detail-local',item.local);
+    setText_('audiencias-detail-observacoes',item.observacoes);
+
+    var link=document.getElementById('audiencias-detail-link');
+    var linkEmpty=document.getElementById('audiencias-detail-link-empty');
+    if(link){
+      if(item.link&&/^https?:\/\//i.test(item.link)){
+        link.href=item.link;
+        link.hidden=false;
+        if(linkEmpty) linkEmpty.hidden=true;
+      }else{
+        link.removeAttribute('href');
+        link.hidden=true;
+        if(linkEmpty){linkEmpty.hidden=false;linkEmpty.textContent='—';}
+      }
+    }
+
+    renderDetailRecipients_(item.destinatarios);
+    dialog.hidden=false;
+    document.body.classList.add('modal-open');
+    var close=document.getElementById('audiencias-detail-close');
+    if(close) close.focus();
+  }
+
+  function closeDetails_(){
+    var dialog=document.getElementById('audiencias-detail-dialog');
+    if(dialog) dialog.hidden=true;
+    document.body.classList.remove('modal-open');
   }
 
   function applySearch_(){
@@ -395,6 +485,15 @@
       if(current.rg) current.rg.focus();
     });
     if(add)add.addEventListener('click',addRecipient_);
+    var detailClose=document.getElementById('audiencias-detail-close');
+    var detailCloseBottom=document.getElementById('audiencias-detail-close-bottom');
+    if(detailClose)detailClose.addEventListener('click',closeDetails_);
+    if(detailCloseBottom)detailCloseBottom.addEventListener('click',closeDetails_);
+    document.querySelectorAll('[data-audiencias-detail-close]').forEach(function(element){element.addEventListener('click',closeDetails_);});
+    document.addEventListener('keydown',function(event){
+      var dialog=document.getElementById('audiencias-detail-dialog');
+      if(event.key==='Escape'&&dialog&&!dialog.hidden) closeDetails_();
+    });
     ['rg','cpf','nome'].forEach(function(type){
       var field=fields[type]; if(!field)return;
       field.addEventListener('input',function(){scheduleLookup_(type);});

@@ -9,13 +9,13 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.8.2">
-  <link rel="stylesheet" href="./css/app.css?v=0.8.2">
+  <link rel="manifest" href="./manifest.json?v=0.8.3">
+  <link rel="stylesheet" href="./css/app.css?v=0.8.3">
 </head>
 <body>
   <main class="app-shell" id="app">
     <section class="login-card" aria-labelledby="login-title">
-      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.8.2</span></span>
+      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.8.3</span></span>
       <header class="login-header">
         <div class="brand-mark" aria-hidden="true">SA</div>
         <div>
@@ -362,6 +362,43 @@
           </section>
         </section>
 
+        <section id="audiencias-detail-dialog" class="modal-shell" role="dialog" aria-modal="true" aria-labelledby="audiencias-detail-title" hidden>
+          <div class="modal-backdrop" data-audiencias-detail-close></div>
+          <div class="modal-card audiencia-detail-card">
+            <div class="modal-header">
+              <div>
+                <p class="dashboard-kicker">Audiência</p>
+                <h2 id="audiencias-detail-title">Detalhes da audiência</h2>
+                <p id="audiencias-detail-code" class="audiencia-detail-code"></p>
+              </div>
+              <button id="audiencias-detail-close" class="icon-button" type="button" aria-label="Fechar detalhes">×</button>
+            </div>
+
+            <div class="audiencia-detail-grid">
+              <div class="audiencia-detail-field"><span>Processo</span><strong id="audiencias-detail-processo">—</strong></div>
+              <div class="audiencia-detail-field"><span>Status</span><strong id="audiencias-detail-status">—</strong></div>
+              <div class="audiencia-detail-field detail-wide"><span>Assunto</span><strong id="audiencias-detail-assunto">—</strong></div>
+              <div class="audiencia-detail-field"><span>Data e hora</span><strong id="audiencias-detail-data">—</strong></div>
+              <div class="audiencia-detail-field"><span>Modalidade</span><strong id="audiencias-detail-modalidade">—</strong></div>
+              <div class="audiencia-detail-field detail-wide"><span>Local</span><strong id="audiencias-detail-local">—</strong></div>
+              <div class="audiencia-detail-field detail-wide"><span>Link</span><a id="audiencias-detail-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Abrir link da audiência</a><strong id="audiencias-detail-link-empty">—</strong></div>
+              <div class="audiencia-detail-field detail-wide"><span>Observações</span><p id="audiencias-detail-observacoes">—</p></div>
+            </div>
+
+            <section class="audiencia-detail-recipients" aria-labelledby="audiencias-detail-recipients-title">
+              <div class="detail-section-heading">
+                <h3 id="audiencias-detail-recipients-title">Militares convocados</h3>
+                <span id="audiencias-detail-recipients-count" class="module-count">0</span>
+              </div>
+              <div id="audiencias-detail-recipients-list" class="detail-recipient-list"></div>
+            </section>
+
+            <div class="form-actions">
+              <button id="audiencias-detail-close-bottom" class="secondary-button" type="button">Fechar</button>
+            </div>
+          </div>
+        </section>
+
         <div class="global-auth-actions" aria-label="Ações da sessão">
           <button id="logout-button" class="logout-button global-logout-button" type="button">Sair</button>
         </div>
@@ -443,13 +480,13 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.8.2"></script>
-  <script src="./js/api.js?v=0.8.2"></script>
-  <script src="./js/audiencias.js?v=0.8.2"></script>
-  <script src="./js/destinatarios.js?v=0.8.2"></script>
-  <script src="./js/dashboard.js?v=0.8.2"></script>
-  <script src="./js/auth.js?v=0.8.2"></script>
-  <script src="./js/session.js?v=0.8.2"></script>
+  <script src="./js/config.js?v=0.8.3"></script>
+  <script src="./js/api.js?v=0.8.3"></script>
+  <script src="./js/audiencias.js?v=0.8.3"></script>
+  <script src="./js/destinatarios.js?v=0.8.3"></script>
+  <script src="./js/dashboard.js?v=0.8.3"></script>
+  <script src="./js/auth.js?v=0.8.3"></script>
+  <script src="./js/session.js?v=0.8.3"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
