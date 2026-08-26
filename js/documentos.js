@@ -17,6 +17,11 @@
     var data = getData_(response);
     return String(data.code || data.codigo || response.code || response.codigo || '').toUpperCase();
   }
+  function getSafeMessage_(response, fallback) {
+    if (!isObject_(response)) return fallback || 'Não foi possível concluir a operação.';
+    var message = String(response.message || response.mensagem || '').trim();
+    return message || fallback || 'Não foi possível concluir a operação.';
+  }
   function handleExpiredSession_() {
     if (window.Auth && typeof window.Auth.clearStoredSession === 'function') window.Auth.clearStoredSession();
     if (window.Auth && typeof window.Auth.showLogin === 'function') window.Auth.showLogin('Sua sessão expirou. Entre novamente para continuar.');
@@ -142,7 +147,7 @@
       if (!isSuccess_(response)) {
         var code = getErrorCode_(response);
         if (code === 'TOKEN_AUSENTE' || code.indexOf('SESSAO_') === 0) { handleExpiredSession_(); return false; }
-        throw new Error('Não foi possível carregar a configuração dos ofícios.');
+        throw new Error(getSafeMessage_(response, 'Não foi possível carregar a configuração dos ofícios.'));
       }
       var data = getData_(response);
       updateExpiry_(data);
@@ -180,7 +185,7 @@
       if (!isSuccess_(response)) {
         var code = getErrorCode_(response);
         if (code === 'TOKEN_AUSENTE' || code.indexOf('SESSAO_') === 0) { handleExpiredSession_(); return; }
-        throw new Error('Não foi possível salvar a configuração dos ofícios.');
+        throw new Error(getSafeMessage_(response, 'Não foi possível salvar a configuração dos ofícios.'));
       }
       var data = getData_(response);
       updateExpiry_(data);

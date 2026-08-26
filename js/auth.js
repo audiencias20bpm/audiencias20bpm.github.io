@@ -181,7 +181,7 @@
       validatingPanel.hidden = true;
     }
     if (intro) {
-      intro.hidden = false;
+      intro.hidden = true;
     }
 
     form.hidden = true;

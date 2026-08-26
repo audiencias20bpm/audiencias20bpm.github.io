@@ -219,7 +219,7 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - não gera PDF nem envia WhatsApp nesta fase.
 
 
-## v0.9.1 — Nome de guerra do signatário
+## v0.9.2 — Nome de guerra do signatário
 
 - mantém o nome completo do signatário como texto puro;
 - adiciona marcação separada do nome de guerra para renderização em negrito no ofício;
