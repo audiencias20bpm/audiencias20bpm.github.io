@@ -306,3 +306,13 @@ Deploy retry: v0.9.7
 - Mantém em negrito apenas o rótulo `Assunto:`; `Apresentação de Praças.` passa a peso normal.
 - Reposiciona o brasão do 20º BPM mais à direita no bloco de assinatura, aproximando-o do padrão oficial.
 - Nenhuma alteração de backend, Drive, numeração, autenticação ou sessão.
+
+
+## Histórico de ofícios (v0.9.12)
+
+- habilita a consulta dos registros da aba `OFICIOS`;
+- permite filtrar por texto, ano e status;
+- exibe número, data, militar, RG, processo e situação;
+- permite abrir ou baixar, sob demanda e com sessão válida, o PDF privado armazenado no Drive;
+- não torna os arquivos do Drive públicos e não expõe `drive_id` no frontend;
+- mantém o módulo geral `Histórico` do painel como etapa futura.

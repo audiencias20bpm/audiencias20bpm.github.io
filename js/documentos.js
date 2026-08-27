@@ -9,6 +9,8 @@
   var pendingOficioReservation_ = null;
   var generationBusy_ = false;
   var signatureRemoveRequested_ = false;
+  var historyItems_ = [];
+  var historyBusy_ = false;
 
   function isObject_(value) { return value !== null && typeof value === 'object'; }
   function isSuccess_(response) {
@@ -52,6 +54,180 @@
     el.hidden = !message;
     el.textContent = message || '';
   }
+  function setHistoryLoading_(loading) {
+    historyBusy_ = Boolean(loading);
+    var el = document.getElementById('documentos-history-loading');
+    if (el) el.hidden = !historyBusy_;
+    var apply = document.getElementById('documentos-history-apply');
+    if (apply) apply.disabled = historyBusy_;
+  }
+  function setHistoryError_(message) {
+    var el = document.getElementById('documentos-history-error');
+    if (!el) return;
+    el.hidden = !message;
+    el.textContent = message || '';
+  }
+  function formatDatePt_(value) {
+    var text = String(value || '').trim();
+    if (!text) return '—';
+    var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
+    if (match) return match[3] + '/' + match[2] + '/' + match[1];
+    var date = new Date(text);
+    if (Number.isNaN(date.getTime())) return text;
+    return new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Belem', day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+  }
+  function historyStatusLabel_(status) {
+    var value = String(status || '').toUpperCase();
+    if (value === 'GERADO') return 'Gerado';
+    if (value === 'FALHA_PDF') return 'Falha no PDF';
+    if (value === 'RESERVADO') return 'Reservado';
+    return value || '—';
+  }
+  function base64ToBlob_(base64, mime) {
+    var binary = atob(String(base64 || ''));
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    return new Blob([bytes], { type: mime || 'application/pdf' });
+  }
+  function openHistoryPdf_(item, button) {
+    if (!item || !item.id || !item.tem_pdf || historyBusy_) return;
+    var token = sessionStorage.getItem(TOKEN_STORAGE_KEY) || '';
+    if (!token) { handleExpiredSession_(); return; }
+    var original = button ? button.textContent : '';
+    if (button) { button.disabled = true; button.textContent = 'Abrindo...'; }
+    setHistoryError_('');
+    var popup = window.open('', '_blank');
+    if (popup) {
+      try { popup.opener = null; popup.document.title = 'Carregando PDF...'; } catch (error) { /* sem ação */ }
+    }
+    window.Api.post('oficios_pdf_obter', { token: token, oficio_id: item.id }).then(function (response) {
+      if (!isSuccess_(response)) {
+        var code = getErrorCode_(response);
+        if (code === 'TOKEN_AUSENTE' || code.indexOf('SESSAO_') === 0) { handleExpiredSession_(); return; }
+        throw new Error(getSafeMessage_(response, 'Não foi possível abrir o PDF do ofício.'));
+      }
+      var data = getData_(response);
+      updateExpiry_(data);
+      var arquivo = data.arquivo || {};
+      if (!arquivo.base64) throw new Error('O servidor não devolveu o PDF do ofício.');
+      var blob = base64ToBlob_(arquivo.base64, arquivo.mime || 'application/pdf');
+      var url = URL.createObjectURL(blob);
+      if (popup && !popup.closed) {
+        popup.location.href = url;
+      } else {
+        var link = document.createElement('a');
+        link.href = url;
+        link.download = arquivo.nome || item.pdf_nome || ('OFICIO-' + item.numero_formatado.replace('/', '-') + '.pdf');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+      window.setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+    }).catch(function (error) {
+      if (popup && !popup.closed) popup.close();
+      setHistoryError_(error && error.message ? error.message : 'Não foi possível abrir o PDF do ofício.');
+    }).finally(function () {
+      if (button) { button.disabled = false; button.textContent = original || 'Abrir PDF'; }
+    });
+  }
+  function renderHistoryYears_(items) {
+    var select = document.getElementById('documentos-history-year');
+    if (!select) return;
+    var selected = select.value;
+    var years = [];
+    (items || []).forEach(function (item) {
+      var year = Number(item.ano || 0);
+      if (year && years.indexOf(year) === -1) years.push(year);
+    });
+    years.sort(function (a, b) { return b - a; });
+    select.innerHTML = '<option value="">Todos os anos</option>' + years.map(function (year) { return '<option value="' + year + '">' + year + '</option>'; }).join('');
+    if (selected && years.indexOf(Number(selected)) !== -1) select.value = selected;
+  }
+  function renderHistory_(items) {
+    historyItems_ = Array.isArray(items) ? items : [];
+    var content = document.getElementById('documentos-history-content');
+    var empty = document.getElementById('documentos-history-empty');
+    var body = document.getElementById('documentos-history-body');
+    var count = document.getElementById('documentos-history-count');
+    if (count) count.textContent = String(historyItems_.length);
+    if (empty) empty.hidden = historyItems_.length !== 0;
+    if (content) content.hidden = historyItems_.length === 0;
+    if (!body) return;
+    body.textContent = '';
+    historyItems_.forEach(function (item) {
+      var tr = document.createElement('tr');
+      var values = [item.numero_formatado || '—', formatDatePt_(item.data_emissao), item.militar_nome || '—', item.militar_rg || '—', item.processo || '—'];
+      values.forEach(function (value, index) {
+        var td = document.createElement('td');
+        td.textContent = value;
+        if (index === 2) td.className = 'document-history-name';
+        if (index === 4) td.className = 'document-history-process';
+        tr.appendChild(td);
+      });
+      var statusTd = document.createElement('td');
+      var badge = document.createElement('span');
+      badge.className = 'document-history-status status-' + String(item.status || '').toLowerCase().replace(/_/g, '-');
+      badge.textContent = historyStatusLabel_(item.status);
+      statusTd.appendChild(badge);
+      tr.appendChild(statusTd);
+      var actionTd = document.createElement('td');
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'secondary-button compact-button document-history-pdf-button';
+      button.textContent = item.tem_pdf ? 'Abrir PDF' : 'Indisponível';
+      button.disabled = !item.tem_pdf;
+      button.addEventListener('click', function () { openHistoryPdf_(item, button); });
+      actionTd.appendChild(button);
+      tr.appendChild(actionTd);
+      body.appendChild(tr);
+    });
+  }
+  function loadHistory_() {
+    var token = sessionStorage.getItem(TOKEN_STORAGE_KEY) || '';
+    if (!token) { handleExpiredSession_(); return Promise.resolve(false); }
+    var search = document.getElementById('documentos-history-search');
+    var year = document.getElementById('documentos-history-year');
+    var status = document.getElementById('documentos-history-status');
+    setHistoryLoading_(true); setHistoryError_('');
+    return window.Api.post('oficios_historico_list', {
+      token: token,
+      busca: search ? search.value.trim() : '',
+      ano: year ? year.value : '',
+      status: status ? status.value : ''
+    }).then(function (response) {
+      if (!isSuccess_(response)) {
+        var code = getErrorCode_(response);
+        if (code === 'TOKEN_AUSENTE' || code.indexOf('SESSAO_') === 0) { handleExpiredSession_(); return false; }
+        throw new Error(getSafeMessage_(response, 'Não foi possível carregar o histórico de ofícios.'));
+      }
+      var data = getData_(response);
+      updateExpiry_(data);
+      var items = Array.isArray(data.itens) ? data.itens : [];
+      renderHistoryYears_(items);
+      renderHistory_(items);
+      return true;
+    }).catch(function (error) {
+      renderHistory_([]);
+      setHistoryError_(error && error.message ? error.message : 'Não foi possível carregar o histórico de ofícios.');
+      return false;
+    }).finally(function () { setHistoryLoading_(false); });
+  }
+  function showHistory_() {
+    if (!currentConfig_ || !currentConfig_.configurada) { showConfig_(); return; }
+    var home = document.getElementById('documentos-home');
+    var form = document.getElementById('documentos-config-form');
+    var generateView = document.getElementById('documentos-generate-view');
+    var historyView = document.getElementById('documentos-history-view');
+    var subtitle = document.getElementById('documentos-view-subtitle');
+    if (home) home.hidden = true;
+    if (form) form.hidden = true;
+    if (generateView) generateView.hidden = true;
+    if (historyView) historyView.hidden = false;
+    if (subtitle) subtitle.textContent = 'Consulte os ofícios registrados e abra os PDFs armazenados no Drive.';
+    setError_(''); setSuccess_(''); setHistoryError_('');
+    loadHistory_();
+  }
+
   function updateNextNumber_() {
     var year = document.getElementById('oficio-ano');
     var last = document.getElementById('oficio-ultimo-numero');
@@ -228,11 +404,13 @@
     var home = document.getElementById('documentos-home');
     var form = document.getElementById('documentos-config-form');
     var generateView = document.getElementById('documentos-generate-view');
+    var historyView = document.getElementById('documentos-history-view');
     var subtitle = document.getElementById('documentos-view-subtitle');
     var status = document.getElementById('documentos-config-status');
     if (!config || !config.configurada) {
       if (home) home.hidden = true;
       if (generateView) generateView.hidden = true;
+      if (historyView) historyView.hidden = true;
       if (form) form.hidden = false;
       if (subtitle) subtitle.textContent = 'Faça a configuração inicial para preparar a numeração e o signatário dos ofícios.';
       if (status) status.textContent = 'Configuração inicial';
@@ -240,6 +418,7 @@
     }
     if (form) form.hidden = true;
     if (generateView) generateView.hidden = true;
+    if (historyView) historyView.hidden = true;
     if (home) home.hidden = false;
     if (subtitle) subtitle.textContent = 'Gerencie a emissão dos ofícios vinculados às audiências.';
     if (status) status.textContent = 'Configurado';
@@ -252,9 +431,11 @@
     var home = document.getElementById('documentos-home');
     var form = document.getElementById('documentos-config-form');
     var generateView = document.getElementById('documentos-generate-view');
+    var historyView = document.getElementById('documentos-history-view');
     var subtitle = document.getElementById('documentos-view-subtitle');
     if (home) home.hidden = true;
     if (generateView) generateView.hidden = true;
+    if (historyView) historyView.hidden = true;
     if (form) form.hidden = false;
     if (subtitle) subtitle.textContent = 'Configuração da numeração anual e do signatário padrão.';
     setError_(''); setSuccess_('');
@@ -263,7 +444,9 @@
   function showHome_() {
     if (!currentConfig_ || !currentConfig_.configurada) { showConfig_(); return; }
     var generateView = document.getElementById('documentos-generate-view');
+    var historyView = document.getElementById('documentos-history-view');
     if (generateView) generateView.hidden = true;
+    if (historyView) historyView.hidden = true;
     setError_(''); setSuccess_('');
     renderHome_(currentConfig_);
   }
@@ -963,9 +1146,11 @@
     var home = document.getElementById('documentos-home');
     var form = document.getElementById('documentos-config-form');
     var generateView = document.getElementById('documentos-generate-view');
+    var historyView = document.getElementById('documentos-history-view');
     var subtitle = document.getElementById('documentos-view-subtitle');
     if (home) home.hidden = true;
     if (form) form.hidden = true;
+    if (historyView) historyView.hidden = true;
     if (generateView) generateView.hidden = false;
     if (subtitle) subtitle.textContent = 'Prepare o conteúdo do ofício e revise a prévia antes da geração do PDF.';
     setError_(''); setSuccess_(''); setGenerateError_('');
@@ -1015,6 +1200,11 @@
     var openConfig = document.getElementById('documentos-open-config');
     var closeConfig = document.getElementById('documentos-close-config');
     var generate = document.getElementById('documentos-generate');
+    var history = document.getElementById('documentos-history');
+    var historyBack = document.getElementById('documentos-history-back');
+    var historyApply = document.getElementById('documentos-history-apply');
+    var historyClear = document.getElementById('documentos-history-clear');
+    var historySearch = document.getElementById('documentos-history-search');
     var generateBack = document.getElementById('documentos-generate-back');
     var audienceSelect = document.getElementById('documentos-audiencia-select');
     var militarySelect = document.getElementById('documentos-militar-select');
@@ -1066,6 +1256,19 @@
     if (openConfig) openConfig.addEventListener('click', showConfig_);
     if (closeConfig) closeConfig.addEventListener('click', showHome_);
     if (generate) generate.addEventListener('click', showGenerate_);
+    if (history) history.addEventListener('click', showHistory_);
+    if (historyBack) historyBack.addEventListener('click', showHome_);
+    if (historyApply) historyApply.addEventListener('click', loadHistory_);
+    if (historySearch) historySearch.addEventListener('keydown', function (event) { if (event.key === 'Enter') { event.preventDefault(); loadHistory_(); } });
+    if (historyClear) historyClear.addEventListener('click', function () {
+      var search = document.getElementById('documentos-history-search');
+      var year = document.getElementById('documentos-history-year');
+      var status = document.getElementById('documentos-history-status');
+      if (search) search.value = '';
+      if (year) year.value = '';
+      if (status) status.value = '';
+      loadHistory_();
+    });
     if (generateBack) generateBack.addEventListener('click', showHome_);
     if (audienceSelect) audienceSelect.addEventListener('change', onAudienceChange_);
     if (militarySelect) militarySelect.addEventListener('change', onMilitaryChange_);
@@ -1075,5 +1278,5 @@
     [issueDate, destination, optional].forEach(function (element) { if (element) element.addEventListener('input', function () { pendingOficioReservation_ = null; updateGeneratePreview_(); }); });
   }
   document.addEventListener('DOMContentLoaded', bind_);
-  window.Documentos = Object.freeze({ open: open, back: back, reload: load_, showConfig: showConfig_, showHome: showHome_, showGenerate: showGenerate_ });
+  window.Documentos = Object.freeze({ open: open, back: back, reload: load_, showConfig: showConfig_, showHome: showHome_, showGenerate: showGenerate_, showHistory: showHistory_ });
 }());

@@ -2615,3 +2615,85 @@ body.modal-open {
     max-height: 80px;
   }
 }
+
+
+/* v0.9.12 - Histórico de ofícios */
+.document-history-view {
+  display: grid;
+  gap: 20px;
+}
+.document-history-filters {
+  border: 1px solid var(--border-color, #d4e0e4);
+  border-radius: 18px;
+  padding: 18px;
+  background: #fff;
+}
+.document-history-filter-actions {
+  margin-top: 14px;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.document-history-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #45616b;
+}
+.document-history-summary strong {
+  color: #073f50;
+  font-size: 1.15rem;
+}
+.document-history-table td {
+  vertical-align: middle;
+}
+.document-history-name {
+  min-width: 190px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.document-history-process {
+  min-width: 150px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.document-history-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: .78rem;
+  font-weight: 800;
+  white-space: nowrap;
+  border: 1px solid #c9d8dd;
+  background: #f4f8f9;
+  color: #244d59;
+}
+.document-history-status.status-gerado {
+  border-color: #b7dbc8;
+  background: #eef8f2;
+  color: #17613a;
+}
+.document-history-status.status-falha-pdf {
+  border-color: #efc0c0;
+  background: #fff2f2;
+  color: #9a2222;
+}
+.document-history-pdf-button {
+  min-width: 92px;
+}
+.document-history-pdf-button[disabled] {
+  opacity: .55;
+  cursor: not-allowed;
+}
+@media (max-width: 720px) {
+  .document-history-filter-actions {
+    justify-content: stretch;
+  }
+  .document-history-filter-actions button {
+    flex: 1 1 140px;
+  }
+  .document-history-table {
+    min-width: 820px;
+  }
+}
