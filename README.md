@@ -300,3 +300,9 @@ Deploy retry: v0.9.7
 - A imagem cadastrada continua sobreposta atrás da linha de identificação do signatário, conforme o padrão aprovado.
 - A renderização interna do A4 foi elevada de 2x para 2,5x e a qualidade JPEG para 0,98, preservando medidas e lógica do documento.
 - Nenhuma alteração de autenticação, sessão, numeração, Drive ou módulos de Audiências/Destinatários.
+
+
+## v0.9.11 — Ajustes finais visuais do ofício
+- Mantém em negrito apenas o rótulo `Assunto:`; `Apresentação de Praças.` passa a peso normal.
+- Reposiciona o brasão do 20º BPM mais à direita no bloco de assinatura, aproximando-o do padrão oficial.
+- Nenhuma alteração de backend, Drive, numeração, autenticação ou sessão.

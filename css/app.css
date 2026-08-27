@@ -2258,7 +2258,7 @@ body.modal-open {
   text-align: center;
 }
 
-/* v0.9.10 - saudacao e fecho alinhados ao recuo da primeira linha do corpo */
+/* v0.9.11 - assunto com negrito apenas no rotulo e brasao inferior reposicionado */
 .oficio-preview-saudacao,
 .oficio-preview-respect {
   text-align: left;
@@ -2382,7 +2382,7 @@ body.modal-open {
 
 .oficio-preview-footer-emblem {
   position: absolute;
-  left: 0;
+  left: 22px;
   bottom: 0;
   width: auto;
   max-width: 44px;

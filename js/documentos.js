@@ -796,7 +796,12 @@
       var destLines = wrapSimpleText_(ctx, destination, mm(170), 20, false);
       destLines.forEach(function (line, i) { ctx.fillText(line, mm(20), mm(56) + i * 28); });
       var y = mm(56) + destLines.length * 28 + mm(8);
-      setCanvasFont_(ctx, 20, true); ctx.fillText('Assunto: Apresentação de Praças.', mm(20), y); y += mm(24);
+      setCanvasFont_(ctx, 20, true);
+      ctx.fillText('Assunto:', mm(20), y);
+      var assuntoLabelWidth = ctx.measureText('Assunto: ').width;
+      setCanvasFont_(ctx, 20, false);
+      ctx.fillText('Apresentação de Praças.', mm(20) + assuntoLabelWidth, y);
+      y += mm(24);
       setCanvasFont_(ctx, 20, false);
       ctx.fillStyle = black;
       ctx.textAlign = 'left';
@@ -834,7 +839,7 @@
         signSegments.push({ text: name.slice(warIndex, warIndex + war.length), bold: true });
         signSegments.push({ text: name.slice(warIndex + war.length) + ' - ' + signPost + ' RG ' + signRg, bold: false });
       } else signSegments.push({ text: name + ' - ' + signPost + ' RG ' + signRg, bold: false });
-      ctx.drawImage(footerLogo, mm(4), y - mm(8), mm(13), mm(18));
+      ctx.drawImage(footerLogo, mm(12), y - mm(8), mm(13), mm(18));
       if (signatureImage) {
         var signMaxW = mm(58);
         var signMaxH = mm(26);
