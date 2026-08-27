@@ -213,19 +213,28 @@
     }).finally(function () { setHistoryLoading_(false); });
   }
   function showHistory_() {
-    if (!currentConfig_ || !currentConfig_.configurada) { showConfig_(); return; }
-    var home = document.getElementById('documentos-home');
-    var form = document.getElementById('documentos-config-form');
-    var generateView = document.getElementById('documentos-generate-view');
+    var dashboard = document.getElementById('dashboard-home');
+    var audiencias = document.getElementById('audiencias-view');
+    var destinatarios = document.getElementById('destinatarios-view');
+    var documentos = document.getElementById('documentos-view');
+    var historico = document.getElementById('historico-view');
     var historyView = document.getElementById('documentos-history-view');
-    var subtitle = document.getElementById('documentos-view-subtitle');
-    if (home) home.hidden = true;
-    if (form) form.hidden = true;
-    if (generateView) generateView.hidden = true;
+    if (dashboard) dashboard.hidden = true;
+    if (audiencias) audiencias.hidden = true;
+    if (destinatarios) destinatarios.hidden = true;
+    if (documentos) documentos.hidden = true;
+    if (historico) historico.hidden = false;
     if (historyView) historyView.hidden = false;
-    if (subtitle) subtitle.textContent = 'Consulte os ofícios registrados e abra os PDFs armazenados no Drive.';
     setError_(''); setSuccess_(''); setHistoryError_('');
     loadHistory_();
+  }
+
+  function backHistory_() {
+    var historico = document.getElementById('historico-view');
+    var dashboard = document.getElementById('dashboard-home');
+    if (historico) historico.hidden = true;
+    if (dashboard) dashboard.hidden = false;
+    setHistoryError_('');
   }
 
   function updateNextNumber_() {
@@ -1176,9 +1185,11 @@
     var audiencias = document.getElementById('audiencias-view');
     var destinatarios = document.getElementById('destinatarios-view');
     var documentos = document.getElementById('documentos-view');
+    var historico = document.getElementById('historico-view');
     if (dashboard) dashboard.hidden = true;
     if (audiencias) audiencias.hidden = true;
     if (destinatarios) destinatarios.hidden = true;
+    if (historico) historico.hidden = true;
     if (documentos) documentos.hidden = false;
     load_();
   }
@@ -1257,7 +1268,7 @@
     if (closeConfig) closeConfig.addEventListener('click', showHome_);
     if (generate) generate.addEventListener('click', showGenerate_);
     if (history) history.addEventListener('click', showHistory_);
-    if (historyBack) historyBack.addEventListener('click', showHome_);
+    if (historyBack) historyBack.addEventListener('click', backHistory_);
     if (historyApply) historyApply.addEventListener('click', loadHistory_);
     if (historySearch) historySearch.addEventListener('keydown', function (event) { if (event.key === 'Enter') { event.preventDefault(); loadHistory_(); } });
     if (historyClear) historyClear.addEventListener('click', function () {

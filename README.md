@@ -321,3 +321,12 @@ Deploy retry: v0.9.7
 ## Acesso direto ao Histórico (v0.9.13)
 
 O card **Histórico** do painel principal passa a ficar disponível e abre diretamente o Histórico de Ofícios já implementado no módulo Documentos. Esta alteração é exclusivamente de navegação do frontend; não altera backend, autenticação, sessões, geração de PDF, Drive ou estrutura de dados.
+
+
+## Histórico como módulo independente (v0.9.14)
+
+- O card **Histórico** do painel principal abre diretamente o histórico de ofícios, sem passar pelo módulo Documentos.
+- A ação duplicada **Histórico de ofícios** foi removida da tela inicial de Documentos.
+- Documentos permanece focado em **Gerar ofício** e **Configuração**.
+- A tela de Histórico possui identidade própria e botão **Voltar ao painel**.
+- Pesquisa, filtros, consulta e abertura segura dos PDFs continuam utilizando a lógica já aprovada da v0.9.12.

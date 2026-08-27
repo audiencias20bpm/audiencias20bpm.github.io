@@ -73,7 +73,6 @@
         } else if (module.key === 'documentos' && window.Documentos) {
           window.Documentos.open();
         } else if (module.key === 'historico' && window.Documentos) {
-          window.Documentos.open();
           window.Documentos.showHistory();
         }
       });
