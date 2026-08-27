@@ -291,3 +291,12 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - aumenta o timeout de comunicação com o Apps Script para 45 segundos.
 
 Deploy retry: v0.9.7
+
+
+## v0.9.10 — Alinhamento do corpo, assinatura opcional e nitidez
+
+- `Senhor Juiz,` e `Respeitosamente,` usam o mesmo recuo da primeira linha do parágrafo do corpo, conforme o ofício-modelo.
+- Mantido no frontend o campo `Assinatura digitalizada (opcional)` na configuração do signatário, com JPG/JPEG de até 2,5 MB; a ausência da imagem não bloqueia a geração.
+- A imagem cadastrada continua sobreposta atrás da linha de identificação do signatário, conforme o padrão aprovado.
+- A renderização interna do A4 foi elevada de 2x para 2,5x e a qualidade JPEG para 0,98, preservando medidas e lógica do documento.
+- Nenhuma alteração de autenticação, sessão, numeração, Drive ou módulos de Audiências/Destinatários.

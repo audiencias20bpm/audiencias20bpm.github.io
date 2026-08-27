@@ -757,11 +757,11 @@
 
   function createOficioCanvas_() {
     var canvas = document.createElement('canvas');
-    // Renderiza o A4 em 2x (aprox. 300 dpi) para melhorar a nitidez do PDF
-    // sem alterar as medidas/logica visual ja aprovadas.
+    // Renderiza o A4 em 2,5x para elevar a nitidez do PDF sem alterar
+    // as medidas/logica visual ja aprovadas e sem o custo maior de 3x.
     var logicalWidth = 1240;
     var logicalHeight = 1754;
-    var renderScale = 2;
+    var renderScale = 2.5;
     canvas.width = logicalWidth * renderScale;
     canvas.height = logicalHeight * renderScale;
     var ctx = canvas.getContext('2d');
@@ -816,7 +816,10 @@
       if (optional) segments.push({ text: optional, color: '#c62828' });
       y = drawJustifiedSegments_(ctx, segments, mm(28), y, mm(154), 20, 31, mm(22));
       y += mm(18);
-      drawCenteredText_(ctx, 'Respeitosamente,', center, y, 20, false, black); y += mm(42);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = black;
+      setCanvasFont_(ctx, 20, false);
+      ctx.fillText('Respeitosamente,', mm(50), y); y += mm(42);
 
       var name = String(currentConfig_.signatario_nome || '').trim();
       var war = String(currentConfig_.signatario_nome_guerra || '').trim();
@@ -929,7 +932,7 @@
       .then(reserveOficio_)
       .then(function (reservation) {
         return createOficioCanvas_().then(function (canvas) {
-          var jpeg = canvas.toDataURL('image/jpeg', 0.96);
+          var jpeg = canvas.toDataURL('image/jpeg', 0.98);
           var blob = jpegDataUrlToPdfBlob_(jpeg, canvas.width, canvas.height);
           var safeNumber = String(reservation.numero_formatado || 'oficio').replace(/[\\/:*?"<>|]+/g, '-');
           var rg = String(selectedGenerationMilitary_.rg || '').replace(/\D+/g, '');
