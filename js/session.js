@@ -46,7 +46,9 @@
       id: user.id || current.id || '',
       nome: user.nome || user.name || current.nome || '',
       login: user.login || current.login || '',
-      perfil: user.perfil || user.role || current.perfil || ''
+      perfil: user.perfil || user.role || current.perfil || '',
+      tipo_conta: user.tipo_conta || current.tipo_conta || '',
+      troca_senha_pendente: user.troca_senha_pendente === true
     };
 
     sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(merged));

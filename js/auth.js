@@ -113,7 +113,9 @@
         id: user.id || '',
         nome: user.nome || user.name || '',
         login: user.login || '',
-        perfil: user.perfil || user.role || ''
+        perfil: user.perfil || user.role || '',
+        tipo_conta: user.tipo_conta || '',
+        troca_senha_pendente: user.troca_senha_pendente === true
       }));
     } else {
       sessionStorage.removeItem(USER_STORAGE_KEY);
@@ -190,8 +192,15 @@
       card.classList.add('is-authenticated');
     }
 
-    if (window.Dashboard && typeof window.Dashboard.render === 'function') {
-      window.Dashboard.render(normalizedUser);
+    if (normalizedUser.troca_senha_pendente === true && window.Usuarios && typeof window.Usuarios.requirePasswordChange === 'function') {
+      window.Usuarios.requirePasswordChange(normalizedUser);
+    } else {
+      if (window.Usuarios && typeof window.Usuarios.hidePasswordChange === 'function') {
+        window.Usuarios.hidePasswordChange();
+      }
+      if (window.Dashboard && typeof window.Dashboard.render === 'function') {
+        window.Dashboard.render(normalizedUser);
+      }
     }
 
     if (loginInput) {

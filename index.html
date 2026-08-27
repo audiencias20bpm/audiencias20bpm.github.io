@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.14">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.14">
+  <link rel="manifest" href="./manifest.json?v=0.9.15">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.15">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -82,6 +82,28 @@
       </form>
 
       <section id="login-success" class="authenticated-shell" aria-live="polite" hidden>
+        <section id="password-change-view" class="password-change-view" aria-labelledby="password-change-title" hidden>
+          <div class="password-change-card">
+            <p class="dashboard-kicker">Primeiro acesso</p>
+            <h2 id="password-change-title">Crie sua nova senha</h2>
+            <p>A conta de <strong id="password-change-user">Usuário</strong> foi criada com uma senha temporária. Defina uma senha pessoal para continuar.</p>
+            <form id="password-change-form" class="users-form-grid" novalidate>
+              <div class="form-group">
+                <label for="password-change-new">Nova senha</label>
+                <input id="password-change-new" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+                <small>Mínimo de 12 caracteres.</small>
+              </div>
+              <div class="form-group">
+                <label for="password-change-confirm">Confirmar nova senha</label>
+                <input id="password-change-confirm" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+              </div>
+              <div id="password-change-message" class="module-error full-width" role="alert" hidden></div>
+              <div class="form-actions full-width">
+                <button class="primary-button" type="submit">Salvar nova senha</button>
+              </div>
+            </form>
+          </div>
+        </section>
         <section id="dashboard" class="dashboard" aria-labelledby="dashboard-title">
           <div id="dashboard-home">
           <header class="dashboard-header">
@@ -763,6 +785,112 @@
             </div>
           </section>
 
+          <section id="usuarios-view" class="module-view" aria-labelledby="usuarios-view-title" hidden>
+            <header class="module-view-header">
+              <div>
+                <button id="usuarios-back" class="back-button" type="button">← Voltar ao painel</button>
+                <p class="dashboard-kicker">Administração DEV</p>
+                <h2 id="usuarios-view-title">Usuários</h2>
+                <p class="module-view-subtitle">Criação e administração de contas do sistema.</p>
+              </div>
+              <div class="module-header-actions">
+                <span id="usuarios-count" class="module-count">—</span>
+                <button id="usuarios-new" class="primary-button compact-button" type="button">+ Novo usuário</button>
+              </div>
+            </header>
+
+            <div class="users-security-note">
+              <strong>Contas individuais</strong> poderão receber acesso rápido por biometria/Passkey em etapa futura.
+              <strong>Contas funcionais</strong>, como P1_Cadastro, permanecerão com biometria desabilitada.
+            </div>
+
+            <div id="usuarios-success" class="module-success" role="status" aria-live="polite" hidden></div>
+            <div id="usuarios-error" class="module-error" role="alert" hidden></div>
+
+            <section id="usuarios-create-panel" class="users-panel" hidden>
+              <h3>Novo usuário</h3>
+              <form id="usuarios-create-form" class="users-form-grid" novalidate>
+                <div class="form-group">
+                  <label for="usuarios-create-nome">Nome de exibição</label>
+                  <input id="usuarios-create-nome" autocomplete="off" maxlength="120" placeholder="Ex.: SD Karina ou P1 - Cadastro" required>
+                </div>
+                <div class="form-group">
+                  <label for="usuarios-create-login">Login</label>
+                  <input id="usuarios-create-login" autocomplete="off" maxlength="60" placeholder="Ex.: SD_Karina ou P1_Cadastro" required>
+                </div>
+                <div class="form-group">
+                  <label for="usuarios-create-tipo">Tipo da conta</label>
+                  <select id="usuarios-create-tipo" required>
+                    <option value="INDIVIDUAL">Individual</option>
+                    <option value="FUNCIONAL">Funcional / setor</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="usuarios-create-perfil">Perfil</label>
+                  <select id="usuarios-create-perfil" required>
+                    <option value="ADMINISTRADOR">Administrador</option>
+                    <option value="DEV">DEV</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="usuarios-create-senha">Senha temporária</label>
+                  <input id="usuarios-create-senha" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+                  <small>O usuário deverá trocá-la no primeiro acesso.</small>
+                </div>
+                <div class="form-group">
+                  <label for="usuarios-create-senha-confirm">Confirmar senha temporária</label>
+                  <input id="usuarios-create-senha-confirm" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+                </div>
+                <label id="usuarios-create-confirm-dev-wrap" class="users-confirm-dev full-width" hidden>
+                  <input id="usuarios-create-confirm-dev" type="checkbox"> Confirmo a criação de uma nova conta com privilégios DEV.
+                </label>
+                <div class="form-actions full-width">
+                  <button id="usuarios-create-cancel" class="secondary-button" type="button">Cancelar</button>
+                  <button class="primary-button" type="submit">Criar usuário</button>
+                </div>
+              </form>
+            </section>
+
+            <section id="usuarios-reset-panel" class="users-panel" hidden>
+              <h3>Redefinir senha</h3>
+              <p>Conta: <strong id="usuarios-reset-target"></strong></p>
+              <form id="usuarios-reset-form" class="users-form-grid" novalidate>
+                <div class="form-group">
+                  <label for="usuarios-reset-senha">Nova senha temporária</label>
+                  <input id="usuarios-reset-senha" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+                </div>
+                <div class="form-group">
+                  <label for="usuarios-reset-senha-confirm">Confirmar senha</label>
+                  <input id="usuarios-reset-senha-confirm" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+                </div>
+                <div class="form-actions full-width">
+                  <button id="usuarios-reset-cancel" class="secondary-button" type="button">Cancelar</button>
+                  <button class="primary-button" type="submit">Redefinir senha</button>
+                </div>
+              </form>
+            </section>
+
+            <div id="usuarios-loading" class="module-state" role="status" aria-live="polite" hidden>
+              <div class="validation-spinner" aria-hidden="true"></div>
+              <strong>Carregando usuários...</strong>
+            </div>
+            <div class="usuarios-search-bar">
+              <div class="form-group">
+                <label for="usuarios-search">Pesquisar</label>
+                <input id="usuarios-search" type="search" autocomplete="off" placeholder="Nome, login, perfil ou tipo">
+              </div>
+            </div>
+            <div id="usuarios-empty" class="module-state" hidden>
+              <strong>Nenhum usuário encontrado.</strong>
+            </div>
+            <div id="usuarios-content" class="table-scroll" hidden>
+              <table class="audiencias-table usuarios-table">
+                <thead><tr><th>Usuário</th><th>Tipo</th><th>Perfil</th><th>Status</th><th>Último acesso</th><th>Segurança</th><th>Ações</th></tr></thead>
+                <tbody id="usuarios-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
       <div id="logout-overlay" class="logout-overlay" role="status" aria-live="assertive" aria-busy="true" hidden>
         <div class="logout-dialog">
           <div class="validation-spinner" aria-hidden="true"></div>
@@ -783,14 +911,15 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.14"></script>
-  <script src="./js/api.js?v=0.9.14"></script>
-  <script src="./js/audiencias.js?v=0.9.14"></script>
-  <script src="./js/destinatarios.js?v=0.9.14"></script>
-  <script src="./js/documentos.js?v=0.9.14"></script>
-  <script src="./js/dashboard.js?v=0.9.14"></script>
-  <script src="./js/auth.js?v=0.9.14"></script>
-  <script src="./js/session.js?v=0.9.14"></script>
+  <script src="./js/config.js?v=0.9.15"></script>
+  <script src="./js/api.js?v=0.9.15"></script>
+  <script src="./js/audiencias.js?v=0.9.15"></script>
+  <script src="./js/destinatarios.js?v=0.9.15"></script>
+  <script src="./js/documentos.js?v=0.9.15"></script>
+  <script src="./js/usuarios.js?v=0.9.15"></script>
+  <script src="./js/dashboard.js?v=0.9.15"></script>
+  <script src="./js/auth.js?v=0.9.15"></script>
+  <script src="./js/session.js?v=0.9.15"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

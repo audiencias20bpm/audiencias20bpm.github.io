@@ -11,7 +11,7 @@
   ];
 
   var DEV_MODULES = [
-    { key: 'usuarios', title: 'Usuários', description: 'Gestão de usuários, bloqueios e sessões.', devOnly: true },
+    { key: 'usuarios', title: 'Usuários', description: 'Gestão de usuários, bloqueios e sessões.', devOnly: true, available: true },
     { key: 'auditoria', title: 'Auditoria', description: 'Consulta aos registros técnicos e ações administrativas.', devOnly: true },
     { key: 'seguranca', title: 'Segurança', description: 'Área reservada para configurações e controles do DEV.', devOnly: true }
   ];
@@ -74,6 +74,8 @@
           window.Documentos.open();
         } else if (module.key === 'historico' && window.Documentos) {
           window.Documentos.showHistory();
+        } else if (module.key === 'usuarios' && window.Usuarios) {
+          window.Usuarios.open();
         }
       });
       article.appendChild(action);

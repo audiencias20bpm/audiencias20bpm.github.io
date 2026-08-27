@@ -2697,3 +2697,68 @@ body.modal-open {
     min-width: 820px;
   }
 }
+
+
+/* ===== Usuários DEV - v0.9.15 ===== */
+.users-security-note {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #d4e0e3;
+  border-radius: 14px;
+  background: #f7fafb;
+  color: #53636a;
+  line-height: 1.55;
+}
+.users-panel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #d4e0e3;
+  border-radius: 16px;
+  background: #fbfdfd;
+}
+.users-panel h3 { margin-top: 0; color: #073746; }
+.users-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.users-form-grid .full-width { grid-column: 1 / -1; }
+.users-form-grid small { color: #607178; }
+.users-confirm-dev {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  color: #8d1919;
+  font-weight: 700;
+}
+.usuarios-search-bar { margin: 1rem 0; max-width: 520px; }
+.usuarios-table { min-width: 1080px; }
+.usuarios-login { color: #607178; font-size: 0.82rem; }
+.usuario-status {
+  display: inline-flex;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.usuario-status.status-active { background: #eaf5ee; color: #17633d; }
+.usuario-status.status-inactive { background: #fbeaea; color: #9d1c1c; }
+.usuarios-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; min-width: 230px; }
+.usuarios-actions .table-action-button { white-space: nowrap; }
+.danger-action { border-color: #d9a7a7; color: #9d1c1c; }
+.usuarios-self { color: #607178; font-weight: 700; }
+.password-change-view { padding: 1rem 0; }
+.password-change-card {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 1.25rem;
+  border: 1px solid #d4e0e3;
+  border-radius: 16px;
+  background: #fff;
+}
+.password-change-card h2 { margin-top: 0.2rem; color: #073746; }
+@media (max-width: 720px) {
+  .users-form-grid { grid-template-columns: 1fr; }
+  .users-form-grid .full-width { grid-column: auto; }
+  .usuarios-actions { min-width: 180px; }
+}
