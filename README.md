@@ -308,7 +308,7 @@ Deploy retry: v0.9.7
 - Nenhuma alteração de backend, Drive, numeração, autenticação ou sessão.
 
 
-## Histórico de ofícios (v0.9.12)
+## Histórico de ofícios (v0.9.13)
 
 - habilita a consulta dos registros da aba `OFICIOS`;
 - permite filtrar por texto, ano e status;
@@ -316,3 +316,8 @@ Deploy retry: v0.9.7
 - permite abrir ou baixar, sob demanda e com sessão válida, o PDF privado armazenado no Drive;
 - não torna os arquivos do Drive públicos e não expõe `drive_id` no frontend;
 - mantém o módulo geral `Histórico` do painel como etapa futura.
+
+
+## Acesso direto ao Histórico (v0.9.13)
+
+O card **Histórico** do painel principal passa a ficar disponível e abre diretamente o Histórico de Ofícios já implementado no módulo Documentos. Esta alteração é exclusivamente de navegação do frontend; não altera backend, autenticação, sessões, geração de PDF, Drive ou estrutura de dados.
