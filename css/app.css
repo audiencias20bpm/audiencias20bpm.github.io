@@ -2258,6 +2258,12 @@ body.modal-open {
   text-align: center;
 }
 
+/* v0.9.9 - saudacao alinhada ao corpo conforme o oficio-modelo */
+.oficio-preview-saudacao {
+  text-align: left;
+  margin-left: 18%;
+}
+
 .oficio-preview-body {
   text-align: justify;
   text-indent: 42px;

@@ -757,12 +757,18 @@
 
   function createOficioCanvas_() {
     var canvas = document.createElement('canvas');
-    canvas.width = 1240;
-    canvas.height = 1754;
+    // Renderiza o A4 em 2x (aprox. 300 dpi) para melhorar a nitidez do PDF
+    // sem alterar as medidas/logica visual ja aprovadas.
+    var logicalWidth = 1240;
+    var logicalHeight = 1754;
+    var renderScale = 2;
+    canvas.width = logicalWidth * renderScale;
+    canvas.height = logicalHeight * renderScale;
     var ctx = canvas.getContext('2d');
-    var scale = canvas.width / 210;
+    ctx.scale(renderScale, renderScale);
+    var scale = logicalWidth / 210;
     function mm(value) { return value * scale; }
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, logicalWidth, logicalHeight);
     var signatureDataUrl = String(currentConfig_ && currentConfig_.signatario_assinatura_data_url || '').trim();
     var signaturePromise = signatureDataUrl ? loadImage_(signatureDataUrl).catch(function () { return null; }) : Promise.resolve(null);
     return Promise.all([
@@ -772,7 +778,7 @@
       signaturePromise
     ]).then(function (images) {
       var left = images[0], right = images[1], footerLogo = images[2], signatureImage = images[3];
-      var center = canvas.width / 2;
+      var center = logicalWidth / 2;
       var black = '#111111';
       ctx.drawImage(left, mm(6), mm(5), mm(15), mm(22));
       ctx.drawImage(right, mm(189), mm(5), mm(15), mm(22));
@@ -791,7 +797,11 @@
       destLines.forEach(function (line, i) { ctx.fillText(line, mm(20), mm(56) + i * 28); });
       var y = mm(56) + destLines.length * 28 + mm(8);
       setCanvasFont_(ctx, 20, true); ctx.fillText('Assunto: Apresentação de Praças.', mm(20), y); y += mm(24);
-      drawCenteredText_(ctx, 'Senhor Juiz,', center, y, 20, false, black); y += mm(18);
+      setCanvasFont_(ctx, 20, false);
+      ctx.fillStyle = black;
+      ctx.textAlign = 'left';
+      ctx.fillText('Senhor Juiz,', mm(50), y);
+      y += mm(18);
 
       var posto = getGenerationPost_();
       var military = recipientDisplay_(selectedGenerationMilitary_, posto);
@@ -919,7 +929,7 @@
       .then(reserveOficio_)
       .then(function (reservation) {
         return createOficioCanvas_().then(function (canvas) {
-          var jpeg = canvas.toDataURL('image/jpeg', 0.94);
+          var jpeg = canvas.toDataURL('image/jpeg', 0.96);
           var blob = jpegDataUrlToPdfBlob_(jpeg, canvas.width, canvas.height);
           var safeNumber = String(reservation.numero_formatado || 'oficio').replace(/[\\/:*?"<>|]+/g, '-');
           var rg = String(selectedGenerationMilitary_.rg || '').replace(/\D+/g, '');

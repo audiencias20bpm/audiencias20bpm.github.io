@@ -240,6 +240,15 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - mantém a geração de PDF desabilitada até a próxima fase;
 - não altera o Google Apps Script nesta versão.
 
+
+## v0.9.9 — Ajuste de saudação e nitidez do PDF
+
+- Alinha `Senhor Juiz,` à esquerda, acompanhando o padrão visual do ofício-modelo.
+- Mantém `Respeitosamente,` centralizado.
+- Aumenta a resolução interna de renderização do A4 para 2x (aprox. 300 dpi), preservando medidas, margens e layout já aprovados.
+- Eleva a qualidade JPEG interna do PDF de 0,94 para 0,96.
+- Não altera backend, autenticação, sessão, banco, numeração ou fluxo de salvamento no Drive.
+
 ## v0.9.8 — Drive automático, assinatura opcional e padrão institucional
 
 - Estrutura do Google Drive criada automaticamente pelo Apps Script:
