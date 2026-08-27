@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.7">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.7">
+  <link rel="manifest" href="./manifest.json?v=0.9.8">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.8">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -259,7 +259,7 @@
                         </div>
                         <div class="form-group">
                           <label for="destinatario-posto-graduacao">Posto/Graduação <span class="field-optional">(atualizável)</span></label>
-                          <input id="destinatario-posto-graduacao" type="text" maxlength="80" autocomplete="off" list="postos-graduacoes" placeholder="Ex.: SD, CB, 3º SGT, TEN CEL">
+                          <input id="destinatario-posto-graduacao" type="text" maxlength="80" autocomplete="off" list="postos-graduacoes" placeholder="Ex.: SD PM, CB PM, 3º SGT PM, TEN CEL">
                         </div>
                         <div class="form-group">
                           <label for="destinatario-cpf">CPF <span class="field-optional">(opcional para novo cadastro)</span></label>
@@ -278,8 +278,8 @@
 
                       <datalist id="postos-graduacoes">
                         <option value="CEL"></option><option value="TEN CEL"></option><option value="MAJ"></option><option value="CAP"></option>
-                        <option value="1º TEN"></option><option value="2º TEN"></option><option value="ASP OF"></option><option value="SUBTEN"></option>
-                        <option value="1º SGT"></option><option value="2º SGT"></option><option value="3º SGT"></option><option value="CB"></option><option value="SD"></option>
+                        <option value="1º TEN"></option><option value="2º TEN"></option><option value="ASP OF"></option><option value="SUB TEN PM"></option>
+                        <option value="1º SGT PM"></option><option value="2º SGT PM"></option><option value="3º SGT PM"></option><option value="CB PM"></option><option value="SD PM"></option>
                       </datalist>
                       <div id="destinatario-sugestoes" class="recipient-suggestions" role="listbox" aria-label="Sugestões de militares" hidden></div>
                       <div id="destinatario-lookup-status" class="recipient-lookup-status" role="status" aria-live="polite"></div>
@@ -522,7 +522,7 @@
 
                   <div class="form-group">
                     <label for="documentos-militar-posto">Posto/Graduação do militar</label>
-                    <input id="documentos-militar-posto" type="text" maxlength="80" list="postos-graduacoes" autocomplete="off" placeholder="Ex.: SD, CB, 3º SGT, 2º TEN..." disabled>
+                    <input id="documentos-militar-posto" type="text" maxlength="80" list="postos-graduacoes" autocomplete="off" placeholder="Ex.: SD PM, CB PM, 3º SGT PM..." disabled>
                     <small class="field-help">Preenchido automaticamente quando cadastrado. Se houver promoção ou estiver vazio, informe o posto/graduação atual; o cadastro será atualizado ao gerar o PDF.</small>
                   </div>
 
@@ -572,7 +572,10 @@
                     <p class="oficio-preview-respect">Respeitosamente,</p>
                     <div class="oficio-preview-signature-row">
                       <img class="oficio-preview-footer-emblem" src="./assets/oficios/brasao-20bpm.png" alt="Brasão do 20º BPM">
-                      <p class="oficio-preview-signature"><span id="documentos-preview-signatario">—</span><br><span id="documentos-preview-cargo">—</span></p>
+                      <div class="oficio-preview-signature-stack">
+                        <img id="documentos-preview-assinatura" class="oficio-preview-signature-image" alt="Assinatura digitalizada do signatário" hidden>
+                        <p class="oficio-preview-signature"><span id="documentos-preview-signatario">—</span><br><span id="documentos-preview-cargo">—</span></p>
+                      </div>
                     </div>
                     <div class="oficio-preview-footer"><strong>20º BATALHÃO DE POLÍCIA MILITAR – BATALHÃO COMUNITÁRIO</strong><br>Tv. Pe. Eutiquio, nº 3000, Condor - Belém /PA. CEP: 66045-225. (esq. PSG. S. Antônio).<br>Contato: email: oficio2024bpm@gmail.com</div>
                   </article>
@@ -627,6 +630,16 @@
                   <div class="form-group"><label for="signatario-posto">Posto/Graduação</label><input id="signatario-posto" type="text" maxlength="80" list="postos-graduacoes" autocomplete="off" required></div>
                   <div class="form-group"><label for="signatario-rg">RG</label><input id="signatario-rg" type="text" maxlength="20" inputmode="numeric" autocomplete="off" required></div>
                   <div class="form-group full-width"><label for="signatario-cargo">Cargo</label><input id="signatario-cargo" type="text" maxlength="160" autocomplete="off" placeholder="Ex.: Comandante do 20º BPM" required></div>
+                  <div class="form-group full-width signatory-image-group">
+                    <label for="signatario-assinatura-arquivo">Assinatura digitalizada <span class="field-optional">(opcional)</span></label>
+                    <input id="signatario-assinatura-arquivo" type="file" accept="image/jpeg,.jpg,.jpeg">
+                    <small class="field-help">Use uma imagem JPG/JPEG de até 2,5 MB. Se cadastrada, será posicionada acima do nome, atrás da linha de identificação. A ausência da imagem não impede a geração do ofício.</small>
+                    <div class="signatory-image-preview">
+                      <img id="signatario-assinatura-preview" alt="Prévia da assinatura digitalizada" hidden>
+                      <span id="signatario-assinatura-status">Nenhuma assinatura digitalizada cadastrada. O ofício continuará podendo ser gerado normalmente.</span>
+                    </div>
+                    <button id="signatario-assinatura-remover" class="secondary-button compact-button" type="button" hidden>Remover assinatura cadastrada</button>
+                  </div>
                 </div>
               </section>
 
@@ -674,7 +687,7 @@
                   <p class="fixed-data-note full-width">RG, CPF e Nome são dados fixos do cadastro. Posto/Graduação, WhatsApp, Unidade e Status podem ser atualizados quando houver mudança funcional ou de contato.</p>
                   <div class="form-group">
                     <label for="destinatarios-edit-posto-graduacao">Posto/Graduação</label>
-                    <input id="destinatarios-edit-posto-graduacao" autocomplete="off" maxlength="80" list="postos-graduacoes" placeholder="Ex.: SD, CB, 3º SGT, TEN CEL">
+                    <input id="destinatarios-edit-posto-graduacao" autocomplete="off" maxlength="80" list="postos-graduacoes" placeholder="Ex.: SD PM, CB PM, 3º SGT PM, TEN CEL">
                   </div>
                   <div class="form-group">
                     <label for="destinatarios-edit-whatsapp">WhatsApp</label>
@@ -722,14 +735,14 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.7"></script>
-  <script src="./js/api.js?v=0.9.7"></script>
-  <script src="./js/audiencias.js?v=0.9.7"></script>
-  <script src="./js/destinatarios.js?v=0.9.7"></script>
-  <script src="./js/documentos.js?v=0.9.7"></script>
-  <script src="./js/dashboard.js?v=0.9.7"></script>
-  <script src="./js/auth.js?v=0.9.7"></script>
-  <script src="./js/session.js?v=0.9.7"></script>
+  <script src="./js/config.js?v=0.9.8"></script>
+  <script src="./js/api.js?v=0.9.8"></script>
+  <script src="./js/audiencias.js?v=0.9.8"></script>
+  <script src="./js/destinatarios.js?v=0.9.8"></script>
+  <script src="./js/documentos.js?v=0.9.8"></script>
+  <script src="./js/dashboard.js?v=0.9.8"></script>
+  <script src="./js/auth.js?v=0.9.8"></script>
+  <script src="./js/session.js?v=0.9.8"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

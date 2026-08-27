@@ -240,6 +240,21 @@ Login por senha, validação/restauração da sessão, contador visual, logout s
 - mantém a geração de PDF desabilitada até a próxima fase;
 - não altera o Google Apps Script nesta versão.
 
+## v0.9.8 — Drive automático, assinatura opcional e padrão institucional
+
+- Estrutura do Google Drive criada automaticamente pelo Apps Script:
+  - `SISTEMA_AUDIENCIAS/OFICIOS/<ANO>`;
+  - `SISTEMA_AUDIENCIAS/CONFIGURACAO/ASSINATURAS`.
+- IDs das pastas reutilizados por `Script Properties`, com recriação automática se o destino deixar de existir.
+- Diagnóstico de falha do PDF separado por etapa (pasta Drive, criação do arquivo e atualização do registro).
+- Reservas com falha de PDF ficam identificadas como `FALHA_PDF` e podem reutilizar a mesma reserva durante a tentativa corrente.
+- Posto/Graduação de praças padronizado na emissão (`SD PM`, `CB PM`, `3º SGT PM`, etc.).
+- Assinatura do signatário exibida com `QOPM`.
+- Campo opcional para assinatura digitalizada JPG/JPEG, armazenada no Drive e aplicada acima/atrás da linha de identificação do signatário.
+- Ausência de assinatura digitalizada não bloqueia a emissão.
+- Brasões do ofício atualizados a partir dos arquivos originais fornecidos.
+- Cache e assets do frontend atualizados para `v0.9.8`.
+
 ## v0.9.7 — Ofício fiel ao modelo e geração de PDF
 
 - usa os três brasões extraídos do modelo oficial fornecido;

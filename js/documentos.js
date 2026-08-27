@@ -8,6 +8,7 @@
   var selectedGenerationMilitary_ = null;
   var pendingOficioReservation_ = null;
   var generationBusy_ = false;
+  var signatureRemoveRequested_ = false;
 
   function isObject_(value) { return value !== null && typeof value === 'object'; }
   function isSuccess_(response) {
@@ -72,6 +73,69 @@
     });
   }
 
+  function normalizeMilitaryPost_(value) {
+    var post = String(value || '').trim().toUpperCase().replace(/\s+/g, ' ');
+    var aliases = {
+      'SD': 'SD PM', 'SD PM': 'SD PM',
+      'CB': 'CB PM', 'CB PM': 'CB PM',
+      '3º SGT': '3º SGT PM', '3° SGT': '3º SGT PM', '3 SGT': '3º SGT PM',
+      '3º SGT PM': '3º SGT PM', '3° SGT PM': '3º SGT PM',
+      '2º SGT': '2º SGT PM', '2° SGT': '2º SGT PM', '2 SGT': '2º SGT PM',
+      '2º SGT PM': '2º SGT PM', '2° SGT PM': '2º SGT PM',
+      '1º SGT': '1º SGT PM', '1° SGT': '1º SGT PM', '1 SGT': '1º SGT PM',
+      '1º SGT PM': '1º SGT PM', '1° SGT PM': '1º SGT PM',
+      'SUBTEN': 'SUB TEN PM', 'SUB TEN': 'SUB TEN PM',
+      'SUBTEN PM': 'SUB TEN PM', 'SUB TEN PM': 'SUB TEN PM'
+    };
+    return aliases[post] || post;
+  }
+
+  function signatoryPostWithQopm_(value) {
+    var post = String(value || '').trim().toUpperCase().replace(/\s+/g, ' ');
+    if (!post) return '';
+    return /\bQOPM\b/.test(post) ? post : post + ' QOPM';
+  }
+
+  function setSignatureConfigPreview_(config) {
+    var image = document.getElementById('signatario-assinatura-preview');
+    var status = document.getElementById('signatario-assinatura-status');
+    var remove = document.getElementById('signatario-assinatura-remover');
+    var dataUrl = String(config && config.signatario_assinatura_data_url || '').trim();
+    if (image) {
+      image.src = dataUrl || '';
+      image.hidden = !dataUrl;
+    }
+    if (status) {
+      status.textContent = dataUrl
+        ? 'Assinatura digitalizada cadastrada. Ela será usada automaticamente nos ofícios.'
+        : 'Nenhuma assinatura digitalizada cadastrada. O ofício continuará podendo ser gerado normalmente.';
+    }
+    if (remove) remove.hidden = !dataUrl;
+  }
+
+  function readSignatureFile_(file) {
+    return new Promise(function (resolve, reject) {
+      if (!file) { resolve(null); return; }
+      if (String(file.type || '').toLowerCase() !== 'image/jpeg') {
+        reject(new Error('A assinatura digitalizada deve estar em formato JPG/JPEG.'));
+        return;
+      }
+      if (file.size > 2500000) {
+        reject(new Error('A imagem da assinatura deve ter no máximo 2,5 MB.'));
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function () {
+        var dataUrl = String(reader.result || '');
+        var base64 = dataUrl.indexOf(',') >= 0 ? dataUrl.split(',')[1] : '';
+        if (!base64) { reject(new Error('Não foi possível ler a imagem da assinatura.')); return; }
+        resolve({ base64: base64, mime: 'image/jpeg', nome: file.name || 'assinatura.jpg', dataUrl: dataUrl });
+      };
+      reader.onerror = function () { reject(new Error('Não foi possível ler a imagem da assinatura.')); };
+      reader.readAsDataURL(file);
+    });
+  }
+
   function updateNamePreview_() {
     var input = document.getElementById('signatario-nome');
     var hidden = document.getElementById('signatario-nome-guerra');
@@ -123,6 +187,10 @@
     ['signatario-nome', 'signatario-posto', 'signatario-rg', 'signatario-cargo', 'signatario-nome-guerra'].forEach(function (id) {
       var el = document.getElementById(id); if (el) el.value = '';
     });
+    var assinaturaInput = document.getElementById('signatario-assinatura-arquivo');
+    if (assinaturaInput) assinaturaInput.value = '';
+    signatureRemoveRequested_ = true;
+    setSignatureConfigPreview_({});
     setError_(''); setSuccess_('');
     updateNamePreview_();
     var input = document.getElementById('signatario-nome');
@@ -150,7 +218,7 @@
       nameEl.textContent = name;
     }
     var parts = [];
-    if (config.signatario_posto_graduacao) parts.push(config.signatario_posto_graduacao);
+    if (config.signatario_posto_graduacao) parts.push(signatoryPostWithQopm_(config.signatario_posto_graduacao));
     if (config.signatario_rg) parts.push('RG ' + config.signatario_rg);
     if (config.signatario_cargo) parts.push(config.signatario_cargo);
     detailEl.textContent = parts.join(' • ') || '—';
@@ -210,6 +278,10 @@
     document.getElementById('signatario-posto').value = c.signatario_posto_graduacao || '';
     document.getElementById('signatario-rg').value = c.signatario_rg || '';
     document.getElementById('signatario-cargo').value = c.signatario_cargo || '';
+    var assinaturaInput = document.getElementById('signatario-assinatura-arquivo');
+    if (assinaturaInput) assinaturaInput.value = '';
+    signatureRemoveRequested_ = false;
+    setSignatureConfigPreview_(c);
     updateNextNumber_();
     updateNamePreview_();
     renderHome_(c);
@@ -247,30 +319,47 @@
       signatario_nome_guerra: document.getElementById('signatario-nome-guerra').value.trim(),
       signatario_posto_graduacao: document.getElementById('signatario-posto').value.trim(),
       signatario_rg: document.getElementById('signatario-rg').value.replace(/\D+/g, ''),
-      signatario_cargo: document.getElementById('signatario-cargo').value.trim()
+      signatario_cargo: document.getElementById('signatario-cargo').value.trim(),
+      remover_assinatura: signatureRemoveRequested_
     };
     if (!Number.isInteger(year) || year < 2020 || year > 2100 || !Number.isInteger(last) || last < 0 || !payload.signatario_nome || !payload.signatario_posto_graduacao || !payload.signatario_rg || !payload.signatario_cargo) {
-      setError_('Preencha corretamente todos os campos da configuração.');
+      setError_('Preencha corretamente todos os campos obrigatórios da configuração.');
       return;
     }
+
     var button = document.getElementById('documentos-config-save');
+    var assinaturaInput = document.getElementById('signatario-assinatura-arquivo');
+    var file = assinaturaInput && assinaturaInput.files && assinaturaInput.files.length ? assinaturaInput.files[0] : null;
     if (button) { button.disabled = true; button.textContent = 'Salvando...'; }
     setError_(''); setSuccess_('');
-    window.Api.post('oficios_config_save', payload).then(function (response) {
-      if (!isSuccess_(response)) {
-        var code = getErrorCode_(response);
-        if (code === 'TOKEN_AUSENTE' || code.indexOf('SESSAO_') === 0) { handleExpiredSession_(); return; }
-        throw new Error(getSafeMessage_(response, 'Não foi possível salvar a configuração dos ofícios.'));
-      }
-      var data = getData_(response);
-      updateExpiry_(data);
-      fill_(data.configuracao || payload);
-      setSuccess_('Configuração salva. A próxima numeração continuará a partir do valor informado.');
-    }).catch(function (error) {
-      setError_(error && error.message ? error.message : 'Não foi possível salvar a configuração dos ofícios.');
-    }).finally(function () {
-      if (button) { button.disabled = false; button.textContent = 'Salvar configuração'; }
-    });
+
+    readSignatureFile_(file)
+      .then(function (assinatura) {
+        if (assinatura) {
+          payload.signatario_assinatura_base64 = assinatura.base64;
+          payload.signatario_assinatura_mime = assinatura.mime;
+          payload.signatario_assinatura_nome = assinatura.nome;
+          payload.remover_assinatura = false;
+        }
+        return window.Api.post('oficios_config_save', payload);
+      })
+      .then(function (response) {
+        if (!isSuccess_(response)) {
+          var code = getErrorCode_(response);
+          if (code === 'TOKEN_AUSENTE' || code.indexOf('SESSAO_') === 0) { handleExpiredSession_(); return; }
+          throw new Error(getSafeMessage_(response, 'Não foi possível salvar a configuração dos ofícios.'));
+        }
+        var data = getData_(response);
+        updateExpiry_(data);
+        fill_(data.configuracao || payload);
+        setSuccess_('Configuração salva. A assinatura digitalizada é opcional e a numeração continuará a partir do valor informado.');
+      })
+      .catch(function (error) {
+        setError_(error && error.message ? error.message : 'Não foi possível salvar a configuração dos ofícios.');
+      })
+      .finally(function () {
+        if (button) { button.disabled = false; button.textContent = 'Salvar configuração'; }
+      });
   }
   function formatDateTimePt_(value) {
     if (!value) return '—';
@@ -318,12 +407,12 @@
 
   function getGenerationPost_() {
     var input = document.getElementById('documentos-militar-posto');
-    return input ? String(input.value || '').trim() : '';
+    return input ? normalizeMilitaryPost_(input.value) : '';
   }
 
   function recipientDisplay_(item, postoOverride) {
     var parts = [];
-    var posto = String(postoOverride || (item && item.posto_graduacao) || '').trim();
+    var posto = normalizeMilitaryPost_(postoOverride || (item && item.posto_graduacao) || '');
     if (posto) parts.push(posto);
     if (item && item.rg) parts.push('RG ' + item.rg);
     if (item && item.nome) parts.push(item.nome);
@@ -336,7 +425,7 @@
     var name = String(currentConfig_.signatario_nome || '').trim();
     var war = String(currentConfig_.signatario_nome_guerra || '').trim();
     var prefix = [];
-    if (currentConfig_.signatario_posto_graduacao) prefix.push(currentConfig_.signatario_posto_graduacao);
+    if (currentConfig_.signatario_posto_graduacao) prefix.push(signatoryPostWithQopm_(currentConfig_.signatario_posto_graduacao));
     if (currentConfig_.signatario_rg) prefix.push('RG ' + currentConfig_.signatario_rg);
     var prefixText = prefix.length ? ' - ' + prefix.join(' ') : '';
     if (!name) { target.textContent = '—'; return; }
@@ -371,6 +460,12 @@
     setElementText_('documentos-preview-processo', selectedGenerationAudience_.processo || '—');
     setElementText_('documentos-preview-cargo', currentConfig_ && currentConfig_.signatario_cargo ? currentConfig_.signatario_cargo : '—');
     renderGenerateSignatory_();
+    var assinaturaPreview = document.getElementById('documentos-preview-assinatura');
+    var assinaturaData = String(currentConfig_ && currentConfig_.signatario_assinatura_data_url || '').trim();
+    if (assinaturaPreview) {
+      assinaturaPreview.src = assinaturaData || '';
+      assinaturaPreview.hidden = !assinaturaData;
+    }
 
     var optionalEl = document.getElementById('documentos-preview-complemento');
     if (optionalEl) {
@@ -400,13 +495,13 @@
       return;
     }
     if (summary) summary.hidden = false;
-    setElementText_('documentos-resumo-posto', selectedGenerationMilitary_.posto_graduacao || 'Não cadastrado');
+    setElementText_('documentos-resumo-posto', normalizeMilitaryPost_(selectedGenerationMilitary_.posto_graduacao || '') || 'Não cadastrado');
     setElementText_('documentos-resumo-rg', selectedGenerationMilitary_.rg ? 'RG ' + selectedGenerationMilitary_.rg : '—');
     setElementText_('documentos-resumo-whatsapp', selectedGenerationMilitary_.telefone || 'Não informado');
     var postoInput = document.getElementById('documentos-militar-posto');
     if (postoInput) {
       postoInput.disabled = false;
-      postoInput.value = selectedGenerationMilitary_.posto_graduacao || '';
+      postoInput.value = normalizeMilitaryPost_(selectedGenerationMilitary_.posto_graduacao || '');
     }
   }
 
@@ -668,16 +763,19 @@
     var scale = canvas.width / 210;
     function mm(value) { return value * scale; }
     ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    var signatureDataUrl = String(currentConfig_ && currentConfig_.signatario_assinatura_data_url || '').trim();
+    var signaturePromise = signatureDataUrl ? loadImage_(signatureDataUrl).catch(function () { return null; }) : Promise.resolve(null);
     return Promise.all([
       loadImage_('./assets/oficios/brasao-estado-para.png'),
       loadImage_('./assets/oficios/brasao-pmpa.png'),
-      loadImage_('./assets/oficios/brasao-20bpm.png')
+      loadImage_('./assets/oficios/brasao-20bpm.png'),
+      signaturePromise
     ]).then(function (images) {
-      var left = images[0], right = images[1], footerLogo = images[2];
+      var left = images[0], right = images[1], footerLogo = images[2], signatureImage = images[3];
       var center = canvas.width / 2;
       var black = '#111111';
-      ctx.drawImage(left, mm(6), mm(6), mm(14), mm(21));
-      ctx.drawImage(right, mm(190), mm(6), mm(14), mm(20.5));
+      ctx.drawImage(left, mm(6), mm(5), mm(15), mm(22));
+      ctx.drawImage(right, mm(189), mm(5), mm(15), mm(22));
       drawCenteredText_(ctx, 'GOVERNO DO ESTADO DO PARÁ', center, mm(10), 20, false, black);
       drawCenteredText_(ctx, 'SECRETARIA DE ESTADO DE SEGURANÇA PÚBLICA E DEFESA SOCIAL', center, mm(14), 19, false, black);
       drawCenteredText_(ctx, 'POLÍCIA MILITAR DO PARÁ', center, mm(18), 19, false, black);
@@ -712,7 +810,7 @@
 
       var name = String(currentConfig_.signatario_nome || '').trim();
       var war = String(currentConfig_.signatario_nome_guerra || '').trim();
-      var signPost = String(currentConfig_.signatario_posto_graduacao || '').trim();
+      var signPost = signatoryPostWithQopm_(currentConfig_.signatario_posto_graduacao || '');
       var signRg = String(currentConfig_.signatario_rg || '').trim();
       var lowerName = name.toLocaleLowerCase('pt-BR');
       var lowerWar = war.toLocaleLowerCase('pt-BR');
@@ -724,6 +822,17 @@
         signSegments.push({ text: name.slice(warIndex + war.length) + ' - ' + signPost + ' RG ' + signRg, bold: false });
       } else signSegments.push({ text: name + ' - ' + signPost + ' RG ' + signRg, bold: false });
       ctx.drawImage(footerLogo, mm(4), y - mm(8), mm(13), mm(18));
+      if (signatureImage) {
+        var signMaxW = mm(58);
+        var signMaxH = mm(26);
+        var ratio = Math.min(signMaxW / signatureImage.width, signMaxH / signatureImage.height);
+        var signW = signatureImage.width * ratio;
+        var signH = signatureImage.height * ratio;
+        ctx.save();
+        ctx.globalAlpha = 0.68;
+        ctx.drawImage(signatureImage, center - signW / 2, y - signH + mm(4), signW, signH);
+        ctx.restore();
+      }
       drawRichCentered_(ctx, signSegments, center, y, 20);
       y += 30;
       drawCenteredText_(ctx, currentConfig_.signatario_cargo || '', center, y, 20, false, black);
@@ -897,6 +1006,8 @@
     var optional = document.getElementById('documentos-trecho-opcional');
     var militaryPost = document.getElementById('documentos-militar-posto');
     var generatePdf = document.getElementById('documentos-generate-pdf');
+    var signatureInput = document.getElementById('signatario-assinatura-arquivo');
+    var signatureRemove = document.getElementById('signatario-assinatura-remover');
     if (backButton) backButton.addEventListener('click', back);
     if (form) form.addEventListener('submit', submit_);
     if (year) year.addEventListener('input', updateNextNumber_);
@@ -915,6 +1026,25 @@
     if (mark) mark.addEventListener('click', markWarName_);
     if (unmark) unmark.addEventListener('click', clearWarName_);
     if (clear) clear.addEventListener('click', clearSignatory_);
+    if (signatureInput) signatureInput.addEventListener('change', function () {
+      signatureRemoveRequested_ = false;
+      var file = signatureInput.files && signatureInput.files.length ? signatureInput.files[0] : null;
+      if (!file) { setSignatureConfigPreview_(currentConfig_ || {}); return; }
+      readSignatureFile_(file).then(function (assinatura) {
+        setSignatureConfigPreview_(Object.assign({}, currentConfig_ || {}, { signatario_assinatura_data_url: assinatura.dataUrl }));
+        setError_('');
+      }).catch(function (error) {
+        signatureInput.value = '';
+        setSignatureConfigPreview_(currentConfig_ || {});
+        setError_(error && error.message ? error.message : 'Não foi possível ler a assinatura.');
+      });
+    });
+    if (signatureRemove) signatureRemove.addEventListener('click', function () {
+      signatureRemoveRequested_ = true;
+      if (signatureInput) signatureInput.value = '';
+      setSignatureConfigPreview_({});
+      setError_('');
+    });
     if (openConfig) openConfig.addEventListener('click', showConfig_);
     if (closeConfig) closeConfig.addEventListener('click', showHome_);
     if (generate) generate.addEventListener('click', showGenerate_);
