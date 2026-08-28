@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.16">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.16">
+  <link rel="manifest" href="./manifest.json?v=0.9.17">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.17">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -848,6 +848,43 @@
               </form>
             </section>
 
+
+
+            <section id="usuarios-edit-panel" class="users-panel" hidden>
+              <h3>Editar usuário</h3>
+              <form id="usuarios-edit-form" class="users-form-grid" novalidate>
+                <div class="form-group">
+                  <label for="usuarios-edit-nome">Nome de exibição</label>
+                  <input id="usuarios-edit-nome" autocomplete="off" maxlength="120" required>
+                </div>
+                <div class="form-group">
+                  <label for="usuarios-edit-login">Login</label>
+                  <input id="usuarios-edit-login" autocomplete="off" maxlength="60" required>
+                </div>
+                <div class="form-group">
+                  <label for="usuarios-edit-tipo">Tipo da conta</label>
+                  <select id="usuarios-edit-tipo" required>
+                    <option value="INDIVIDUAL">Individual</option>
+                    <option value="FUNCIONAL">Funcional / setor</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="usuarios-edit-perfil">Perfil</label>
+                  <select id="usuarios-edit-perfil" required>
+                    <option value="ADMINISTRADOR">Administrador</option>
+                    <option value="DEV">DEV</option>
+                  </select>
+                </div>
+                <label id="usuarios-edit-confirm-dev-wrap" class="users-confirm-dev full-width" hidden>
+                  <input id="usuarios-edit-confirm-dev" type="checkbox"> Confirmo a atribuição do perfil DEV.
+                </label>
+                <div class="form-actions full-width">
+                  <button id="usuarios-edit-cancel" class="secondary-button" type="button">Cancelar</button>
+                  <button class="primary-button" type="submit">Salvar alterações</button>
+                </div>
+              </form>
+            </section>
+
             <section id="usuarios-reset-panel" class="users-panel" hidden>
               <h3>Redefinir senha</h3>
               <p>Conta: <strong id="usuarios-reset-target"></strong></p>
@@ -882,7 +919,7 @@
             </div>
             <div id="usuarios-content" class="table-scroll" hidden>
               <table class="audiencias-table usuarios-table">
-                <thead><tr><th>Usuário</th><th>Tipo</th><th>Perfil</th><th>Status</th><th>Último acesso</th><th>Segurança</th><th>Ações</th></tr></thead>
+                <thead><tr><th>Usuário</th><th>Tipo</th><th>Perfil</th><th>Status / Segurança</th><th>Último acesso</th><th>Ações</th></tr></thead>
                 <tbody id="usuarios-table-body"></tbody>
               </table>
             </div>
@@ -912,15 +949,15 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.16"></script>
-  <script src="./js/api.js?v=0.9.16"></script>
-  <script src="./js/audiencias.js?v=0.9.16"></script>
-  <script src="./js/destinatarios.js?v=0.9.16"></script>
-  <script src="./js/documentos.js?v=0.9.16"></script>
-  <script src="./js/usuarios.js?v=0.9.16"></script>
-  <script src="./js/dashboard.js?v=0.9.16"></script>
-  <script src="./js/auth.js?v=0.9.16"></script>
-  <script src="./js/session.js?v=0.9.16"></script>
+  <script src="./js/config.js?v=0.9.17"></script>
+  <script src="./js/api.js?v=0.9.17"></script>
+  <script src="./js/audiencias.js?v=0.9.17"></script>
+  <script src="./js/destinatarios.js?v=0.9.17"></script>
+  <script src="./js/documentos.js?v=0.9.17"></script>
+  <script src="./js/usuarios.js?v=0.9.17"></script>
+  <script src="./js/dashboard.js?v=0.9.17"></script>
+  <script src="./js/auth.js?v=0.9.17"></script>
+  <script src="./js/session.js?v=0.9.17"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

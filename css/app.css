@@ -2699,7 +2699,7 @@ body.modal-open {
 }
 
 
-/* ===== Usuários DEV - v0.9.16 ===== */
+/* ===== Usuários DEV - v0.9.17 ===== */
 .users-security-note {
   margin-bottom: 1rem;
   padding: 0.9rem 1rem;
@@ -2732,7 +2732,7 @@ body.modal-open {
   font-weight: 700;
 }
 .usuarios-search-bar { margin: 1rem 0; max-width: 520px; }
-.usuarios-table { min-width: 1080px; }
+.usuarios-table { width: 100%; min-width: 0; table-layout: auto; }
 .usuarios-login { color: #607178; font-size: 0.82rem; }
 .usuario-status {
   display: inline-flex;
@@ -2743,8 +2743,10 @@ body.modal-open {
 }
 .usuario-status.status-active { background: #eaf5ee; color: #17633d; }
 .usuario-status.status-inactive { background: #fbeaea; color: #9d1c1c; }
-.usuarios-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; min-width: 230px; }
-.usuarios-actions .table-action-button { white-space: nowrap; }
+.usuarios-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; min-width: 190px; }
+.usuarios-actions .table-action-button { white-space: nowrap; padding: 0.38rem 0.55rem; font-size: 0.76rem; }
+.usuarios-security-note { margin-top: 0.35rem; color: #607178; font-size: 0.76rem; line-height: 1.25; }
+.usuarios-table th:last-child, .usuarios-table td:last-child { min-width: 190px; }
 .danger-action { border-color: #d9a7a7; color: #9d1c1c; }
 .usuarios-self { color: #607178; font-weight: 700; }
 .password-change-view { padding: 1rem 0; }
@@ -2760,5 +2762,6 @@ body.modal-open {
 @media (max-width: 720px) {
   .users-form-grid { grid-template-columns: 1fr; }
   .users-form-grid .full-width { grid-column: auto; }
-  .usuarios-actions { min-width: 180px; }
+  .usuarios-table { min-width: 760px; }
+  .usuarios-actions { min-width: 170px; }
 }

@@ -5,6 +5,7 @@
   var USER_STORAGE_KEY = 'audiencias_session_user';
   var allUsers_ = [];
   var resetTarget_ = null;
+  var editTarget_ = null;
 
   function isObject_(value) { return value !== null && typeof value === 'object'; }
   function isSuccess_(response) { return Boolean(isObject_(response) && (response.success === true || response.sucesso === true || response.ok === true)); }
@@ -110,19 +111,23 @@
       var status = document.createElement('td');
       var badge = document.createElement('span');
       badge.className = 'usuario-status ' + (String(item.status).toUpperCase() === 'ATIVO' ? 'status-active' : 'status-inactive');
-      badge.textContent = String(item.status || '—').toUpperCase(); status.appendChild(badge); tr.appendChild(status);
-      var access = document.createElement('td'); access.textContent = formatDate_(item.ultimo_login); tr.appendChild(access);
-      var security = document.createElement('td');
+      badge.textContent = String(item.status || '—').toUpperCase();
+      status.appendChild(badge);
       var notes = [];
       if (item.bloqueado) notes.push('Bloqueado');
       if (item.troca_senha_pendente) notes.push('Troca de senha pendente');
       if (String(item.tipo_conta || '').toUpperCase() === 'FUNCIONAL') notes.push('Biometria desabilitada');
-      security.textContent = notes.length ? notes.join(' • ') : 'Normal';
-      tr.appendChild(security);
+      var securityLine = document.createElement('div');
+      securityLine.className = 'usuarios-security-note';
+      securityLine.textContent = notes.length ? notes.join(' • ') : 'Normal';
+      status.appendChild(securityLine);
+      tr.appendChild(status);
+      var access = document.createElement('td'); access.textContent = formatDate_(item.ultimo_login); tr.appendChild(access);
 
       var actions = document.createElement('td'); actions.className = 'usuarios-actions';
       var isSelf = String(item.id || '') === String(current.id || '');
       if (!isSelf) {
+        actions.appendChild(createAction_('Editar', function () { openEdit_(item); }));
         actions.appendChild(createAction_(String(item.status).toUpperCase() === 'ATIVO' ? 'Inativar' : 'Ativar', function () {
           changeStatus_(item, String(item.status).toUpperCase() === 'ATIVO' ? 'INATIVO' : 'ATIVO');
         }, String(item.status).toUpperCase() === 'ATIVO'));
@@ -163,7 +168,7 @@
   function open_() {
     hideModuleViews_();
     var view = document.getElementById('usuarios-view'); if (view) view.hidden = false;
-    closeCreate_(); closeReset_(); load_();
+    closeCreate_(); closeEdit_(); closeReset_(); load_();
   }
   function openCreate_() {
     var panel = document.getElementById('usuarios-create-panel'); if (panel) panel.hidden = false;
@@ -173,6 +178,23 @@
     var panel = document.getElementById('usuarios-create-panel'); if (panel) panel.hidden = true;
     var form = document.getElementById('usuarios-create-form'); if (form) form.reset();
     var confirmDev = document.getElementById('usuarios-create-confirm-dev-wrap'); if (confirmDev) confirmDev.hidden = true;
+  }
+  function openEdit_(item) {
+    editTarget_ = item;
+    var panel = document.getElementById('usuarios-edit-panel'); if (panel) panel.hidden = false;
+    document.getElementById('usuarios-edit-nome').value = item.nome || '';
+    document.getElementById('usuarios-edit-login').value = item.login || '';
+    document.getElementById('usuarios-edit-tipo').value = String(item.tipo_conta || 'INDIVIDUAL').toUpperCase();
+    document.getElementById('usuarios-edit-perfil').value = String(item.perfil || 'ADMINISTRADOR').toUpperCase();
+    var wrap = document.getElementById('usuarios-edit-confirm-dev-wrap');
+    if (wrap) wrap.hidden = document.getElementById('usuarios-edit-perfil').value !== 'DEV';
+    var confirmDev = document.getElementById('usuarios-edit-confirm-dev'); if (confirmDev) confirmDev.checked = false;
+    var input = document.getElementById('usuarios-edit-nome'); if (input) input.focus();
+  }
+  function closeEdit_() {
+    editTarget_ = null;
+    var panel = document.getElementById('usuarios-edit-panel'); if (panel) panel.hidden = true;
+    var form = document.getElementById('usuarios-edit-form'); if (form) form.reset();
   }
   function openReset_(item) {
     resetTarget_ = item;
@@ -224,11 +246,38 @@
     var back = document.getElementById('usuarios-back'); if (back) back.addEventListener('click', backToDashboard_);
     var add = document.getElementById('usuarios-new'); if (add) add.addEventListener('click', openCreate_);
     var cancel = document.getElementById('usuarios-create-cancel'); if (cancel) cancel.addEventListener('click', closeCreate_);
+    var editCancel = document.getElementById('usuarios-edit-cancel'); if (editCancel) editCancel.addEventListener('click', closeEdit_);
     var resetCancel = document.getElementById('usuarios-reset-cancel'); if (resetCancel) resetCancel.addEventListener('click', closeReset_);
     var search = document.getElementById('usuarios-search'); if (search) search.addEventListener('input', filter_);
+    var editProfile = document.getElementById('usuarios-edit-perfil');
+    if (editProfile) editProfile.addEventListener('change', function () {
+      var wrap = document.getElementById('usuarios-edit-confirm-dev-wrap'); if (wrap) wrap.hidden = editProfile.value !== 'DEV';
+    });
+
     var profile = document.getElementById('usuarios-create-perfil');
     if (profile) profile.addEventListener('change', function () {
       var wrap = document.getElementById('usuarios-create-confirm-dev-wrap'); if (wrap) wrap.hidden = profile.value !== 'DEV';
+    });
+
+    var editForm = document.getElementById('usuarios-edit-form');
+    if (editForm) editForm.addEventListener('submit', function (event) {
+      event.preventDefault(); setError_('');
+      if (!editTarget_) return;
+      var selectedProfile = document.getElementById('usuarios-edit-perfil').value;
+      var payload = {
+        nome: document.getElementById('usuarios-edit-nome').value,
+        login: document.getElementById('usuarios-edit-login').value,
+        tipo_conta: document.getElementById('usuarios-edit-tipo').value,
+        perfil: selectedProfile,
+        confirmar_dev: selectedProfile !== 'DEV' || document.getElementById('usuarios-edit-confirm-dev').checked
+      };
+      window.Api.post('usuarios_update', { token: token_(), usuario_id: editTarget_.id, usuario: payload }).then(function (response) {
+        if (!isSuccess_(response)) { if (handleSessionError_(response)) return; setError_(getMessage_(response)); return; }
+        var data = getData_(response);
+        closeEdit_();
+        setSuccess_('Usuário atualizado com sucesso.' + (Number(data.sessoes_encerradas || 0) ? ' Sessões anteriores foram encerradas.' : ''));
+        load_();
+      }).catch(function () { setError_('Não foi possível editar o usuário agora.'); });
     });
 
     var createForm = document.getElementById('usuarios-create-form');
