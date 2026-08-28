@@ -373,3 +373,20 @@ O card **Histórico** do painel principal passa a ficar disponível e abre diret
 - Ações são distribuídas horizontalmente quando há espaço.
 - Em telas pequenas, a listagem vira cards responsivos por usuário.
 - Nenhuma alteração de backend nesta versão.
+
+
+## v0.10.0 — Notificações / Modo TESTE
+
+- habilita o módulo **Notificações** no painel principal;
+- cria notificações individuais vinculadas a audiência, destinatário e ofício;
+- trabalha somente com os tipos `OFICIO` (ciência) e `LEMBRETE`;
+- não oferece reagendamento nem cancelamento;
+- reaproveita automaticamente o WhatsApp do cadastro de Destinatários;
+- permite cadastrar/atualizar o WhatsApp quando ausente;
+- simula o envio da notificação inicial sem acessar qualquer API real;
+- cria token forte de confirmação somente no momento da simulação/envio e guarda apenas o hash;
+- disponibiliza página pública `/confirmar/` para confirmação individual da ciência;
+- agenda o lembrete para o dia anterior à audiência às 09:00 (America/Belem), mesmo sem confirmação da primeira mensagem;
+- inclui processador de lembretes em modo TESTE e função opcional para instalar trigger a cada 15 minutos;
+- mantém credenciais/API de WhatsApp inexistentes nesta fase e nenhum WhatsApp real é enviado;
+- preserva autenticação, sessões, Passkey, PWA, Audiências, Destinatários, geração de ofícios, PDF e Drive.

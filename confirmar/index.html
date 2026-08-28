@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0B3C49">
+  <title>Confirmar ciência • Sistema de Audiências</title>
+  <link rel="stylesheet" href="../css/app.css?v=0.10.0">
+  <style>
+    .confirm-page{min-height:100vh;display:grid;place-items:center;padding:1rem;background:#f3f6f6}
+    .confirm-card{width:min(100%,620px);background:#fff;border:1px solid rgba(11,60,73,.14);border-radius:18px;padding:1.25rem;box-shadow:0 18px 45px rgba(11,60,73,.12)}
+    .confirm-card h1{margin:.25rem 0 .5rem;color:#0b3c49;font-size:1.5rem}
+    .confirm-subtitle{margin:0 0 1rem;color:#5b6e74;line-height:1.5}
+    .confirm-data{display:grid;gap:.65rem;padding:1rem;border-radius:14px;background:#f6f8f8;margin:1rem 0}
+    .confirm-data div{display:grid;grid-template-columns:120px 1fr;gap:.5rem}
+    .confirm-data dt{font-weight:700;color:#445b62}.confirm-data dd{margin:0;color:#20363d;overflow-wrap:anywhere}
+    .confirm-action{width:100%;min-height:48px}
+    .confirm-result{padding:.85rem 1rem;border-radius:12px;margin-top:1rem;line-height:1.5}
+    .confirm-result.success{background:#eaf6ed;color:#1d6035}.confirm-result.error{background:#fdeaea;color:#812626}
+    .confirm-footer{margin-top:1rem;text-align:center;color:#708087;font-size:.82rem}
+    @media(max-width:480px){.confirm-data div{grid-template-columns:1fr;gap:.1rem}.confirm-card{padding:1rem}}
+  </style>
+</head>
+<body>
+  <main class="confirm-page">
+    <section class="confirm-card" aria-labelledby="confirm-title">
+      <p class="dashboard-kicker">Sistema de Audiências • 20º BPM</p>
+      <h1 id="confirm-title">Confirmar ciência</h1>
+      <p class="confirm-subtitle">Confira os dados básicos da audiência e confirme que tomou ciência da comunicação.</p>
+      <div id="confirm-loading" class="module-state compact-state" role="status"><div class="validation-spinner" aria-hidden="true"></div><strong>Carregando...</strong></div>
+      <div id="confirm-error" class="confirm-result error" role="alert" hidden></div>
+      <div id="confirm-content" hidden>
+        <dl class="confirm-data">
+          <div><dt>Militar</dt><dd id="confirm-militar">—</dd></div>
+          <div><dt>Ofício</dt><dd id="confirm-oficio">—</dd></div>
+          <div><dt>Data</dt><dd id="confirm-data">—</dd></div>
+          <div><dt>Hora</dt><dd id="confirm-hora">—</dd></div>
+          <div><dt>Processo</dt><dd id="confirm-processo">—</dd></div>
+          <div><dt>Local</dt><dd id="confirm-local">—</dd></div>
+          <div><dt>Modalidade</dt><dd id="confirm-modalidade">—</dd></div>
+        </dl>
+        <button id="confirm-button" class="primary-button confirm-action" type="button">Confirmar ciência</button>
+        <div id="confirm-success" class="confirm-result success" role="status" hidden></div>
+      </div>
+      <div class="confirm-footer">Aplicação desenvolvida pelo P4/20º BPM</div>
+    </section>
+  </main>
+  <script src="../js/config.js?v=0.10.0"></script>
+  <script src="../js/api.js?v=0.10.0"></script>
+  <script src="./confirmar.js?v=0.10.0"></script>
+</body>
+</html>

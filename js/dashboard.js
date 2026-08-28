@@ -5,7 +5,7 @@
     { key: 'audiencias', title: 'Audiências', description: 'Consulta e acompanhamento de audiências.', available: true },
     { key: 'destinatarios', title: 'Destinatários', description: 'Consulta da base cadastral dos militares.', available: true },
     { key: 'documentos', title: 'Documentos', description: 'Configuração e controle dos ofícios.', available: true },
-    { key: 'notificacoes', title: 'Notificações', description: 'Acompanhamento das notificações e respectivos status.' },
+    { key: 'notificacoes', title: 'Notificações', description: 'Ciência das audiências e lembretes automáticos.', available: true },
     { key: 'historico', title: 'Histórico', description: 'Consulta aos eventos e movimentações registradas.', available: true },
     { key: 'relatorios', title: 'Relatórios', description: 'Visão consolidada dos dados operacionais do sistema.' }
   ];
@@ -74,6 +74,8 @@
           window.Destinatarios.open();
         } else if (module.key === 'documentos' && window.Documentos) {
           window.Documentos.open();
+        } else if (module.key === 'notificacoes' && window.Notificacoes) {
+          window.Notificacoes.open();
         } else if (module.key === 'historico' && window.Documentos) {
           window.Documentos.showHistory();
         } else if (module.key === 'usuarios' && window.Usuarios) {

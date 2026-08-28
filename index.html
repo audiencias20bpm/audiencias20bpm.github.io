@@ -12,8 +12,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.20">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.20">
+  <link rel="manifest" href="./manifest.json?v=0.10.0">
+  <link rel="stylesheet" href="./css/app.css?v=0.10.0">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -687,6 +687,60 @@
             </form>
           </section>
 
+
+          <section id="notificacoes-view" class="module-view" aria-labelledby="notificacoes-view-title" hidden>
+            <header class="module-view-header">
+              <div>
+                <button id="notificacoes-back" class="back-button" type="button">← Voltar ao painel</button>
+                <p class="dashboard-kicker">Notificações</p>
+                <h2 id="notificacoes-view-title">Ciência e lembretes</h2>
+                <p class="module-view-subtitle">Acompanhe a ciência das audiências e os lembretes programados para o dia anterior às 09:00.</p>
+              </div>
+              <button id="notificacoes-refresh" class="secondary-button" type="button">Atualizar</button>
+            </header>
+
+            <div id="notificacoes-mode" class="notification-test-banner" role="status">MODO TESTE — nenhum WhatsApp real será enviado</div>
+
+            <section class="notification-summary-grid" aria-label="Resumo das notificações">
+              <article class="notification-summary-card"><span>Pendentes</span><strong id="notificacoes-count-pendentes">0</strong></article>
+              <article class="notification-summary-card"><span>Enviadas / simuladas</span><strong id="notificacoes-count-enviadas">0</strong></article>
+              <article class="notification-summary-card"><span>Ciências confirmadas</span><strong id="notificacoes-count-confirmadas">0</strong></article>
+              <article class="notification-summary-card"><span>Com erro</span><strong id="notificacoes-count-erros">0</strong></article>
+            </section>
+
+            <section class="document-history-filters notification-filters" aria-label="Filtros das notificações">
+              <div class="form-grid three-columns">
+                <div class="form-group">
+                  <label for="notificacoes-search">Pesquisar</label>
+                  <input id="notificacoes-search" type="search" maxlength="160" autocomplete="off" placeholder="Ofício, RG, nome, WhatsApp, processo...">
+                </div>
+                <div class="form-group">
+                  <label for="notificacoes-type">Tipo</label>
+                  <select id="notificacoes-type"><option value="">Todos</option><option value="OFICIO">Ciência</option><option value="LEMBRETE">Lembrete</option></select>
+                </div>
+                <div class="form-group">
+                  <label for="notificacoes-status">Status</label>
+                  <select id="notificacoes-status"><option value="">Todos</option><option value="PENDENTE">Pendente</option><option value="SIMULADA">Simulada</option><option value="ENVIADO">Enviada</option><option value="FALHOU">Com erro</option></select>
+                </div>
+              </div>
+            </section>
+
+            <div id="notificacoes-loading" class="module-state compact-state" role="status" aria-live="polite" hidden>
+              <div class="validation-spinner" aria-hidden="true"></div><strong>Carregando notificações...</strong><span>Aguarde enquanto consultamos os registros.</span>
+            </div>
+            <div id="notificacoes-error" class="module-error" role="alert" hidden></div>
+            <div id="notificacoes-success" class="module-success" role="status" hidden></div>
+            <div id="notificacoes-empty" class="module-state compact-state" hidden><strong>Nenhuma notificação encontrada.</strong><span>Os registros são criados quando o ofício possui PDF gerado.</span></div>
+
+            <div class="notification-desktop-list table-scroll" tabindex="0" aria-label="Lista de notificações">
+              <table class="audiencias-table notification-table">
+                <thead><tr><th>Ofício</th><th>Audiência</th><th>Militar</th><th>RG</th><th>WhatsApp</th><th>Processo</th><th>Tipo</th><th>Status</th><th>Ciência</th><th>Ações</th></tr></thead>
+                <tbody id="notificacoes-body"></tbody>
+              </table>
+            </div>
+            <div id="notificacoes-mobile-list" class="notification-mobile-list"></div>
+          </section>
+
           <section id="historico-view" class="module-view" aria-labelledby="historico-view-title" hidden>
             <header class="module-view-header">
               <div>
@@ -986,21 +1040,35 @@
     </section>
   </main>
 
+
+  <section id="notificacoes-message-dialog" class="modal-shell" role="dialog" aria-modal="true" aria-labelledby="notificacoes-message-title" hidden>
+    <div class="modal-backdrop" data-notificacoes-message-close></div>
+    <div class="modal-card notification-message-card">
+      <div class="modal-header">
+        <div><p class="dashboard-kicker">Prévia</p><h2 id="notificacoes-message-title">Mensagem da notificação</h2></div>
+        <button id="notificacoes-message-close" class="icon-button" type="button" aria-label="Fechar">×</button>
+      </div>
+      <pre id="notificacoes-message-text" class="notification-message-preview"></pre>
+      <a id="notificacoes-test-confirm-link" class="primary-button notification-test-link" href="#" target="_blank" rel="noopener" hidden>Abrir confirmação de teste</a>
+    </div>
+  </section>
+
   <noscript>
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.20"></script>
-  <script src="./js/api.js?v=0.9.20"></script>
-  <script src="./js/audiencias.js?v=0.9.20"></script>
-  <script src="./js/destinatarios.js?v=0.9.20"></script>
-  <script src="./js/documentos.js?v=0.9.20"></script>
-  <script src="./js/usuarios.js?v=0.9.20"></script>
-  <script src="./js/biometria.js?v=0.9.20"></script>
-  <script src="./js/install.js?v=0.9.20"></script>
-  <script src="./js/dashboard.js?v=0.9.20"></script>
-  <script src="./js/auth.js?v=0.9.20"></script>
-  <script src="./js/session.js?v=0.9.20"></script>
+  <script src="./js/config.js?v=0.10.0"></script>
+  <script src="./js/api.js?v=0.10.0"></script>
+  <script src="./js/audiencias.js?v=0.10.0"></script>
+  <script src="./js/destinatarios.js?v=0.10.0"></script>
+  <script src="./js/documentos.js?v=0.10.0"></script>
+  <script src="./js/notificacoes.js?v=0.10.0"></script>
+  <script src="./js/usuarios.js?v=0.10.0"></script>
+  <script src="./js/biometria.js?v=0.10.0"></script>
+  <script src="./js/install.js?v=0.10.0"></script>
+  <script src="./js/dashboard.js?v=0.10.0"></script>
+  <script src="./js/auth.js?v=0.10.0"></script>
+  <script src="./js/session.js?v=0.10.0"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
