@@ -9,8 +9,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.15">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.15">
+  <link rel="manifest" href="./manifest.json?v=0.9.16">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.16">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -720,9 +720,6 @@
             </section>
           </section>
 
-        <div class="global-auth-actions" aria-label="Ações da sessão">
-          <button id="logout-button" class="logout-button global-logout-button" type="button">Sair</button>
-        </div>
       </section>
 
 
@@ -816,7 +813,7 @@
                 </div>
                 <div class="form-group">
                   <label for="usuarios-create-login">Login</label>
-                  <input id="usuarios-create-login" autocomplete="off" maxlength="60" placeholder="Ex.: SD_Karina ou P1_Cadastro" required>
+                  <input id="usuarios-create-login" autocomplete="off" maxlength="60" placeholder="Ex.: CB_BRANDÃO ou P1_Cadastro" required>
                 </div>
                 <div class="form-group">
                   <label for="usuarios-create-tipo">Tipo da conta</label>
@@ -891,6 +888,10 @@
             </div>
           </section>
 
+      <div class="global-auth-actions" aria-label="Ações da sessão">
+        <button id="logout-button" class="logout-button global-logout-button" type="button">Sair</button>
+      </div>
+
       <div id="logout-overlay" class="logout-overlay" role="status" aria-live="assertive" aria-busy="true" hidden>
         <div class="logout-dialog">
           <div class="validation-spinner" aria-hidden="true"></div>
@@ -911,15 +912,15 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.15"></script>
-  <script src="./js/api.js?v=0.9.15"></script>
-  <script src="./js/audiencias.js?v=0.9.15"></script>
-  <script src="./js/destinatarios.js?v=0.9.15"></script>
-  <script src="./js/documentos.js?v=0.9.15"></script>
-  <script src="./js/usuarios.js?v=0.9.15"></script>
-  <script src="./js/dashboard.js?v=0.9.15"></script>
-  <script src="./js/auth.js?v=0.9.15"></script>
-  <script src="./js/session.js?v=0.9.15"></script>
+  <script src="./js/config.js?v=0.9.16"></script>
+  <script src="./js/api.js?v=0.9.16"></script>
+  <script src="./js/audiencias.js?v=0.9.16"></script>
+  <script src="./js/destinatarios.js?v=0.9.16"></script>
+  <script src="./js/documentos.js?v=0.9.16"></script>
+  <script src="./js/usuarios.js?v=0.9.16"></script>
+  <script src="./js/dashboard.js?v=0.9.16"></script>
+  <script src="./js/auth.js?v=0.9.16"></script>
+  <script src="./js/session.js?v=0.9.16"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

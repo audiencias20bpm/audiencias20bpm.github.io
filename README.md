@@ -323,7 +323,7 @@ Deploy retry: v0.9.7
 O card **Histórico** do painel principal passa a ficar disponível e abre diretamente o Histórico de Ofícios já implementado no módulo Documentos. Esta alteração é exclusivamente de navegação do frontend; não altera backend, autenticação, sessões, geração de PDF, Drive ou estrutura de dados.
 
 
-## Histórico como módulo independente (v0.9.15)
+## Histórico como módulo independente (v0.9.16)
 
 - O card **Histórico** do painel principal abre diretamente o histórico de ofícios, sem passar pelo módulo Documentos.
 - A ação duplicada **Histórico de ofícios** foi removida da tela inicial de Documentos.
@@ -332,7 +332,7 @@ O card **Histórico** do painel principal passa a ficar disponível e abre diret
 - Pesquisa, filtros, consulta e abertura segura dos PDFs continuam utilizando a lógica já aprovada da v0.9.12.
 
 
-## v0.9.15 — Gestão de Usuários DEV
+## v0.9.16 — Gestão de Usuários DEV
 - Habilita o card Usuários exclusivamente para DEV.
 - Permite criar contas individuais e funcionais.
 - Contas funcionais ficam marcadas para não receber biometria/Passkey em etapa futura.

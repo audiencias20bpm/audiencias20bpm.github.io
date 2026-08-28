@@ -129,6 +129,7 @@
         if (item.bloqueado) actions.appendChild(createAction_('Desbloquear', function () { unlock_(item); }));
         actions.appendChild(createAction_('Redefinir senha', function () { openReset_(item); }));
         actions.appendChild(createAction_('Encerrar sessões', function () { endSessions_(item); }));
+        actions.appendChild(createAction_('Excluir', function () { deleteUser_(item); }, true));
       } else {
         var self = document.createElement('span'); self.className = 'usuarios-self'; self.textContent = 'Conta atual'; actions.appendChild(self);
       }
@@ -192,6 +193,16 @@
     if (!window.confirm('Encerrar todas as sessões ativas de ' + item.login + '?')) return;
     window.Api.post('usuarios_end_sessions', { token: token_(), usuario_id: item.id }).then(afterAction_('Sessões encerradas.'));
   }
+
+  function deleteUser_(item) {
+    if (!window.confirm('Excluir definitivamente o usuário ' + item.login + '? Esta ação não poderá ser desfeita.')) return;
+    if (!window.confirm('Confirme novamente a exclusão de ' + item.login + '.')) return;
+    window.Api.post('usuarios_delete', { token: token_(), usuario_id: item.id }).then(function (response) {
+      if (!isSuccess_(response)) { if (handleSessionError_(response)) return; setError_(getMessage_(response)); return; }
+      setSuccess_('Usuário excluído com sucesso.'); load_();
+    }).catch(function () { setError_('Não foi possível excluir o usuário agora.'); });
+  }
+
   function afterAction_(successMessage) {
     return function (response) {
       if (!isSuccess_(response)) {
