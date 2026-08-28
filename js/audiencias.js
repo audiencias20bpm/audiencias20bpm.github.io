@@ -135,7 +135,7 @@
       var detailButton=document.createElement('button');
       detailButton.type='button';
       detailButton.className='secondary-button compact-button table-action-button';
-      detailButton.textContent='Ver detalhes';
+      detailButton.textContent='Detalhes';
       detailButton.addEventListener('click',function(){openDetails_(item);});
       actionsCell.appendChild(detailButton);
       tr.appendChild(actionsCell);

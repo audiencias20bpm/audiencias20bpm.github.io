@@ -3110,3 +3110,172 @@ body.modal-open {
     grid-column: auto;
   }
 }
+
+
+/* v0.10.2 — Audiências mobile compactas, ações desktop e prévia de ofício sem sobreposição */
+@media (min-width: 721px) {
+  #audiencias-table-wrap {
+    overflow-x: auto;
+  }
+
+  #audiencias-table-wrap .audiencias-table {
+    min-width: 980px;
+  }
+
+  #audiencias-table-wrap .audiencias-table th:last-child,
+  #audiencias-table-wrap .audiencias-table td:last-child {
+    width: 118px;
+    min-width: 118px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  #audiencias-table-wrap .table-action-button {
+    width: 100%;
+    min-width: 102px;
+    padding-inline: 10px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 720px) {
+  #audiencias-table-wrap {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  #audiencias-table-wrap .audiencias-table {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    font-size: .9rem;
+  }
+
+  #audiencias-table-wrap .audiencias-table thead {
+    display: none;
+  }
+
+  #audiencias-table-wrap .audiencias-table tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  #audiencias-table-wrap .audiencias-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid #d4e0e3;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(11, 60, 73, .05);
+  }
+
+  #audiencias-table-wrap .audiencias-table td {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 9px;
+    border: 0;
+    border-radius: 10px;
+    background: rgba(11, 60, 73, .035);
+    overflow-wrap: anywhere;
+  }
+
+  #audiencias-table-wrap .audiencias-table td::before {
+    color: #62767d;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+  }
+
+  #audiencias-table-wrap .audiencias-table td:nth-child(1)::before { content: 'Código'; }
+  #audiencias-table-wrap .audiencias-table td:nth-child(2)::before { content: 'Processo'; }
+  #audiencias-table-wrap .audiencias-table td:nth-child(3)::before { content: 'Assunto'; }
+  #audiencias-table-wrap .audiencias-table td:nth-child(4)::before { content: 'Militares'; }
+  #audiencias-table-wrap .audiencias-table td:nth-child(5)::before { content: 'Data e hora'; }
+  #audiencias-table-wrap .audiencias-table td:nth-child(6)::before { content: 'Modalidade'; }
+  #audiencias-table-wrap .audiencias-table td:nth-child(7)::before { content: 'Local'; }
+  #audiencias-table-wrap .audiencias-table td:nth-child(8)::before { content: 'Status'; }
+  #audiencias-table-wrap .audiencias-table td:nth-child(9)::before { content: 'Ações'; }
+
+  #audiencias-table-wrap .audiencias-table td:nth-child(1),
+  #audiencias-table-wrap .audiencias-table td:nth-child(4),
+  #audiencias-table-wrap .audiencias-table td:nth-child(9) {
+    grid-column: 1 / -1;
+  }
+
+  #audiencias-table-wrap .audiencias-table td:nth-child(9) {
+    background: transparent;
+    padding: 2px 0 0;
+  }
+
+  #audiencias-table-wrap .table-action-button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  #audiencias-table-wrap .audiencia-status {
+    align-self: flex-start;
+  }
+
+  .audiencias-search-summary:empty {
+    display: none;
+  }
+
+  .audiencias-search-bar {
+    margin-bottom: 10px;
+  }
+
+  .document-preview-card {
+    overflow: visible;
+  }
+
+  .oficio-preview {
+    aspect-ratio: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible;
+    padding-bottom: 22px;
+  }
+
+  .oficio-preview-signature-row {
+    margin-top: 30px;
+  }
+
+  .oficio-preview-footer {
+    margin-top: 38px;
+  }
+
+  .document-preview-actions {
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .document-preview-actions .primary-button,
+  .document-preview-actions .secondary-button {
+    width: 100%;
+  }
+}
+
+.process-document-field input[type="file"] {
+  width: 100%;
+}
+
+.process-document-status {
+  margin-top: 8px;
+  padding: 9px 11px;
+  border: 1px solid #d8e4e8;
+  border-radius: 10px;
+  background: #f7fafb;
+  color: #53676e;
+  font-size: .82rem;
+  line-height: 1.4;
+}

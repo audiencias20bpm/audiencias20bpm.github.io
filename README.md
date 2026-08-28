@@ -375,7 +375,7 @@ O card **Histórico** do painel principal passa a ficar disponível e abre diret
 - Nenhuma alteração de backend nesta versão.
 
 
-## v0.10.0 — Notificações / Modo TESTE
+## v0.10.1 — Notificações / Modo TESTE
 
 - habilita o módulo **Notificações** no painel principal;
 - cria notificações individuais vinculadas a audiência, destinatário e ofício;
@@ -390,3 +390,10 @@ O card **Histórico** do painel principal passa a ficar disponível e abre diret
 - inclui processador de lembretes em modo TESTE e função opcional para instalar trigger a cada 15 minutos;
 - mantém credenciais/API de WhatsApp inexistentes nesta fase e nenhum WhatsApp real é enviado;
 - preserva autenticação, sessões, Passkey, PWA, Audiências, Destinatários, geração de ofícios, PDF e Drive.
+
+
+## v0.10.2
+- Audiências em cards compactos no mobile, eliminando espaço ocioso e rolagem horizontal desnecessária.
+- Ação Detalhes ajustada no desktop.
+- Prévia de ofício corrigida no mobile para não sobrepor assinatura, rodapé e botões.
+- Campo opcional para anexar PDF do processo durante a geração do ofício; arquivo salvo no Drive e vinculado ao registro do ofício.

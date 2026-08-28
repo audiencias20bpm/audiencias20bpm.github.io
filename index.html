@@ -12,8 +12,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.10.1">
-  <link rel="stylesheet" href="./css/app.css?v=0.10.1">
+  <link rel="manifest" href="./manifest.json?v=0.10.2">
+  <link rel="stylesheet" href="./css/app.css?v=0.10.2">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -583,6 +583,12 @@
                       <textarea id="documentos-trecho-opcional" rows="3" maxlength="500" placeholder="Ex.: onde configura como réu: NOME DO RÉU."></textarea>
                       <small class="field-help">Quando preenchido, este trecho aparecerá em vermelho ao final do corpo do ofício.</small>
                     </div>
+                    <div class="form-group full-width process-document-field">
+                      <label for="documentos-processo-pdf">Documento do processo em PDF <span class="label-optional">(opcional)</span></label>
+                      <input id="documentos-processo-pdf" type="file" accept="application/pdf,.pdf">
+                      <small class="field-help">Anexe, quando necessário, um PDF relacionado ao processo. Limite de 5 MB. O arquivo será salvo no Drive e vinculado ao ofício gerado.</small>
+                      <div id="documentos-processo-pdf-status" class="process-document-status" hidden></div>
+                    </div>
                   </div>
                 </section>
 
@@ -1057,18 +1063,18 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.10.1"></script>
-  <script src="./js/api.js?v=0.10.1"></script>
-  <script src="./js/audiencias.js?v=0.10.1"></script>
-  <script src="./js/destinatarios.js?v=0.10.1"></script>
-  <script src="./js/documentos.js?v=0.10.1"></script>
-  <script src="./js/notificacoes.js?v=0.10.1"></script>
-  <script src="./js/usuarios.js?v=0.10.1"></script>
-  <script src="./js/biometria.js?v=0.10.1"></script>
-  <script src="./js/install.js?v=0.10.1"></script>
-  <script src="./js/dashboard.js?v=0.10.1"></script>
-  <script src="./js/auth.js?v=0.10.1"></script>
-  <script src="./js/session.js?v=0.10.1"></script>
+  <script src="./js/config.js?v=0.10.2"></script>
+  <script src="./js/api.js?v=0.10.2"></script>
+  <script src="./js/audiencias.js?v=0.10.2"></script>
+  <script src="./js/destinatarios.js?v=0.10.2"></script>
+  <script src="./js/documentos.js?v=0.10.2"></script>
+  <script src="./js/notificacoes.js?v=0.10.2"></script>
+  <script src="./js/usuarios.js?v=0.10.2"></script>
+  <script src="./js/biometria.js?v=0.10.2"></script>
+  <script src="./js/install.js?v=0.10.2"></script>
+  <script src="./js/dashboard.js?v=0.10.2"></script>
+  <script src="./js/auth.js?v=0.10.2"></script>
+  <script src="./js/session.js?v=0.10.2"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

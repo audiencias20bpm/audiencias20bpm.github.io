@@ -1108,10 +1108,43 @@
     setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
   }
 
-  function finalizeOficioPdf_(reservation, blob, fileName) {
+
+
+  function setProcessPdfStatus_(message, isError) {
+    var el = document.getElementById('documentos-processo-pdf-status');
+    if (!el) return;
+    if (!message) { el.hidden = true; el.textContent = ''; el.classList.remove('module-error'); return; }
+    el.hidden = false;
+    el.textContent = message;
+    el.classList.toggle('module-error', Boolean(isError));
+  }
+
+  function readProcessPdfFile_() {
+    var input = document.getElementById('documentos-processo-pdf');
+    var file = input && input.files && input.files.length ? input.files[0] : null;
+    if (!file) { setProcessPdfStatus_('', false); return Promise.resolve(null); }
+    var name = String(file.name || 'documento-processo.pdf');
+    var isPdf = String(file.type || '').toLowerCase() === 'application/pdf' || /\.pdf$/i.test(name);
+    if (!isPdf) return Promise.reject(new Error('O documento do processo deve estar em formato PDF.'));
+    if (file.size > 5 * 1024 * 1024) return Promise.reject(new Error('O documento do processo excede o limite de 5 MB.'));
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        var result = String(reader.result || '');
+        var comma = result.indexOf(',');
+        if (comma < 0) { reject(new Error('Não foi possível ler o documento do processo.')); return; }
+        setProcessPdfStatus_('PDF selecionado: ' + name, false);
+        resolve({ nome: name, base64: result.slice(comma + 1) });
+      };
+      reader.onerror = function () { reject(new Error('Não foi possível ler o documento do processo.')); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function finalizeOficioPdf_(reservation, blob, fileName, processoPdf) {
     var token = sessionStorage.getItem(TOKEN_STORAGE_KEY) || '';
     return blobToBase64_(blob).then(function (base64) {
-      return window.Api.post('oficios_pdf_finalizar', { token: token, oficio_id: reservation.id, pdf_nome: fileName, pdf_base64: base64 });
+      return window.Api.post('oficios_pdf_finalizar', { token: token, oficio_id: reservation.id, pdf_nome: fileName, pdf_base64: base64, processo_pdf_nome: processoPdf ? processoPdf.nome : '', processo_pdf_base64: processoPdf ? processoPdf.base64 : '' });
     }).then(function (response) {
       if (!isSuccess_(response)) throw new Error(getSafeMessage_(response, 'Não foi possível salvar o PDF no Drive.'));
       var data = getData_(response); updateExpiry_(data); return data;
@@ -1125,7 +1158,9 @@
     if (validation) { setGenerateError_(validation); return; }
     setGenerateBusy_(true);
     updateGeneratePreview_();
-    updateMilitaryPostIfNeeded_()
+    var processoPdfSelecionado = null;
+    readProcessPdfFile_()
+      .then(function (processoPdf) { processoPdfSelecionado = processoPdf; return updateMilitaryPostIfNeeded_(); })
       .then(reserveOficio_)
       .then(function (reservation) {
         return createOficioCanvas_().then(function (canvas) {
@@ -1134,9 +1169,9 @@
           var safeNumber = String(reservation.numero_formatado || 'oficio').replace(/[\\/:*?"<>|]+/g, '-');
           var rg = String(selectedGenerationMilitary_.rg || '').replace(/\D+/g, '');
           var fileName = 'OFICIO-' + safeNumber + (rg ? '-RG-' + rg : '') + '.pdf';
-          return finalizeOficioPdf_(reservation, blob, fileName).then(function () {
+          return finalizeOficioPdf_(reservation, blob, fileName, processoPdfSelecionado).then(function () {
             downloadBlob_(blob, fileName);
-            setSuccess_('Ofício ' + (reservation.numero_formatado || '') + ' gerado, salvo no Drive e baixado no dispositivo.');
+            setSuccess_('Ofício ' + (reservation.numero_formatado || '') + ' gerado, salvo no Drive e baixado no dispositivo.' + (processoPdfSelecionado ? ' Documento do processo também salvo e vinculado ao ofício.' : ''));
             pendingOficioReservation_ = null;
             if (currentConfig_) {
               currentConfig_.oficio_ultimo_numero = reservation.numero;
@@ -1174,6 +1209,9 @@
     var optional = document.getElementById('documentos-trecho-opcional');
     if (destination) destination.value = '';
     if (optional) optional.value = '';
+    var processPdfInput = document.getElementById('documentos-processo-pdf');
+    if (processPdfInput) processPdfInput.value = '';
+    setProcessPdfStatus_('', false);
     fillGenerationAudienceSummary_();
     fillGenerationMilitarySummary_();
     updateGeneratePreview_();
@@ -1224,6 +1262,7 @@
     var destination = document.getElementById('documentos-destino-judicial');
     var optional = document.getElementById('documentos-trecho-opcional');
     var militaryPost = document.getElementById('documentos-militar-posto');
+    var processPdfInput = document.getElementById('documentos-processo-pdf');
     var generatePdf = document.getElementById('documentos-generate-pdf');
     var signatureInput = document.getElementById('signatario-assinatura-arquivo');
     var signatureRemove = document.getElementById('signatario-assinatura-remover');
@@ -1283,6 +1322,12 @@
     if (generateBack) generateBack.addEventListener('click', showHome_);
     if (audienceSelect) audienceSelect.addEventListener('change', onAudienceChange_);
     if (militarySelect) militarySelect.addEventListener('change', onMilitaryChange_);
+    if (processPdfInput) processPdfInput.addEventListener('change', function () {
+      readProcessPdfFile_().catch(function (error) {
+        setProcessPdfStatus_(error && error.message ? error.message : 'PDF inválido.', true);
+        processPdfInput.value = '';
+      });
+    });
     if (previewRefresh) previewRefresh.addEventListener('click', updateGeneratePreview_);
     if (militaryPost) militaryPost.addEventListener('input', function () { pendingOficioReservation_ = null; updateGeneratePreview_(); });
     if (generatePdf) generatePdf.addEventListener('click', generatePdf_);
