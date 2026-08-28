@@ -260,12 +260,12 @@
         var badgeM = document.createElement('span'); badgeM.className = 'notification-status status-' + String(item.status || '').toLowerCase(); badgeM.textContent = statusLabel_(item);
         header.appendChild(title); header.appendChild(badgeM); card.appendChild(header);
         var info = document.createElement('div'); info.className = 'notification-card-info';
-        info.innerHTML = '<span><b>' + typeLabel_(item.tipo) + '</b></span>' +
-          '<span>' + (item.militar_nome || '—') + ' • RG ' + (item.militar_rg || '—') + '</span>' +
-          '<span>Audiência: ' + formatDateTime_(item.audiencia_data_hora) + '</span>' +
-          '<span>WhatsApp: ' + formatPhone_(item.whatsapp) + '</span>' +
-          '<span>Processo: ' + (item.processo || '—') + '</span>' +
-          (item.confirmado_em ? '<span>Ciência: ' + item.confirmado_em + '</span>' : '');
+        info.innerHTML = '<span class="notification-card-wide">' + (item.militar_nome || '—') + ' • RG ' + (item.militar_rg || '—') + '</span>' +
+          '<span><b>Tipo</b><small>' + typeLabel_(item.tipo) + '</small></span>' +
+          '<span><b>Audiência</b><small>' + formatDateTime_(item.audiencia_data_hora) + '</small></span>' +
+          '<span><b>WhatsApp</b><small>' + formatPhone_(item.whatsapp) + '</small></span>' +
+          '<span><b>Processo</b><small>' + (item.processo || '—') + '</small></span>' +
+          (item.confirmado_em ? '<span class="notification-card-wide"><b>Ciência</b><small>' + item.confirmado_em + '</small></span>' : '');
         card.appendChild(info);
         var act = document.createElement('div'); act.className = 'notification-card-actions';
         if (String(item.tipo).toUpperCase() === 'OFICIO') {
