@@ -50,6 +50,7 @@
     var view = document.getElementById('usuarios-view');
     var home = document.getElementById('dashboard-home');
     if (view) view.hidden = true;
+    var card = document.querySelector('.login-card'); if (card) card.classList.remove('usuarios-wide');
     if (home) home.hidden = false;
   }
   function setError_(message) {
@@ -100,15 +101,15 @@
     var current = storedUser_();
     items.forEach(function (item) {
       var tr = document.createElement('tr');
-      var name = document.createElement('td');
+      var name = document.createElement('td'); name.dataset.label = 'Usuário';
       name.innerHTML = '<strong></strong><br><span class="usuarios-login"></span>';
       name.querySelector('strong').textContent = item.nome || '—';
       name.querySelector('span').textContent = item.login || '—';
       tr.appendChild(name);
 
-      var type = document.createElement('td'); type.textContent = labelTipo_(item.tipo_conta); tr.appendChild(type);
-      var profile = document.createElement('td'); profile.textContent = item.perfil || '—'; tr.appendChild(profile);
-      var status = document.createElement('td');
+      var type = document.createElement('td'); type.dataset.label = 'Tipo'; type.textContent = labelTipo_(item.tipo_conta); tr.appendChild(type);
+      var profile = document.createElement('td'); profile.dataset.label = 'Perfil'; profile.textContent = item.perfil || '—'; tr.appendChild(profile);
+      var status = document.createElement('td'); status.dataset.label = 'Status / Segurança';
       var badge = document.createElement('span');
       badge.className = 'usuario-status ' + (String(item.status).toUpperCase() === 'ATIVO' ? 'status-active' : 'status-inactive');
       badge.textContent = String(item.status || '—').toUpperCase();
@@ -122,9 +123,9 @@
       securityLine.textContent = notes.length ? notes.join(' • ') : 'Normal';
       status.appendChild(securityLine);
       tr.appendChild(status);
-      var access = document.createElement('td'); access.textContent = formatDate_(item.ultimo_login); tr.appendChild(access);
+      var access = document.createElement('td'); access.dataset.label = 'Último acesso'; access.textContent = formatDate_(item.ultimo_login); tr.appendChild(access);
 
-      var actions = document.createElement('td'); actions.className = 'usuarios-actions';
+      var actions = document.createElement('td'); actions.dataset.label = 'Ações'; actions.className = 'usuarios-actions';
       var isSelf = String(item.id || '') === String(current.id || '');
       if (!isSelf) {
         actions.appendChild(createAction_('Editar', function () { openEdit_(item); }));
@@ -168,6 +169,7 @@
   function open_() {
     hideModuleViews_();
     var view = document.getElementById('usuarios-view'); if (view) view.hidden = false;
+    var card = document.querySelector('.login-card'); if (card) card.classList.add('usuarios-wide');
     closeCreate_(); closeEdit_(); closeReset_(); load_();
   }
   function openCreate_() {
