@@ -128,6 +128,10 @@
       window.Biometria.renderDashboard(normalized);
     }
 
+    if (window.PwaInstall && typeof window.PwaInstall.afterLogin === 'function') {
+      window.PwaInstall.afterLogin();
+    }
+
     if (devSection) {
       var isDev = normalized.perfil === 'DEV';
       devSection.hidden = !isDev;

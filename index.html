@@ -4,18 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0B3C49">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Audiências">
   <meta name="description" content="Sistema de Audiências">
   <title>Sistema de Audiências</title>
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.19">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.19">
+  <link rel="manifest" href="./manifest.json?v=0.9.20">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.20">
 </head>
 <body>
   <main class="app-shell" id="app">
     <section class="login-card" aria-labelledby="login-title">
-      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.9.19</span></span>
+      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.9.20</span></span>
       <header class="login-header">
         <div class="brand-mark" aria-hidden="true">SA</div>
         <div>
@@ -948,6 +951,25 @@
         <button id="logout-button" class="logout-button global-logout-button" type="button">Sair</button>
       </div>
 
+
+      <div id="pwa-install-modal" class="pwa-install-modal" role="dialog" aria-modal="true" aria-labelledby="pwa-install-title" hidden>
+        <div class="pwa-install-dialog">
+          <button id="pwa-install-close" class="pwa-install-close" type="button" aria-label="Fechar">×</button>
+          <div class="pwa-install-icon" aria-hidden="true">SA</div>
+          <p class="dashboard-kicker">Acesso no celular</p>
+          <h2 id="pwa-install-title">Instalar Sistema de Audiências</h2>
+          <p id="pwa-install-text">Adicione o sistema à tela inicial para abrir como aplicativo no celular.</p>
+          <div id="pwa-install-ios-steps" class="pwa-install-ios-steps" hidden>
+            <strong>No iPhone/iPad:</strong> toque em <b>Compartilhar</b> no Safari e depois em <b>Adicionar à Tela de Início</b>.
+          </div>
+          <div class="pwa-install-actions">
+            <button id="pwa-install-later" class="secondary-button" type="button">Agora não</button>
+            <button id="pwa-install-primary" class="primary-button" type="button">Instalar aplicativo</button>
+          </div>
+          <small>O sistema continua disponível normalmente pelo navegador.</small>
+        </div>
+      </div>
+
       <div id="logout-overlay" class="logout-overlay" role="status" aria-live="assertive" aria-busy="true" hidden>
         <div class="logout-dialog">
           <div class="validation-spinner" aria-hidden="true"></div>
@@ -968,16 +990,17 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.19"></script>
-  <script src="./js/api.js?v=0.9.19"></script>
-  <script src="./js/audiencias.js?v=0.9.19"></script>
-  <script src="./js/destinatarios.js?v=0.9.19"></script>
-  <script src="./js/documentos.js?v=0.9.19"></script>
-  <script src="./js/usuarios.js?v=0.9.19"></script>
-  <script src="./js/biometria.js?v=0.9.19"></script>
-  <script src="./js/dashboard.js?v=0.9.19"></script>
-  <script src="./js/auth.js?v=0.9.19"></script>
-  <script src="./js/session.js?v=0.9.19"></script>
+  <script src="./js/config.js?v=0.9.20"></script>
+  <script src="./js/api.js?v=0.9.20"></script>
+  <script src="./js/audiencias.js?v=0.9.20"></script>
+  <script src="./js/destinatarios.js?v=0.9.20"></script>
+  <script src="./js/documentos.js?v=0.9.20"></script>
+  <script src="./js/usuarios.js?v=0.9.20"></script>
+  <script src="./js/biometria.js?v=0.9.20"></script>
+  <script src="./js/install.js?v=0.9.20"></script>
+  <script src="./js/dashboard.js?v=0.9.20"></script>
+  <script src="./js/auth.js?v=0.9.20"></script>
+  <script src="./js/session.js?v=0.9.20"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

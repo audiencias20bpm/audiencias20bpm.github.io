@@ -1,3 +1,12 @@
+## v0.9.20 - Instalação PWA no mobile
+
+- adiciona convite de instalação após o login em Android/iOS;
+- Android/Chromium usa o prompt nativo de instalação quando disponível;
+- iPhone/iPad exibe orientação para Compartilhar > Adicionar à Tela de Início;
+- não exibe o convite quando o sistema já está aberto em modo instalado/standalone;
+- evita repetição excessiva do modal com intervalo de 7 dias após exibição;
+- preserva biometria/Passkey, autenticação, sessões e backend sem alterações.
+
 
 ## v0.9.19 - Biometria/Passkey para contas individuais
 
