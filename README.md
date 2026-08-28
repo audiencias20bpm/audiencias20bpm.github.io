@@ -397,7 +397,7 @@ O card **Histórico** do painel principal passa a ficar disponível e abre diret
 - Ação Detalhes ajustada no desktop.
 - Prévia de ofício corrigida no mobile para não sobrepor assinatura, rodapé e botões.
 - Campo opcional para anexar PDF do processo durante a geração do ofício; arquivo salvo no Drive e vinculado ao registro do ofício.
-## v0.10.3
+## v0.10.4
 
 - corrige definitivamente a lista de Audiências no mobile usando cards dedicados, sem converter a tabela HTML;
 - elimina o grande espaço vertical observado em navegadores móveis Samsung/Chrome;

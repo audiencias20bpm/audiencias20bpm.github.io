@@ -161,6 +161,57 @@
     });
   }
 
+
+  function openAdminDocument_(item, tipo, button) {
+    var token = token_();
+    if (!token) { expired_(); return; }
+    var original = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Abrindo...';
+    setError_('');
+    var popup = window.open('', '_blank');
+    window.Api.post('notificacoes_documento_admin_obter', { token: token, notificacao_id: item.id, tipo: tipo }).then(function (response) {
+      if (!isSuccess_(response)) {
+        var code = getCode_(response);
+        if (code === 'TOKEN_AUSENTE' || code.indexOf('SESSAO_') === 0) { expired_(); return; }
+        throw new Error(getMessage_(response, 'Não foi possível abrir o documento.'));
+      }
+      var data = getData_(response); updateExpiry_(data);
+      var arquivo = data.arquivo || {};
+      if (!arquivo.base64) throw new Error('Documento indisponível.');
+      var binary = atob(String(arquivo.base64));
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+      var url = URL.createObjectURL(new Blob([bytes], { type: arquivo.mime || 'application/pdf' }));
+      if (popup && !popup.closed) popup.location.href = url;
+      else window.open(url, '_blank', 'noopener');
+      window.setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+    }).catch(function (error) {
+      if (popup && !popup.closed) popup.close();
+      setError_(error && error.message ? error.message : 'Não foi possível abrir o documento.');
+    }).finally(function () { button.disabled = false; button.textContent = original; });
+  }
+
+  function showDocuments_(item) {
+    var dialog = document.getElementById('notificacoes-documents-dialog');
+    var list = document.getElementById('notificacoes-documents-list');
+    if (!dialog || !list) return;
+    list.textContent = '';
+    var docs = [];
+    if (item.pdf_disponivel) docs.push({ tipo: 'OFICIO', nome: 'Ofício ' + (item.numero_oficio || '') });
+    if (item.processo_pdf_disponivel) docs.push({ tipo: 'PROCESSO', nome: item.processo_pdf_nome || 'Documento do processo' });
+    docs.forEach(function (doc) {
+      var row = document.createElement('div'); row.className = 'notification-document-row';
+      var name = document.createElement('span'); name.textContent = doc.nome;
+      var btn = button_('Visualizar', 'secondary-button compact-button', function () { openAdminDocument_(item, doc.tipo, btn); });
+      row.appendChild(name); row.appendChild(btn); list.appendChild(row);
+    });
+    if (!docs.length) {
+      var empty = document.createElement('p'); empty.className = 'section-description'; empty.textContent = 'Nenhum documento disponível.'; list.appendChild(empty);
+    }
+    dialog.hidden = false;
+  }
+
   function updateWhatsapp_(item) {
     var raw = window.prompt('Informe o WhatsApp do militar com DDD. Ex.: 91999999999', String(item.whatsapp || '').replace(/^55/, ''));
     if (raw === null) return;
@@ -271,7 +322,7 @@
           else actions.appendChild(button_('Reenviar', 'secondary-button compact-button', function () { send_(item, true, this); }));
         }
         actions.appendChild(button_('Mensagem', 'secondary-button compact-button', function () { showMessage_(item); }));
-        actions.appendChild(button_('Ofício', 'secondary-button compact-button', function () { openPdf_(item, this); }, !item.pdf_disponivel));
+        actions.appendChild(button_('Documentos', 'secondary-button compact-button', function () { showDocuments_(item); }, !item.pdf_disponivel && !item.processo_pdf_disponivel));
         tr.appendChild(actions); body.appendChild(tr);
       }
 
@@ -296,7 +347,7 @@
           else act.appendChild(button_('Reenviar', 'secondary-button compact-button', function () { send_(item, true, this); }));
         }
         act.appendChild(button_('Mensagem', 'secondary-button compact-button', function () { showMessage_(item); }));
-        act.appendChild(button_('Ofício', 'secondary-button compact-button', function () { openPdf_(item, this); }, !item.pdf_disponivel));
+        act.appendChild(button_('Documentos', 'secondary-button compact-button', function () { showDocuments_(item); }, !item.pdf_disponivel && !item.processo_pdf_disponivel));
         card.appendChild(act); cards.appendChild(card);
       }
     });
@@ -340,6 +391,8 @@
     });
     var close = document.getElementById('notificacoes-message-close'); if (close) close.addEventListener('click', function () { document.getElementById('notificacoes-message-dialog').hidden = true; });
     var backdrop = document.querySelector('[data-notificacoes-message-close]'); if (backdrop) backdrop.addEventListener('click', function () { document.getElementById('notificacoes-message-dialog').hidden = true; });
+    var docsClose = document.getElementById('notificacoes-documents-close'); if (docsClose) docsClose.addEventListener('click', function () { document.getElementById('notificacoes-documents-dialog').hidden = true; });
+    var docsBackdrop = document.querySelector('[data-notificacoes-documents-close]'); if (docsBackdrop) docsBackdrop.addEventListener('click', function () { document.getElementById('notificacoes-documents-dialog').hidden = true; });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind_); else bind_();

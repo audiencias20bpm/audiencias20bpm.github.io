@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0B3C49">
   <title>Confirmar ciência • Sistema de Audiências</title>
-  <link rel="stylesheet" href="../css/app.css?v=0.10.3">
+  <link rel="stylesheet" href="../css/app.css?v=0.10.4">
   <style>
     .confirm-page{min-height:100vh;display:grid;place-items:center;padding:1rem;background:#f3f6f6}
     .confirm-card{width:min(100%,620px);background:#fff;border:1px solid rgba(11,60,73,.14);border-radius:18px;padding:1.25rem;box-shadow:0 18px 45px rgba(11,60,73,.12)}
@@ -15,6 +15,13 @@
     .confirm-data div{display:grid;grid-template-columns:120px 1fr;gap:.5rem}
     .confirm-data dt{font-weight:700;color:#445b62}.confirm-data dd{margin:0;color:#20363d;overflow-wrap:anywhere}
     .confirm-action{width:100%;min-height:48px}
+    .confirm-documents{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(11,60,73,.14)}
+    .confirm-documents h2{margin:0 0 .35rem;color:#0b3c49;font-size:1.05rem}
+    .confirm-documents p{margin:0 0 .75rem;color:#5b6e74;line-height:1.45}
+    .confirm-doc-list{display:grid;gap:.65rem}
+    .confirm-doc-item{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.75rem;border:1px solid rgba(11,60,73,.14);border-radius:12px;background:#fff}
+    .confirm-doc-item span{min-width:0;overflow-wrap:anywhere;color:#20363d;font-weight:700}
+    .confirm-doc-item button{flex:0 0 auto;min-height:42px}
     .confirm-result{padding:.85rem 1rem;border-radius:12px;margin-top:1rem;line-height:1.5}
     .confirm-result.success{background:#eaf6ed;color:#1d6035}.confirm-result.error{background:#fdeaea;color:#812626}
     .confirm-footer{margin-top:1rem;text-align:center;color:#708087;font-size:.82rem}
@@ -41,12 +48,17 @@
         </dl>
         <button id="confirm-button" class="primary-button confirm-action" type="button">Confirmar ciência</button>
         <div id="confirm-success" class="confirm-result success" role="status" hidden></div>
+        <section id="confirm-documents" class="confirm-documents" aria-labelledby="confirm-documents-title" hidden>
+          <h2 id="confirm-documents-title">Documentos da audiência</h2>
+          <p>Os documentos permanecem disponíveis neste link para consulta posterior.</p>
+          <div id="confirm-doc-list" class="confirm-doc-list"></div>
+        </section>
       </div>
       <div class="confirm-footer">Aplicação desenvolvida pelo P4/20º BPM</div>
     </section>
   </main>
-  <script src="../js/config.js?v=0.10.3"></script>
-  <script src="../js/api.js?v=0.10.3"></script>
-  <script src="./confirmar.js?v=0.10.3"></script>
+  <script src="../js/config.js?v=0.10.4"></script>
+  <script src="../js/api.js?v=0.10.4"></script>
+  <script src="./confirmar.js?v=0.10.4"></script>
 </body>
 </html>
