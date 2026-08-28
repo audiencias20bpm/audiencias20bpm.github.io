@@ -109,6 +109,65 @@
     return items.map(function (item) { return item.nome || ('RG ' + (item.rg || '')); }).join(' • ');
   }
 
+  function addMobileField_(grid, label, value, wide) {
+    var field = document.createElement('div');
+    field.className = 'audiencia-mobile-field' + (wide ? ' audiencia-mobile-field-wide' : '');
+    var caption = document.createElement('span');
+    caption.className = 'audiencia-mobile-label';
+    caption.textContent = label;
+    var content = document.createElement('span');
+    content.className = 'audiencia-mobile-value';
+    content.textContent = value || '—';
+    field.appendChild(caption);
+    field.appendChild(content);
+    grid.appendChild(field);
+    return field;
+  }
+
+  function renderMobileCards_(items) {
+    var list = document.getElementById('audiencias-mobile-list');
+    if (!list) return;
+    list.textContent = '';
+    items.forEach(function (item) {
+      var status = normalizeStatus_(item.status);
+      var card = document.createElement('article');
+      card.className = 'audiencia-mobile-card';
+
+      var top = document.createElement('div');
+      top.className = 'audiencia-mobile-card-top';
+      var code = document.createElement('strong');
+      code.className = 'audiencia-mobile-code';
+      code.textContent = item.codigo || 'Audiência';
+      var badge = document.createElement('span');
+      badge.className = 'audiencia-status status-' + status.toLowerCase().replace(/_/g, '-');
+      badge.textContent = statusLabel_(status);
+      top.appendChild(code);
+      top.appendChild(badge);
+      card.appendChild(top);
+
+      var grid = document.createElement('div');
+      grid.className = 'audiencia-mobile-grid';
+      addMobileField_(grid, 'Processo', item.processo || '—', true);
+      addMobileField_(grid, 'Assunto', item.assunto || '—', true);
+      addMobileField_(grid, 'Militares', recipientsLabel_(item.destinatarios), true);
+      addMobileField_(grid, 'Data e hora', formatDate_(item.data_hora), false);
+      addMobileField_(grid, 'Modalidade', item.modalidade || '—', false);
+      addMobileField_(grid, 'Local', item.local || '—', true);
+      card.appendChild(grid);
+
+      var actions = document.createElement('div');
+      actions.className = 'audiencia-mobile-actions';
+      var detailButton = document.createElement('button');
+      detailButton.type = 'button';
+      detailButton.className = 'secondary-button compact-button';
+      detailButton.textContent = 'Detalhes';
+      detailButton.addEventListener('click', function () { openDetails_(item); });
+      actions.appendChild(detailButton);
+      card.appendChild(actions);
+      list.appendChild(card);
+    });
+  }
+
   function renderRows_(items) {
     var tbody=document.getElementById('audiencias-table-body');
     var count=document.getElementById('audiencias-count');
@@ -141,6 +200,7 @@
       tr.appendChild(actionsCell);
       tbody.appendChild(tr);
     });
+    renderMobileCards_(items);
     if(count) count.textContent=allAudiencias.length===1?'1 audiência':allAudiencias.length+' audiências';
   }
 
@@ -230,6 +290,7 @@
     var summary=document.getElementById('audiencias-search-summary');
     var empty=document.getElementById('audiencias-search-empty');
     var tableWrap=document.getElementById('audiencias-table-wrap');
+    var mobileList=document.getElementById('audiencias-mobile-list');
     var query=normalizeSearch_(input?input.value:'');
     var filtered=!query ? allAudiencias.slice() : allAudiencias.filter(function(item){
       return searchTextForAudience_(item).indexOf(query)!==-1;
@@ -241,8 +302,12 @@
     }
     if(empty) empty.hidden=filtered.length!==0;
     if(tableWrap) tableWrap.hidden=filtered.length===0;
+    if(mobileList) mobileList.hidden=filtered.length===0;
     if(filtered.length) renderRows_(filtered);
-    else { var tbody=document.getElementById('audiencias-table-body'); if(tbody) tbody.textContent=''; }
+    else {
+      var tbody=document.getElementById('audiencias-table-body'); if(tbody) tbody.textContent='';
+      var mobile=document.getElementById('audiencias-mobile-list'); if(mobile) mobile.textContent='';
+    }
   }
 
   function handleExpiredSession_(){

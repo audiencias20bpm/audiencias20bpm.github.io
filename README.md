@@ -397,3 +397,12 @@ O card **Histórico** do painel principal passa a ficar disponível e abre diret
 - Ação Detalhes ajustada no desktop.
 - Prévia de ofício corrigida no mobile para não sobrepor assinatura, rodapé e botões.
 - Campo opcional para anexar PDF do processo durante a geração do ofício; arquivo salvo no Drive e vinculado ao registro do ofício.
+## v0.10.3
+
+- corrige definitivamente a lista de Audiências no mobile usando cards dedicados, sem converter a tabela HTML;
+- elimina o grande espaço vertical observado em navegadores móveis Samsung/Chrome;
+- mantém a tabela desktop aprovada;
+- primeira notificação de ciência passa a considerar como anexos o PDF do ofício e, quando existir, o PDF do processo;
+- o lembrete do dia anterior continua sem anexos e sem depender da confirmação da ciência;
+- modo TEST continua ativo e passa a exibir os anexos previstos na simulação.
+

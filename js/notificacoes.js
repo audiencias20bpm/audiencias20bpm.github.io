@@ -205,21 +205,43 @@
       var data = getData_(response);
       updateExpiry_(data);
       setSuccess_('Simulação concluída. Nenhuma mensagem real de WhatsApp foi enviada.');
-      if (data.mensagem_teste) showMessage_({ mensagem: data.mensagem_teste }, data.test_confirmation_url || '');
+      if (data.mensagem_teste) showMessage_({ mensagem: data.mensagem_teste }, data.test_confirmation_url || '', data.anexos_teste || []);
       return load_();
     }).catch(function (error) {
       setError_(error && error.message ? error.message : 'Não foi possível processar a notificação.');
     }).finally(function () { button.disabled = false; button.textContent = original; });
   }
 
-  function showMessage_(item, testUrl) {
+  function showMessage_(item, testUrl, anexos) {
     var dialog = document.getElementById('notificacoes-message-dialog');
     var text = document.getElementById('notificacoes-message-text');
     var link = document.getElementById('notificacoes-test-confirm-link');
+    var attachments = document.getElementById('notificacoes-message-attachments');
     if (text) text.textContent = item.mensagem || 'Mensagem indisponível.';
     if (link) {
       link.hidden = !testUrl;
       link.href = testUrl || '#';
+    }
+    var list = Array.isArray(anexos) ? anexos.slice() : [];
+    if (!list.length && item && String(item.tipo || '').toUpperCase() === 'OFICIO') {
+      if (item.pdf_disponivel) list.push({ tipo: 'OFICIO', nome: 'Ofício ' + (item.numero_oficio || '') + '.pdf' });
+      if (item.processo_pdf_disponivel) list.push({ tipo: 'PROCESSO', nome: item.processo_pdf_nome || 'Documento do processo.pdf' });
+    }
+    if (attachments) {
+      attachments.textContent = '';
+      attachments.hidden = list.length === 0;
+      if (list.length) {
+        var title = document.createElement('strong');
+        title.textContent = 'Anexos da primeira notificação';
+        attachments.appendChild(title);
+        var ul = document.createElement('ul');
+        list.forEach(function (anexo) {
+          var li = document.createElement('li');
+          li.textContent = (String(anexo.tipo || '').toUpperCase() === 'PROCESSO' ? 'Documento do processo: ' : 'Ofício: ') + (anexo.nome || 'arquivo.pdf');
+          ul.appendChild(li);
+        });
+        attachments.appendChild(ul);
+      }
     }
     if (dialog) dialog.hidden = false;
   }
