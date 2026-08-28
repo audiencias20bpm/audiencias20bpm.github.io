@@ -2793,3 +2793,46 @@ body.modal-open {
   .users-form-grid { grid-template-columns: 1fr; }
   .users-form-grid .full-width { grid-column: auto; }
 }
+
+/* v0.9.19 - Biometria/Passkey */
+.biometric-login-box {
+  margin-top: 0.9rem;
+  text-align: center;
+}
+.biometric-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.2rem 0 0.75rem;
+  color: #6b7d84;
+  font-size: 0.78rem;
+}
+.biometric-divider::before,
+.biometric-divider::after {
+  content: '';
+  height: 1px;
+  background: #d7e1e4;
+  flex: 1;
+}
+.biometric-login-button { width: 100%; }
+.biometric-login-box .field-help { display: block; margin-top: 0.45rem; }
+.biometric-panel {
+  margin: 1rem 0 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid #bfd4da;
+  border-radius: 16px;
+  background: #f7fafb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.biometric-panel-copy h3 { margin: 0.15rem 0 0.35rem; }
+.biometric-panel-copy > p:not(.dashboard-kicker):not(.biometric-panel-message) { margin: 0; color: #53666d; }
+.biometric-panel-actions { display: flex; flex-wrap: wrap; gap: 0.55rem; justify-content: flex-end; }
+.biometric-panel-message { margin: 0.55rem 0 0; font-weight: 700; color: #0b3c49; }
+@media (max-width: 680px) {
+  .biometric-panel { align-items: stretch; flex-direction: column; }
+  .biometric-panel-actions { justify-content: stretch; }
+  .biometric-panel-actions button { width: 100%; }
+}

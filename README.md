@@ -1,3 +1,14 @@
+
+## v0.9.19 - Biometria/Passkey para contas individuais
+
+- adiciona acesso rapido por biometria/Passkey em contas INDIVIDUAIS;
+- contas FUNCIONAIS permanecem com biometria desabilitada;
+- o primeiro cadastro exige login e senha validos;
+- o dispositivo protege localmente um token aleatorio usando WebAuthn PRF;
+- dados biometricos nunca sao enviados ao sistema;
+- senha permanece como alternativa de acesso e recuperacao;
+- redefinicao de senha pelo DEV revoga a biometria cadastrada.
+
 # Sistema de Audiências
 
 Frontend web/PWA do Sistema de Audiências.

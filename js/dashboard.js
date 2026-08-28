@@ -26,7 +26,9 @@
       id: source.id || '',
       nome: source.nome || source.name || source.login || 'Usuário',
       login: source.login || '',
-      perfil: String(source.perfil || source.role || '').toUpperCase()
+      perfil: String(source.perfil || source.role || '').toUpperCase(),
+      tipo_conta: String(source.tipo_conta || '').toUpperCase(),
+      troca_senha_pendente: source.troca_senha_pendente === true
     };
   }
 
@@ -121,6 +123,10 @@
     }
 
     renderModules_(normalContainer, NORMAL_MODULES);
+
+    if (window.Biometria && typeof window.Biometria.renderDashboard === 'function') {
+      window.Biometria.renderDashboard(normalized);
+    }
 
     if (devSection) {
       var isDev = normalized.perfil === 'DEV';

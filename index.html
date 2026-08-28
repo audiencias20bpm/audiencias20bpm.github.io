@@ -9,13 +9,13 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.9.18">
-  <link rel="stylesheet" href="./css/app.css?v=0.9.18">
+  <link rel="manifest" href="./manifest.json?v=0.9.19">
+  <link rel="stylesheet" href="./css/app.css?v=0.9.19">
 </head>
 <body>
   <main class="app-shell" id="app">
     <section class="login-card" aria-labelledby="login-title">
-      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.9.3</span></span>
+      <span class="app-version-badge" aria-label="Versão do sistema">v<span id="app-version">0.9.19</span></span>
       <header class="login-header">
         <div class="brand-mark" aria-hidden="true">SA</div>
         <div>
@@ -79,6 +79,12 @@
           <span class="button-label">Entrar</span>
           <span class="button-loading" aria-hidden="true" hidden>Entrando...</span>
         </button>
+
+        <div id="biometric-login-box" class="biometric-login-box" hidden>
+          <div class="biometric-divider"><span>ou</span></div>
+          <button id="biometric-login-button" class="secondary-button biometric-login-button" type="button">Entrar com biometria</button>
+          <small id="biometric-login-hint" class="field-help"></small>
+        </div>
       </form>
 
       <section id="login-success" class="authenticated-shell" aria-live="polite" hidden>
@@ -122,6 +128,19 @@
               <strong id="session-timer">30:00</strong>
             </div>
           </div>
+
+          <section id="biometric-panel" class="biometric-panel" aria-labelledby="biometric-panel-title" hidden>
+            <div class="biometric-panel-copy">
+              <p class="dashboard-kicker">Acesso rápido</p>
+              <h3 id="biometric-panel-title">Acesso rápido por biometria</h3>
+              <p id="biometric-panel-text">Ative a biometria/Passkey deste dispositivo.</p>
+              <p id="biometric-panel-message" class="biometric-panel-message" role="status" aria-live="polite" hidden></p>
+            </div>
+            <div class="biometric-panel-actions">
+              <button id="biometric-activate" class="primary-button compact-button" type="button">Ativar biometria</button>
+              <button id="biometric-remove" class="secondary-button compact-button" type="button" hidden>Remover deste dispositivo</button>
+            </div>
+          </section>
 
           <div id="logout-message" class="logout-message" role="status" aria-live="polite" hidden></div>
 
@@ -949,15 +968,16 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.9.18"></script>
-  <script src="./js/api.js?v=0.9.18"></script>
-  <script src="./js/audiencias.js?v=0.9.18"></script>
-  <script src="./js/destinatarios.js?v=0.9.18"></script>
-  <script src="./js/documentos.js?v=0.9.18"></script>
-  <script src="./js/usuarios.js?v=0.9.18"></script>
-  <script src="./js/dashboard.js?v=0.9.18"></script>
-  <script src="./js/auth.js?v=0.9.18"></script>
-  <script src="./js/session.js?v=0.9.18"></script>
+  <script src="./js/config.js?v=0.9.19"></script>
+  <script src="./js/api.js?v=0.9.19"></script>
+  <script src="./js/audiencias.js?v=0.9.19"></script>
+  <script src="./js/destinatarios.js?v=0.9.19"></script>
+  <script src="./js/documentos.js?v=0.9.19"></script>
+  <script src="./js/usuarios.js?v=0.9.19"></script>
+  <script src="./js/biometria.js?v=0.9.19"></script>
+  <script src="./js/dashboard.js?v=0.9.19"></script>
+  <script src="./js/auth.js?v=0.9.19"></script>
+  <script src="./js/session.js?v=0.9.19"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
