@@ -106,16 +106,51 @@
     if (modeEl) modeEl.textContent = String(mode || 'TEST').toUpperCase() === 'TEST' ? 'MODO TESTE — nenhum WhatsApp real será enviado' : 'PRODUÇÃO';
   }
 
-  function filteredItems_() {
+  function timestamp_(value) {
+    var text = String(value || '').trim();
+    if (!text) return 0;
+    var normalized = text.replace(/\//g, '-');
+    var direct = Date.parse(normalized.replace(' ', 'T'));
+    if (!Number.isNaN(direct)) return direct;
+    var br = text.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:[ ,T]+(\d{2}):(\d{2})(?::(\d{2}))?)?/);
+    if (br) return new Date(Number(br[3]), Number(br[2]) - 1, Number(br[1]), Number(br[4] || 0), Number(br[5] || 0), Number(br[6] || 0)).getTime();
+    return 0;
+  }
+
+  function groupKey_(item) {
+    return [item.oficio_id || item.numero_oficio || '', item.destinatario_id || item.militar_rg || item.militar_nome || ''].join('::');
+  }
+
+  function groupedItems_() {
+    var groups = {};
+    items_.forEach(function (item) {
+      var key = groupKey_(item);
+      if (!groups[key]) groups[key] = { key: key, items: [], base: item, criado_ts: 0 };
+      groups[key].items.push(item);
+      var ts = timestamp_(item.criado_em || item.atualizado_em || item.enviado_em || item.simulado_em);
+      if (ts >= groups[key].criado_ts) { groups[key].criado_ts = ts; groups[key].base = item; }
+    });
+    return Object.keys(groups).map(function (key) {
+      var group = groups[key];
+      group.ciencia = group.items.find(function (item) { return String(item.tipo || '').toUpperCase() === 'OFICIO'; }) || null;
+      group.lembrete = group.items.find(function (item) { return String(item.tipo || '').toUpperCase() === 'LEMBRETE'; }) || null;
+      group.base = group.ciencia || group.base || group.lembrete;
+      return group;
+    }).sort(function (a, b) { return b.criado_ts - a.criado_ts; });
+  }
+
+  function filteredGroups_() {
     var search = String((document.getElementById('notificacoes-search') || {}).value || '').trim().toLocaleLowerCase('pt-BR');
     var type = String((document.getElementById('notificacoes-type') || {}).value || '').toUpperCase();
     var status = String((document.getElementById('notificacoes-status') || {}).value || '').toUpperCase();
-    return items_.filter(function (item) {
-      if (type && String(item.tipo || '').toUpperCase() !== type) return false;
-      if (status && String(item.status || '').toUpperCase() !== status) return false;
+    return groupedItems_().filter(function (group) {
+      if (type && !group.items.some(function (item) { return String(item.tipo || '').toUpperCase() === type; })) return false;
+      if (status && !group.items.some(function (item) { return String(item.status || '').toUpperCase() === status; })) return false;
       if (!search) return true;
-      return [item.numero_oficio, item.militar_nome, item.militar_rg, item.whatsapp, item.processo]
-        .join(' ').toLocaleLowerCase('pt-BR').includes(search);
+      return group.items.some(function (item) {
+        return [item.numero_oficio, item.militar_nome, item.militar_rg, item.whatsapp, item.processo]
+          .join(' ').toLocaleLowerCase('pt-BR').includes(search);
+      });
     });
   }
 
@@ -297,58 +332,76 @@
     if (dialog) dialog.hidden = false;
   }
 
+  function statusBadge_(item, labelPrefix) {
+    var wrap = document.createElement('div'); wrap.className = 'notification-group-status';
+    var label = document.createElement('small'); label.textContent = labelPrefix;
+    var badge = document.createElement('span'); badge.className = 'notification-status status-' + String((item || {}).status || '').toLowerCase(); badge.textContent = item ? statusLabel_(item) : '—';
+    wrap.appendChild(label); wrap.appendChild(badge); return wrap;
+  }
+
+  function addGroupActions_(container, group) {
+    var ciencia = group.ciencia;
+    var lembrete = group.lembrete;
+    var base = ciencia || group.base;
+    if (ciencia) {
+      if (!ciencia.whatsapp_valido) container.appendChild(button_('Cadastrar WhatsApp', 'secondary-button compact-button', function () { updateWhatsapp_(ciencia); }));
+      else if (String(ciencia.status).toUpperCase() === 'PENDENTE' || String(ciencia.status).toUpperCase() === 'FALHOU') container.appendChild(button_('Enviar', 'primary-button compact-button', function () { send_(ciencia, false, this); }));
+      else container.appendChild(button_('Reenviar', 'secondary-button compact-button', function () { send_(ciencia, true, this); }));
+      container.appendChild(button_('Mensagem ciência', 'secondary-button compact-button', function () { showMessage_(ciencia); }));
+    }
+    if (lembrete) container.appendChild(button_('Mensagem lembrete', 'secondary-button compact-button', function () { showMessage_(lembrete); }));
+    container.appendChild(button_('Documentos', 'secondary-button compact-button', function () { showDocuments_(base); }, !base.pdf_disponivel && !base.processo_pdf_disponivel));
+  }
+
   function render_() {
     var body = document.getElementById('notificacoes-body');
     var cards = document.getElementById('notificacoes-mobile-list');
     var empty = document.getElementById('notificacoes-empty');
-    var list = filteredItems_();
+    var groups = filteredGroups_();
     if (body) body.textContent = '';
     if (cards) cards.textContent = '';
-    if (empty) empty.hidden = list.length !== 0;
+    if (empty) empty.hidden = groups.length !== 0;
 
-    list.forEach(function (item) {
+    groups.forEach(function (group) {
+      var item = group.base;
+      var ciencia = group.ciencia;
+      var lembrete = group.lembrete;
       if (body) {
-        var tr = document.createElement('tr');
-        [item.numero_oficio || '—', formatDateTime_(item.audiencia_data_hora), item.militar_nome || '—', item.militar_rg || '—', formatPhone_(item.whatsapp), item.processo || '—', typeLabel_(item.tipo)].forEach(function (value) {
+        var tr = document.createElement('tr'); tr.className = 'notification-group-row';
+        [item.numero_oficio || '—', formatDateTime_(item.audiencia_data_hora), item.militar_nome || '—', item.militar_rg || '—', formatPhone_(item.whatsapp), item.processo || '—'].forEach(function (value) {
           var td = document.createElement('td'); td.textContent = value; tr.appendChild(td);
         });
+        var typeTd = document.createElement('td'); typeTd.className = 'notification-group-types';
+        if (ciencia) { var c = document.createElement('span'); c.textContent = 'Ciência'; typeTd.appendChild(c); }
+        if (lembrete) { var l = document.createElement('span'); l.textContent = 'Lembrete'; typeTd.appendChild(l); }
+        tr.appendChild(typeTd);
         var statusTd = document.createElement('td');
-        var badge = document.createElement('span'); badge.className = 'notification-status status-' + String(item.status || '').toLowerCase(); badge.textContent = statusLabel_(item); statusTd.appendChild(badge); tr.appendChild(statusTd);
-        var confirmationTd = document.createElement('td'); confirmationTd.textContent = item.confirmado_em || '—'; tr.appendChild(confirmationTd);
-        var actions = document.createElement('td'); actions.className = 'notification-actions';
-        if (String(item.tipo).toUpperCase() === 'OFICIO') {
-          if (!item.whatsapp_valido) actions.appendChild(button_('Cadastrar WhatsApp', 'secondary-button compact-button', function () { updateWhatsapp_(item); }));
-          else if (String(item.status).toUpperCase() === 'PENDENTE' || String(item.status).toUpperCase() === 'FALHOU') actions.appendChild(button_('Enviar', 'primary-button compact-button', function () { send_(item, false, this); }));
-          else actions.appendChild(button_('Reenviar', 'secondary-button compact-button', function () { send_(item, true, this); }));
-        }
-        actions.appendChild(button_('Mensagem', 'secondary-button compact-button', function () { showMessage_(item); }));
-        actions.appendChild(button_('Documentos', 'secondary-button compact-button', function () { showDocuments_(item); }, !item.pdf_disponivel && !item.processo_pdf_disponivel));
-        tr.appendChild(actions); body.appendChild(tr);
+        if (ciencia) statusTd.appendChild(statusBadge_(ciencia, 'Ciência'));
+        if (lembrete) statusTd.appendChild(statusBadge_(lembrete, 'Lembrete'));
+        tr.appendChild(statusTd);
+        var confirmationTd = document.createElement('td'); confirmationTd.textContent = (ciencia && ciencia.confirmado_em) || '—'; tr.appendChild(confirmationTd);
+        var actions = document.createElement('td'); actions.className = 'notification-actions'; addGroupActions_(actions, group); tr.appendChild(actions);
+        body.appendChild(tr);
       }
 
       if (cards) {
-        var card = document.createElement('article'); card.className = 'notification-card';
+        var card = document.createElement('article'); card.className = 'notification-card notification-group-card';
         var header = document.createElement('div'); header.className = 'notification-card-header';
         var title = document.createElement('strong'); title.textContent = 'Ofício ' + (item.numero_oficio || '—');
-        var badgeM = document.createElement('span'); badgeM.className = 'notification-status status-' + String(item.status || '').toLowerCase(); badgeM.textContent = statusLabel_(item);
-        header.appendChild(title); header.appendChild(badgeM); card.appendChild(header);
+        var badges = document.createElement('div'); badges.className = 'notification-card-statuses';
+        if (ciencia) badges.appendChild(statusBadge_(ciencia, 'Ciência'));
+        if (lembrete) badges.appendChild(statusBadge_(lembrete, 'Lembrete'));
+        header.appendChild(title); header.appendChild(badges); card.appendChild(header);
         var info = document.createElement('div'); info.className = 'notification-card-info';
         info.innerHTML = '<span class="notification-card-wide">' + (item.militar_nome || '—') + ' • RG ' + (item.militar_rg || '—') + '</span>' +
-          '<span><b>Tipo</b><small>' + typeLabel_(item.tipo) + '</small></span>' +
           '<span><b>Audiência</b><small>' + formatDateTime_(item.audiencia_data_hora) + '</small></span>' +
           '<span><b>WhatsApp</b><small>' + formatPhone_(item.whatsapp) + '</small></span>' +
-          '<span><b>Processo</b><small>' + (item.processo || '—') + '</small></span>' +
-          (item.confirmado_em ? '<span class="notification-card-wide"><b>Ciência</b><small>' + item.confirmado_em + '</small></span>' : '');
+          '<span class="notification-card-wide"><b>Processo</b><small>' + (item.processo || '—') + '</small></span>' +
+          (ciencia && ciencia.confirmado_em ? '<span class="notification-card-wide"><b>Ciência confirmada</b><small>' + ciencia.confirmado_em + '</small></span>' : '') +
+          (lembrete && lembrete.data_programada ? '<span class="notification-card-wide"><b>Lembrete programado</b><small>' + lembrete.data_programada + '</small></span>' : '');
         card.appendChild(info);
-        var act = document.createElement('div'); act.className = 'notification-card-actions';
-        if (String(item.tipo).toUpperCase() === 'OFICIO') {
-          if (!item.whatsapp_valido) act.appendChild(button_('Cadastrar WhatsApp', 'secondary-button compact-button', function () { updateWhatsapp_(item); }));
-          else if (String(item.status).toUpperCase() === 'PENDENTE' || String(item.status).toUpperCase() === 'FALHOU') act.appendChild(button_('Enviar', 'primary-button compact-button', function () { send_(item, false, this); }));
-          else act.appendChild(button_('Reenviar', 'secondary-button compact-button', function () { send_(item, true, this); }));
-        }
-        act.appendChild(button_('Mensagem', 'secondary-button compact-button', function () { showMessage_(item); }));
-        act.appendChild(button_('Documentos', 'secondary-button compact-button', function () { showDocuments_(item); }, !item.pdf_disponivel && !item.processo_pdf_disponivel));
-        card.appendChild(act); cards.appendChild(card);
+        var act = document.createElement('div'); act.className = 'notification-card-actions'; addGroupActions_(act, group); card.appendChild(act);
+        cards.appendChild(card);
       }
     });
   }

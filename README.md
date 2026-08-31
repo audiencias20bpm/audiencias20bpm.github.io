@@ -406,3 +406,11 @@ O card **Histórico** do painel principal passa a ficar disponível e abre diret
 - o lembrete do dia anterior continua sem anexos e sem depender da confirmação da ciência;
 - modo TEST continua ativo e passa a exibir os anexos previstos na simulação.
 
+
+## v0.10.5
+
+- Notificações passam a ser exibidas por padrão com os registros mais recentes primeiro, usando `criado_em` como referência principal.
+- Ciência e lembrete do mesmo ofício/militar são agrupados em um único registro visual, reduzindo duplicidade e facilitando a leitura operacional.
+- Pesquisa e filtros por tipo/status permanecem disponíveis e passam a considerar os itens existentes dentro de cada grupo.
+- Ações de mensagem distinguem Ciência e Lembrete; Documentos continua reunindo o ofício e o PDF do processo quando disponível.
+- Nenhuma alteração de backend, autenticação, geração de PDF, confirmação de ciência ou agendamento de lembretes nesta versão.
