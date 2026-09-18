@@ -6,7 +6,7 @@ workers_dev = true
 [[d1_databases]]
 binding = "DB"
 database_name = "audiencias20bpm"
-database_id = "81631cdd-0da2-4ec1-bfa2-16d47cf32c3b"
+database_id = "56802b05-5cdb-4f9d-8ef5-e6402294ac97"
 
 [[r2_buckets]]
 binding = "DOCUMENTOS"
