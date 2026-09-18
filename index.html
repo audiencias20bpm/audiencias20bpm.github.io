@@ -12,8 +12,8 @@
   <link rel="icon" href="./assets/icons/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png">
-  <link rel="manifest" href="./manifest.json?v=0.10.5">
-  <link rel="stylesheet" href="./css/app.css?v=0.10.5">
+  <link rel="manifest" href="./manifest.json?v=0.10.6">
+  <link rel="stylesheet" href="./css/app.css?v=0.10.6">
 </head>
 <body>
   <main class="app-shell" id="app">
@@ -676,8 +676,8 @@
                   <div class="form-group full-width"><label for="signatario-cargo">Cargo</label><input id="signatario-cargo" type="text" maxlength="160" autocomplete="off" placeholder="Ex.: Comandante do 20º BPM" required></div>
                   <div class="form-group full-width signatory-image-group">
                     <label for="signatario-assinatura-arquivo">Assinatura digitalizada <span class="field-optional">(opcional)</span></label>
-                    <input id="signatario-assinatura-arquivo" type="file" accept="image/jpeg,.jpg,.jpeg">
-                    <small class="field-help">Use uma imagem JPG/JPEG de até 2,5 MB. Se cadastrada, será posicionada acima do nome, atrás da linha de identificação. A ausência da imagem não impede a geração do ofício.</small>
+                    <input id="signatario-assinatura-arquivo" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png">
+                    <small class="field-help">Use uma imagem JPG/JPEG ou PNG. O sistema compacta a imagem automaticamente, sem reduzir suas dimensões em pixels. Se cadastrada, será posicionada acima do nome, atrás da linha de identificação. A ausência da imagem não impede a geração do ofício.</small>
                     <div class="signatory-image-preview">
                       <img id="signatario-assinatura-preview" alt="Prévia da assinatura digitalizada" hidden>
                       <span id="signatario-assinatura-status">Nenhuma assinatura digitalizada cadastrada. O ofício continuará podendo ser gerado normalmente.</span>
@@ -1077,18 +1077,18 @@
     <div class="noscript-message">Este sistema precisa de JavaScript habilitado para realizar o login.</div>
   </noscript>
 
-  <script src="./js/config.js?v=0.10.5"></script>
-  <script src="./js/api.js?v=0.10.5"></script>
-  <script src="./js/audiencias.js?v=0.10.5"></script>
-  <script src="./js/destinatarios.js?v=0.10.5"></script>
-  <script src="./js/documentos.js?v=0.10.5"></script>
-  <script src="./js/notificacoes.js?v=0.10.5"></script>
-  <script src="./js/usuarios.js?v=0.10.5"></script>
-  <script src="./js/biometria.js?v=0.10.5"></script>
-  <script src="./js/install.js?v=0.10.5"></script>
-  <script src="./js/dashboard.js?v=0.10.5"></script>
-  <script src="./js/auth.js?v=0.10.5"></script>
-  <script src="./js/session.js?v=0.10.5"></script>
+  <script src="./js/config.js?v=0.10.6"></script>
+  <script src="./js/api.js?v=0.10.6"></script>
+  <script src="./js/audiencias.js?v=0.10.6"></script>
+  <script src="./js/destinatarios.js?v=0.10.6"></script>
+  <script src="./js/documentos.js?v=0.10.6"></script>
+  <script src="./js/notificacoes.js?v=0.10.6"></script>
+  <script src="./js/usuarios.js?v=0.10.6"></script>
+  <script src="./js/biometria.js?v=0.10.6"></script>
+  <script src="./js/install.js?v=0.10.6"></script>
+  <script src="./js/dashboard.js?v=0.10.6"></script>
+  <script src="./js/auth.js?v=0.10.6"></script>
+  <script src="./js/session.js?v=0.10.6"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {

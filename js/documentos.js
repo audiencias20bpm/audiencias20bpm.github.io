@@ -298,26 +298,77 @@
     if (remove) remove.hidden = !dataUrl;
   }
 
-  function readSignatureFile_(file) {
+  function blobToDataUrl_(blob) {
     return new Promise(function (resolve, reject) {
-      if (!file) { resolve(null); return; }
-      if (String(file.type || '').toLowerCase() !== 'image/jpeg') {
-        reject(new Error('A assinatura digitalizada deve estar em formato JPG/JPEG.'));
+      var reader = new FileReader();
+      reader.onload = function () { resolve(String(reader.result || '')); };
+      reader.onerror = function () { reject(new Error('Não foi possível processar a imagem da assinatura.')); };
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  function compressSignatureImage_(file) {
+    return new Promise(function (resolve, reject) {
+      var mime = String(file && file.type || '').toLowerCase();
+      if (mime !== 'image/jpeg' && mime !== 'image/png') {
+        reject(new Error('A assinatura digitalizada deve estar em formato JPG/JPEG ou PNG.'));
         return;
       }
-      if (file.size > 2500000) {
-        reject(new Error('A imagem da assinatura deve ter no máximo 2,5 MB.'));
-        return;
-      }
+
       var reader = new FileReader();
       reader.onload = function () {
-        var dataUrl = String(reader.result || '');
-        var base64 = dataUrl.indexOf(',') >= 0 ? dataUrl.split(',')[1] : '';
-        if (!base64) { reject(new Error('Não foi possível ler a imagem da assinatura.')); return; }
-        resolve({ base64: base64, mime: 'image/jpeg', nome: file.name || 'assinatura.jpg', dataUrl: dataUrl });
+        var image = new Image();
+        image.onload = function () {
+          // Mantém a largura e a altura originais. A compactação reduz o peso
+          // do arquivo sem reduzir a resolução em pixels da assinatura.
+          var canvas = document.createElement('canvas');
+          canvas.width = image.naturalWidth || image.width;
+          canvas.height = image.naturalHeight || image.height;
+          var ctx = canvas.getContext('2d');
+          if (!ctx || !canvas.width || !canvas.height) {
+            reject(new Error('Não foi possível processar a imagem da assinatura.'));
+            return;
+          }
+          ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+          var outputMime = mime === 'image/png' ? 'image/png' : 'image/jpeg';
+          var quality = outputMime === 'image/jpeg' ? 0.90 : undefined;
+          canvas.toBlob(function (blob) {
+            if (!blob) { reject(new Error('Não foi possível compactar a imagem da assinatura.')); return; }
+
+            // Nunca troca o original por uma versão maior. PNG permanece PNG;
+            // JPEG é recomprimido somente quando isso efetivamente reduz o peso.
+            if (blob.size >= file.size) {
+              resolve(file);
+              return;
+            }
+            resolve(blob);
+          }, outputMime, quality);
+        };
+        image.onerror = function () { reject(new Error('A imagem da assinatura é inválida ou não pôde ser aberta.')); };
+        image.src = String(reader.result || '');
       };
       reader.onerror = function () { reject(new Error('Não foi possível ler a imagem da assinatura.')); };
       reader.readAsDataURL(file);
+    });
+  }
+
+  function readSignatureFile_(file) {
+    if (!file) return Promise.resolve(null);
+    return compressSignatureImage_(file).then(function (processedBlob) {
+      return blobToDataUrl_(processedBlob).then(function (dataUrl) {
+        var base64 = dataUrl.indexOf(',') >= 0 ? dataUrl.split(',')[1] : '';
+        if (!base64) throw new Error('Não foi possível ler a imagem da assinatura.');
+        var mime = String(processedBlob.type || file.type || '').toLowerCase();
+        var ext = mime === 'image/png' ? '.png' : '.jpg';
+        var originalName = String(file.name || 'assinatura').replace(/\.(jpe?g|png)$/i, '');
+        return {
+          base64: base64,
+          mime: mime,
+          nome: originalName + ext,
+          dataUrl: dataUrl
+        };
+      });
     });
   }
 

@@ -414,3 +414,13 @@ O card **Histórico** do painel principal passa a ficar disponível e abre diret
 - Pesquisa e filtros por tipo/status permanecem disponíveis e passam a considerar os itens existentes dentro de cada grupo.
 - Ações de mensagem distinguem Ciência e Lembrete; Documentos continua reunindo o ofício e o PDF do processo quando disponível.
 - Nenhuma alteração de backend, autenticação, geração de PDF, confirmação de ciência ou agendamento de lembretes nesta versão.
+
+
+## v0.10.6
+
+- Assinatura digitalizada passa a aceitar JPG/JPEG e PNG.
+- Remove o limite artificial de 2,5 MB no frontend.
+- Imagens de assinatura são compactadas automaticamente antes do envio, preservando as dimensões originais em pixels.
+- PNG permanece PNG; JPEG é recomprimido somente quando a versão processada fica menor que o arquivo original.
+- Mantém inalteradas as demais regras de configuração do signatário, geração de ofícios, autenticação e módulos.
+- Atualiza o cache do PWA para `audiencias-shell-v0.10.6`.
