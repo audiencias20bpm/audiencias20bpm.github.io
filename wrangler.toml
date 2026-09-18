@@ -1,0 +1,20 @@
+name = "audiencias20bpm-api"
+main = "src/index.js"
+compatibility_date = "2026-09-17"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "audiencias20bpm"
+database_id = "81631cdd-0da2-4ec1-bfa2-16d47cf32c3b"
+
+[[r2_buckets]]
+binding = "DOCUMENTOS"
+bucket_name = "audiencias20bpm-documentos"
+
+[vars]
+APP_NAME = "Sistema de Audiências"
+APP_VERSION = "0.11.0"
+TIMEZONE = "America/Belem"
+FRONTEND_ORIGIN = "https://audiencias20bpm-github-io.audiencias-20-bpm.workers.dev"
+SESSION_MINUTES = "30"
