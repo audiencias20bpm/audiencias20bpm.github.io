@@ -5,6 +5,6 @@
     APP_NAME: 'Sistema de Audiencias',
     APP_VERSION: '0.10.6',
     TIMEZONE: 'America/Belem',
-    API_BASE_URL: 'https://script.google.com/macros/s/AKfycbx10pdwryOVxoal6UJdESaRnRB4i0TrTrIqmsDvGXotU5fs3p5uC4Rgn7LYK5zdNGY/exec'
+    API_BASE_URL: 'https://audiencias20bpm-api.audiencias-20-bpm.workers.dev'
   });
 }());
