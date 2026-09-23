@@ -587,7 +587,7 @@
                     <div class="form-group full-width process-document-field">
                       <label for="documentos-processo-pdf">Documento do processo em PDF <span class="label-optional">(opcional)</span></label>
                       <input id="documentos-processo-pdf" type="file" accept="application/pdf,.pdf">
-                      <small class="field-help">Anexe, quando necessário, um PDF relacionado ao processo. Limite de 5 MB. O arquivo será salvo no Drive e vinculado ao ofício gerado.</small>
+                      <small class="field-help">Anexe, quando necessário, um PDF relacionado ao processo. O arquivo será armazenado no R2 e vinculado ao ofício gerado.</small>
                       <div id="documentos-processo-pdf-status" class="process-document-status" hidden></div>
                     </div>
                   </div>
@@ -627,7 +627,7 @@
                     <button id="documentos-preview-refresh" class="secondary-button" type="button">Atualizar prévia</button>
                     <button id="documentos-generate-pdf" class="primary-button" type="button">Gerar PDF</button>
                   </div>
-                  <small class="field-help">Ao gerar, o sistema reserva o próximo número, grava o ofício no histórico, salva o PDF no Drive e baixa uma cópia no dispositivo.</small>
+                  <small class="field-help">A prévia não consome numeração. Ao concluir a geração, o sistema grava o ofício no histórico, salva os PDFs no R2 e baixa uma cópia no dispositivo.</small>
                 </section>
               </div>
             </section>
@@ -754,7 +754,7 @@
                 <button id="documentos-history-back" class="back-button" type="button">← Voltar ao painel</button>
                 <p class="dashboard-kicker">Histórico</p>
                 <h2 id="historico-view-title">Histórico de ofícios</h2>
-                <p class="module-view-subtitle">Consulte os ofícios emitidos, seus destinatários, processos e PDFs salvos no Drive.</p>
+                <p class="module-view-subtitle">Consulte os ofícios emitidos, seus destinatários, processos e PDFs armazenados no R2.</p>
               </div>
             </header>
 
@@ -795,7 +795,7 @@
                 <div class="document-history-summary"><strong id="documentos-history-count">0</strong><span>ofício(s) encontrado(s)</span></div>
                 <div class="table-scroll" tabindex="0" aria-label="Histórico de ofícios">
                   <table class="audiencias-table document-history-table">
-                    <thead><tr><th>Ofício</th><th>Data</th><th>Militar</th><th>RG</th><th>Processo</th><th>Status</th><th>PDF</th></tr></thead>
+                    <thead><tr><th>Ofício</th><th>Data</th><th>Militar</th><th>RG</th><th>Processo</th><th>Status</th><th>Documentos</th></tr></thead>
                     <tbody id="documentos-history-body"></tbody>
                   </table>
                 </div>

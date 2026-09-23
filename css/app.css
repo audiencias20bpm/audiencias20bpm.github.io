@@ -2686,6 +2686,14 @@ body.modal-open {
   opacity: .55;
   cursor: not-allowed;
 }
+.document-history-document-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.document-history-documents {
+  min-width: 190px;
+}
 @media (max-width: 720px) {
   .document-history-filter-actions {
     justify-content: stretch;
@@ -2693,8 +2701,67 @@ body.modal-open {
   .document-history-filter-actions button {
     flex: 1 1 140px;
   }
+  .document-history-view .table-scroll {
+    overflow: visible;
+  }
   .document-history-table {
-    min-width: 820px;
+    min-width: 0;
+    width: 100%;
+  }
+  .document-history-table thead {
+    display: none;
+  }
+  .document-history-table,
+  .document-history-table tbody,
+  .document-history-table tr,
+  .document-history-table td {
+    display: block;
+    width: 100%;
+  }
+  .document-history-table tr {
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color, #d4e0e4);
+    border-radius: 16px;
+    background: #fff;
+  }
+  .document-history-table td {
+    display: grid;
+    grid-template-columns: minmax(88px, .7fr) minmax(0, 1.6fr);
+    gap: 12px;
+    align-items: start;
+    min-width: 0;
+    padding: 8px 0;
+    border: 0;
+    border-bottom: 1px solid #edf2f4;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .document-history-table td:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  .document-history-table td::before {
+    content: attr(data-label);
+    color: #526a73;
+    font-size: .78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .035em;
+  }
+  .document-history-name,
+  .document-history-process,
+  .document-history-documents {
+    min-width: 0;
+  }
+  .document-history-document-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .document-history-pdf-button {
+    min-width: 0;
+    width: 100%;
   }
 }
 

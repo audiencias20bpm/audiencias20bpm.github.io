@@ -3,7 +3,7 @@
 
   window.APP_CONFIG = Object.freeze({
     APP_NAME: 'Sistema de Audiencias',
-    APP_VERSION: '0.10.6',
+    APP_VERSION: '0.11.4',
     TIMEZONE: 'America/Belem',
     API_BASE_URL: 'https://audiencias20bpm-api.audiencias-20-bpm.workers.dev'
   });
