@@ -14,7 +14,9 @@ bucket_name = "audiencias20bpm-documentos"
 
 [vars]
 APP_NAME = "Sistema de Audiências"
-APP_VERSION = "0.11.5"
+APP_VERSION = "0.12.0"
 TIMEZONE = "America/Belem"
 FRONTEND_ORIGIN = "https://audiencias20bpm-github-io.audiencias-20-bpm.workers.dev,http://localhost:8080"
 SESSION_MINUTES = "30"
+
+CONFIRMATION_BASE_URL = "https://audiencias20bpm-github-io.audiencias-20-bpm.workers.dev"

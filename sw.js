@@ -1,4 +1,4 @@
-const CACHE_NAME = 'audiencias-shell-v0.11.5';
+const CACHE_NAME = 'audiencias-shell-v0.12.0';
 const APP_SHELL = [
   './',
   './index.html',
