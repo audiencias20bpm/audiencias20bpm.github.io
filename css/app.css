@@ -3489,3 +3489,48 @@ body.modal-open {
   .notification-card-statuses { justify-items: stretch; }
   .notification-card-statuses .notification-group-status { justify-content: space-between; }
 }
+
+/* v0.11.5 — Histórico de ofícios: documentos visíveis também em telas maiores */
+@media (min-width: 721px) {
+  .document-history-view .table-scroll {
+    overflow-x: auto;
+  }
+
+  .document-history-table {
+    min-width: 980px;
+    table-layout: fixed;
+  }
+
+  .document-history-table th:nth-child(1),
+  .document-history-table td:nth-child(1) { width: 10%; }
+  .document-history-table th:nth-child(2),
+  .document-history-table td:nth-child(2) { width: 11%; }
+  .document-history-table th:nth-child(3),
+  .document-history-table td:nth-child(3) { width: 22%; }
+  .document-history-table th:nth-child(4),
+  .document-history-table td:nth-child(4) { width: 9%; }
+  .document-history-table th:nth-child(5),
+  .document-history-table td:nth-child(5) { width: 17%; }
+  .document-history-table th:nth-child(6),
+  .document-history-table td:nth-child(6) { width: 11%; }
+  .document-history-table th:nth-child(7),
+  .document-history-table td:nth-child(7) { width: 20%; }
+
+  .document-history-document-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+
+  .document-history-pdf-button {
+    width: 100%;
+    min-width: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .document-history-documents {
+    min-width: 0;
+  }
+}
