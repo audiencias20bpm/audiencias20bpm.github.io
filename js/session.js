@@ -252,7 +252,7 @@
 
   function setLogoutBusy_(busy) {
     var overlay = document.getElementById('logout-overlay');
-    var button = document.getElementById('logout-button');
+    var buttons = document.querySelectorAll('.logout-trigger');
     var message = document.getElementById('logout-message');
 
     loggingOut = busy;
@@ -260,10 +260,10 @@
     if (overlay) {
       overlay.hidden = !busy;
     }
-    if (button) {
+    buttons.forEach(function (button) {
       button.disabled = busy;
       button.setAttribute('aria-disabled', busy ? 'true' : 'false');
-    }
+    });
     if (message && busy) {
       message.hidden = true;
       message.textContent = '';
@@ -322,14 +322,14 @@
   }
 
   function bindLogout_() {
-    var button = document.getElementById('logout-button');
-    if (!button || button.dataset.bound === 'true') {
-      return;
-    }
-
-    button.dataset.bound = 'true';
-    button.addEventListener('click', function () {
-      logout_();
+    document.querySelectorAll('.logout-trigger').forEach(function (button) {
+      if (button.dataset.bound === 'true') {
+        return;
+      }
+      button.dataset.bound = 'true';
+      button.addEventListener('click', function () {
+        logout_();
+      });
     });
   }
 
