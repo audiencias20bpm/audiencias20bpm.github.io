@@ -1,6 +1,6 @@
 # Sistema de Audiências — 20º BPM
 
-Versão 0.12.4 — backend operacional em Cloudflare Workers + D1 + R2.
+Versão 0.12.5 — backend operacional em Cloudflare Workers + D1 + R2.
 
 ## Arquitetura atual
 - Frontend/PWA estático.
@@ -13,3 +13,15 @@ Versão 0.12.4 — backend operacional em Cloudflare Workers + D1 + R2.
 
 ## Segurança
 Segredos não são versionados. PASSWORD_PEPPER e SESSION_SECRET permanecem como Wrangler secrets. Credenciais futuras da Meta também devem ser secrets.
+
+
+## WhatsApp Cloud API — webhook (v0.12.5)
+
+Endpoint de produção preparado no Worker: `/api/whatsapp/webhook`.
+
+Segredos obrigatórios no Cloudflare Worker (nunca versionar no Git):
+
+- `WHATSAPP_WEBHOOK_VERIFY_TOKEN`: token privado criado pelo administrador para a verificação do webhook da Meta.
+- `META_APP_SECRET`: segredo do app da Meta usado para validar `X-Hub-Signature-256` nos eventos recebidos.
+
+Nesta versão o envio real pelo WhatsApp continua desativado. O webhook já valida a assinatura da Meta, registra mensagens recebidas em `eventos` e atualiza estados de notificações quando existir correspondência por `wamid`.

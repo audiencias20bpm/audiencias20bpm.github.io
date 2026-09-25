@@ -109,6 +109,50 @@ async function notificacoesDocumentoPublic(d,env,o){const row=await notification
 function brDateTime(v){const x=new Date(v);if(Number.isNaN(x.getTime()))return {data:clean(v),hora:''};return {data:new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Belem'}).format(x),hora:new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Belem',hour:'2-digit',minute:'2-digit'}).format(x)}}
 async function notificacoesConfirmData(d,env,o){const row=await notificationByPublicToken(env,clean(d.token));if(!row)return fail('LINK_INVALIDO','Link de confirmação inválido ou expirado.',404,o);const dh=brDateTime(row.data_hora),docs=[];if(row.r2_pdf_key)docs.push({tipo:'OFICIO',nome:row.pdf_nome||`Oficio-${row.numero}-${row.ano}.pdf`});if(row.r2_processo_key)docs.push({tipo:'PROCESSO',nome:row.processo_pdf_nome||'Documento do processo.pdf'});return ok({dados:{posto_graduacao:row.posto_graduacao,militar_nome:row.militar_nome,numero_oficio:row.numero?String(row.numero).padStart(3,'0')+'/'+row.ano:'',data:dh.data,hora:dh.hora,processo:row.processo,local:row.local,modalidade:row.modalidade,documentos:docs,confirmada:Boolean(row.confirmado_em),confirmado_em:row.confirmado_em||''}},'Dados da confirmação carregados.',o)}
 async function notificacoesConfirm(d,env,o){const row=await notificationByPublicToken(env,clean(d.token));if(!row)return fail('LINK_INVALIDO','Link de confirmação inválido ou expirado.',404,o);if(row.confirmado_em)return ok({ja_confirmada:true,confirmado_em:row.confirmado_em},'Ciência já confirmada.',o);const stamp=now();await env.DB.batch([env.DB.prepare('UPDATE notificacoes SET status=?,confirmado_em=?,atualizado_em=? WHERE id=?').bind('CONFIRMADO',stamp,stamp,row.id),env.DB.prepare('UPDATE oficios SET confirmado_em=?,atualizado_em=? WHERE id=?').bind(stamp,stamp,row.oficio_id),env.DB.prepare('INSERT INTO eventos(id,audiencia_id,notificacao_id,tipo,timestamp,origem,dados) VALUES(?,?,?,?,?,?,?)').bind(crypto.randomUUID(),row.audiencia_id,row.id,'CIENCIA_CONFIRMADA',stamp,'PUBLICO',JSON.stringify({oficio_id:row.oficio_id}))]);return ok({ja_confirmada:false,confirmado_em:stamp},'Ciência confirmada.',o)}
+async function verifyMetaSignature(req,env,raw){
+  if(!env.META_APP_SECRET)return false;
+  const supplied=clean(req.headers.get('x-hub-signature-256'));
+  if(!supplied.startsWith('sha256='))return false;
+  const expected='sha256='+await hmacHex(env.META_APP_SECRET,raw);
+  return safeEqual(supplied,expected);
+}
+async function whatsappWebhookVerify(req,env){
+  const u=new URL(req.url),mode=clean(u.searchParams.get('hub.mode')),token=clean(u.searchParams.get('hub.verify_token')),challenge=clean(u.searchParams.get('hub.challenge'));
+  if(mode==='subscribe'&&env.WHATSAPP_WEBHOOK_VERIFY_TOKEN&&safeEqual(token,env.WHATSAPP_WEBHOOK_VERIFY_TOKEN))return new Response(challenge,{status:200,headers:{'content-type':'text/plain; charset=utf-8','cache-control':'no-store'}});
+  return new Response('Forbidden',{status:403,headers:{'content-type':'text/plain; charset=utf-8','cache-control':'no-store'}});
+}
+async function recordWhatsappWebhook(env,payload){
+  const entries=Array.isArray(payload?.entry)?payload.entry:[];
+  for(const entry of entries){
+    const changes=Array.isArray(entry?.changes)?entry.changes:[];
+    for(const change of changes){
+      const value=change?.value||{};
+      const statuses=Array.isArray(value.statuses)?value.statuses:[];
+      for(const st of statuses){
+        const wamid=clean(st.id),status=upper(st.status),stamp=st.timestamp?new Date(Number(st.timestamp)*1000).toISOString():now();
+        let notif=null;if(wamid)notif=await env.DB.prepare('SELECT id,audiencia_id FROM notificacoes WHERE wamid=? LIMIT 1').bind(wamid).first();
+        if(notif){
+          const mapped=status==='SENT'?'ENVIADO':status==='DELIVERED'?'ENTREGUE':status==='READ'?'LIDA':status==='FAILED'?'FALHOU':status;
+          const err=Array.isArray(st.errors)&&st.errors.length?st.errors[0]:null;
+          await env.DB.prepare('UPDATE notificacoes SET status=?,ultimo_erro_codigo=?,ultimo_erro_resumo=?,atualizado_em=? WHERE id=?').bind(mapped,err?clean(err.code):null,err?clean(err.title||err.message||err.error_data?.details):null,now(),notif.id).run();
+        }
+        await env.DB.prepare('INSERT INTO eventos(id,audiencia_id,notificacao_id,tipo,timestamp,wamid,origem,dados) VALUES(?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),notif?.audiencia_id||null,notif?.id||null,'WHATSAPP_STATUS_'+(status||'DESCONHECIDO'),stamp,wamid||null,'META',JSON.stringify(st)).run();
+      }
+      const messages=Array.isArray(value.messages)?value.messages:[];
+      for(const msg of messages){
+        await env.DB.prepare('INSERT INTO eventos(id,tipo,timestamp,wamid,origem,dados) VALUES(?,?,?,?,?,?)').bind(crypto.randomUUID(),'WHATSAPP_MENSAGEM_RECEBIDA',now(),clean(msg.id)||null,'META',JSON.stringify({metadata:value.metadata||null,contacts:value.contacts||null,message:msg})).run();
+      }
+    }
+  }
+}
+async function whatsappWebhookReceive(req,env){
+  const raw=await req.text();
+  if(!env.META_APP_SECRET)return new Response('META_APP_SECRET not configured',{status:503});
+  if(!await verifyMetaSignature(req,env,raw))return new Response('Invalid signature',{status:401});
+  let payload;try{payload=JSON.parse(raw)}catch(_){return new Response('Bad Request',{status:400})}
+  try{await recordWhatsappWebhook(env,payload)}catch(e){return new Response('Webhook processing error',{status:500})}
+  return new Response('EVENT_RECEIVED',{status:200,headers:{'content-type':'text/plain; charset=utf-8','cache-control':'no-store'}});
+}
 async function notificacoesList(d,env,o){const s=await requireSession(d,env,o);const r=await env.DB.prepare(`SELECT n.*,o.numero,o.ano,o.pdf_nome,o.r2_pdf_key,o.processo_pdf_nome,o.r2_processo_key,d.nome militar_nome,d.rg militar_rg,d.telefone whatsapp,d.unidade,d.posto_graduacao,d.status destinatario_status,a.processo,a.data_hora,a.local,a.modalidade FROM notificacoes n LEFT JOIN oficios o ON o.id=n.oficio_id LEFT JOIN destinatarios d ON d.id=n.destinatario_id LEFT JOIN audiencias a ON a.id=n.audiencia_id ORDER BY n.criado_em DESC`).all();const itens=(r.results||[]).map(x=>Object.assign(x,{numero_oficio:x.numero?String(x.numero).padStart(3,'0')+'/'+x.ano:'',pdf_disponivel:Boolean(x.r2_pdf_key),processo_pdf_disponivel:Boolean(x.r2_processo_key)})),resumo={pendentes:0,enviadas:0,confirmadas:0,erros:0};for(const x of itens){const st=upper(x.status);if(st==='PENDENTE')resumo.pendentes++;if(st==='ENVIADO'||st==='SIMULADA')resumo.enviadas++;if(st==='CONFIRMADO')resumo.confirmadas++;if(st==='FALHOU')resumo.erros++}return ok(withExp(s,{itens,resumo,modo:'TEST'}),'Notificações consultadas.',o)}
 async function dispatch(d,env,o){switch(clean(d.action)){case'health':return routeHealth(env,o);case'login':return routeLogin(d,env,o);case'session':return routeSession(d,env,o);case'logout':return routeLogout(d,env,o);case'audiencias_list':return listAudiencias(d,env,o);case'audiencias_create':return createAudiencia(d,env,o);case'destinatarios_list':return listDestinatarios(d,env,o);case'destinatarios_lookup':return lookupDestinatarios(d,env,o);case'destinatarios_update':return updateDestinatario(d,env,o);case'usuarios_list':return listUsuarios(d,env,o);case'usuarios_create':return createUsuario(d,env,o);case'usuarios_update':return updateUsuario(d,env,o);case'usuarios_status':return userAction(d,env,o,'status');case'usuarios_unlock':return userAction(d,env,o,'unlock');case'usuarios_end_sessions':return userAction(d,env,o,'sessions');case'usuarios_delete':return userAction(d,env,o,'delete');case'usuarios_reset_password':return resetPassword(d,env,o,false);case'password_change_self':return resetPassword(d,env,o,true);case'oficios_config_get':return oficioConfigGet(d,env,o);case'oficios_config_save':return oficioConfigSave(d,env,o);case'oficios_reservar':return oficioReservar(d,env,o);case'oficios_pdf_finalizar':return oficioFinalizar(d,env,o);case'oficios_gerar':return oficioGerar(d,env,o);case'oficios_pdf_obter':return oficioPdf(d,env,o);case'oficios_processo_pdf_obter':return processoPdf(d,env,o);case'oficios_historico_list':return oficioHistorico(d,env,o);case'biometria_register':return biometriaRegister(d,env,o);case'biometria_login':return biometriaLogin(d,env,o);case'biometria_remove':return biometriaRemove(d,env,o);case'notificacoes_list':return notificacoesList(d,env,o);case'notificacoes_send':return notificacoesSend(d,env,o);case'notificacoes_documento_admin_obter':return notificacoesDocumentoAdmin(d,env,o);case'notificacoes_documento_obter':return notificacoesDocumentoPublic(d,env,o);case'notificacoes_confirm_data':return notificacoesConfirmData(d,env,o);case'notificacoes_confirm':return notificacoesConfirm(d,env,o);default:return fail('ROTA_EM_MIGRACAO','Rota ainda não ativada no backend Cloudflare: '+clean(d.action),501,o)}}
-export default{async fetch(req,env){const o=originFor(req,env);if(req.method==='OPTIONS')return new Response(null,{status:204,headers:{'access-control-allow-origin':o,'access-control-allow-methods':'GET,POST,OPTIONS','access-control-allow-headers':'Content-Type'}});try{if(req.method==='GET'){const u=new URL(req.url);return dispatch({action:u.searchParams.get('action')||'health'},env,o)}if(req.method!=='POST')return fail('METODO_INVALIDO','Método não permitido.',405,o);const d=await req.json().catch(()=>({}));return await dispatch(d,env,o)}catch(e){return fail(e.code||'ERRO_INTERNO',e.message||'Erro interno.',e.status||500,o)}}};
+export default{async fetch(req,env){const u=new URL(req.url);if(u.pathname==='/api/whatsapp/webhook'){if(req.method==='GET')return whatsappWebhookVerify(req,env);if(req.method==='POST')return whatsappWebhookReceive(req,env);return new Response('Method Not Allowed',{status:405})}const o=originFor(req,env);if(req.method==='OPTIONS')return new Response(null,{status:204,headers:{'access-control-allow-origin':o,'access-control-allow-methods':'GET,POST,OPTIONS','access-control-allow-headers':'Content-Type'}});try{if(req.method==='GET')return dispatch({action:u.searchParams.get('action')||'health'},env,o);if(req.method!=='POST')return fail('METODO_INVALIDO','Método não permitido.',405,o);const d=await req.json().catch(()=>({}));return await dispatch(d,env,o)}catch(e){return fail(e.code||'ERRO_INTERNO',e.message||'Erro interno.',e.status||500,o)}}};
