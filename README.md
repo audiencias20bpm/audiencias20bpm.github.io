@@ -1,6 +1,6 @@
 # Sistema de Audiências — 20º BPM
 
-Versão 0.12.3 — backend operacional em Cloudflare Workers + D1 + R2.
+Versão 0.12.4 — backend operacional em Cloudflare Workers + D1 + R2.
 
 ## Arquitetura atual
 - Frontend/PWA estático.

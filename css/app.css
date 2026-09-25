@@ -4048,3 +4048,60 @@ body.modal-open {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* v0.12.4 — rolagem horizontal acessível e tabelas estáveis */
+.floating-table-scrollbar {
+  position: fixed;
+  left: 0;
+  bottom: 10px;
+  z-index: 1200;
+  height: 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid #b8cbd0;
+  border-radius: 9px;
+  background: rgba(247, 250, 251, .98);
+  box-shadow: 0 5px 18px rgba(11, 60, 73, .16);
+  scrollbar-gutter: stable;
+}
+
+.floating-table-scrollbar[hidden] { display: none !important; }
+.floating-table-scrollbar-track { height: 1px; }
+
+@media (max-width: 720px) {
+  .floating-table-scrollbar { display: none !important; }
+}
+
+/* Em desktop/intermediário, nunca esmagar Tipo/Status/Ações das notificações. */
+@media (min-width: 721px) {
+  .notification-desktop-list {
+    overflow-x: auto !important;
+  }
+
+  .notification-table {
+    min-width: 1240px;
+  }
+
+  .notification-table th:nth-child(7),
+  .notification-table td:nth-child(7) {
+    min-width: 108px;
+  }
+
+  .notification-group-types,
+  .notification-group-types span,
+  .notification-table td:nth-child(7) {
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+  }
+
+  .notification-group-types span {
+    white-space: nowrap !important;
+  }
+}
+
+@media (min-width: 1450px) {
+  .notification-table {
+    min-width: 0;
+  }
+}
